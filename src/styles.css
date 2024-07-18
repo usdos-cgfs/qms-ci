@@ -1,0 +1,101 @@
+﻿#s4-leftpanel {
+  /* display: none; */
+}
+
+#MSO_ContentTable,
+#contentBox {
+  /* margin: 25px 5%; */
+}
+
+#SRSB,
+#DeltaSiteLogo,
+#sideNavBox {
+  /* display: none; */
+}
+
+#s4-ribbonrow {
+  /* display: none !important; */
+}
+
+.btn {
+  margin: 0.5rem;
+}
+
+html {
+  font-size: 80% !important;
+}
+
+.plan-id {
+  color: blue;
+  cursor: pointer;
+}
+
+.required {
+  color: red;
+}
+
+.rich-text {
+  white-space: pre-wrap;
+}
+
+.overdue {
+  background-color: red;
+}
+
+.requires-attention {
+  background-color: #f7c0ae !important;
+}
+
+.text-wrap {
+  white-space: normal;
+}
+
+.section-title {
+  font-weight: bold;
+  padding-top: 2rem;
+}
+
+.section-subtitle {
+  padding-top: 1rem;
+  font-style: italic;
+}
+
+.info-row-spread {
+  display: flex;
+}
+
+.info-row-spread > span {
+  padding-left: 10px;
+}
+
+.card-footer > p {
+  padding-bottom: 0px;
+  margin-bottom: 0px;
+  font-size: 12px;
+}
+
+.table.approval-history {
+  max-width: 500px;
+}
+
+.table.approval-history td:first-child {
+  width: 215px;
+}
+
+.ui.compact.selection.search.dropdown {
+  min-width: 70%;
+}
+
+th .ui.selection.dropdown .menu {
+  min-width: 100%;
+  max-width: 100%;
+}
+
+th .ui.selection.dropdown .menu > .item {
+  padding: 0.5rem 1.14285714rem !important;
+  min-height: 1.15rem;
+}
+
+th .ui.selection.dropdown .menu > .item:nth-child(odd) {
+  background-color: rgb(249, 249, 249);
+}
