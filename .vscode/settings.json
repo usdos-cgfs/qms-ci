@@ -41,6 +41,16 @@
         "deployOnSave": ["CAR/CAP Style Library"],
         "removeOnChange": ["CAR/CAP Style Library"],
         "syncWhenOpen": true
+      },
+      {
+        "name": "lib",
+        "description": "Only Files in lib folder",
+        "files": ["lib/**"],
+        "exclude": ["**.md", "**.json"],
+
+        "deployOnSave": ["CAR/CAP Style Library"],
+        "removeOnChange": ["CAR/CAP Style Library"],
+        "syncWhenOpen": true
       }
     ],
     "targets": [
