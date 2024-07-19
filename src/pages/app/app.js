@@ -1,6 +1,6 @@
 import { getUrlParam } from "../../common/router.js";
 import { Tab, TabsModule } from "../../components/tabs/tabs.js";
-
+import { makeDataTable } from "../../common/data-table.js";
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
 
@@ -195,7 +195,7 @@ $("#btnRequestAllRecords").click(LoadMainData);
 // Tab 0 My CAP Table configuration:
 // columDefs option is used to set style for the first column of the table value
 // initComplete option is used to set the dropdown filters for all columns
-function makeDataTable(id) {
+function makeDataTableDep(id) {
   //check if this is already a datatable
   if ($(id).hasClass("dataTable")) {
     return;
@@ -1916,12 +1916,12 @@ export function CAPViewModel(capIdstring) {
   };
 
   self.bindingCompleteHandlers = {
-    tableBound: function (nodes) {
+    tableBound: function (nodes, elm) {
       // var start = new Date();
       // console.log("Bound", nodes);
-      var tableId = "#" + nodes.id;
+      var tableId = nodes.id;
       makeDataTable(tableId);
-      $(tableId + " .dropdown").dropdown();
+      // $(tableId + " .dropdown").dropdown();
       // console.log(tableId, new Date() - start);
     },
   };
