@@ -1,17 +1,26 @@
-import { setUrlParam } from "../../common/router.js";
+import { getUrlParam, setUrlParam } from "../../common/router.js";
 
 // const urlParam = "Tab";
 
 export class TabsModule {
-  constructor(tabOpts, urlParam = "Tab") {
+  constructor(tabOpts, urlParam = "tab") {
     this.urlParam = urlParam;
     ko.utils.arrayPushAll(this.tabOpts, tabOpts);
     this.selectedTab.subscribe(this.tabChangeHandler);
     window.addEventListener("popstate", this.popStateHandler);
+
+    // Set default tab
+    const defaultTabId = getUrlParam(urlParam);
+    this.selectById(this.selectById(defaultTabId));
   }
 
   tabOpts = ko.observableArray();
   selectedTab = ko.observable();
+
+  visibleTabs = ko.pureComputed(() => {
+    const visibleTabs = this.tabOpts().filter((tab) => tab.visible());
+    return visibleTabs;
+  });
 
   isSelected = (tab) => {
     return tab.id == this.selectedTab()?.id;
@@ -19,10 +28,9 @@ export class TabsModule {
 
   clickTabLink = (tab) => {
     this.selectedTab(tab);
-    console.log("selected: " + tab.id);
   };
 
-  selectTab = (tab) => this.selectById(tab.id);
+  selectTab = (tab) => this.selectById(tab?.id);
 
   selectById = (tabId) => {
     const tabById =
@@ -30,7 +38,11 @@ export class TabsModule {
     this.selectedTab(tabById);
   };
 
-  getDefaultTab = () => this.tabOpts()[0];
+  selectDefault = () => {
+    this.selectedTab(this.getDefaultTab());
+  };
+
+  getDefaultTab = () => this.visibleTabs()[0];
 
   tabChangeHandler = (newTab) => {
     if (newTab) setUrlParam(this.urlParam, newTab.id);
@@ -46,8 +58,8 @@ export class TabsModule {
 }
 
 export class Tab {
-  constructor(id, linkText, template, visible = true) {
-    this.id = id;
+  constructor({ urlKey, linkText, template, visible = true }) {
+    this.id = urlKey;
     this.linkText = linkText;
     this.template = template;
     this.isVisible = visible;

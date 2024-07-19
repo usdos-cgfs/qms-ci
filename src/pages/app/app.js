@@ -1,5 +1,5 @@
 import { getUrlParam } from "../../common/router.js";
-import { Tab } from "../../components/tabs/tabs.js";
+import { Tab, TabsModule } from "../../components/tabs/tabs.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -1127,30 +1127,31 @@ function initComplete() {
   ko.applyBindings(vm);
 
   vm.currentUser(sal.globalConfig.currentUser);
-  var tab = Common.Utilities.getUrlParam("tab");
-  var capid = Common.Utilities.getUrlParam("capid");
+  var tabId = getUrlParam("tab");
+  var capid = getUrlParam("capid");
 
   $("#showme").hide();
 
   $("#tabs").show();
   // $("#tabs").tabs();
 
-  var defaultTab = TABS.MYPLANS;
-  switch (vm.AdminType()) {
-    case ROLES.ADMINTYPE.QO:
-      defaultTab = TABS.QOPLANS;
-      break;
-    case ROLES.ADMINTYPE.QTM:
-      defaultTab = TABS.ALLPLANS;
-      break;
-    case ROLES.ADMINTYPE.QTMB:
-      defaultTab = TABS.QTMBPLANS;
-      break;
-    default:
+  if (!tabId) {
+    const defaultTab = vm.tabOpts.myPlans;
+    switch (vm.AdminType()) {
+      case ROLES.ADMINTYPE.QO:
+        defaultTab = vm.tabOpts.qo;
+        break;
+      case ROLES.ADMINTYPE.QTM:
+        defaultTab = vm.tabOpts.all;
+        break;
+      case ROLES.ADMINTYPE.QTMB:
+        defaultTab = vm.tabOpts.qtmb;
+        break;
+      default:
+    }
+
+    vm.tabs.selectById(defaultTab);
   }
-
-  vm.tab(tab || defaultTab);
-
   if (capid) {
     vm.CAPID(capid);
     vm.selectedTitle(capid);
@@ -1987,6 +1988,10 @@ export function CAPViewModel(capIdstring) {
     }),
   };
 
+  // Default adminType to that provided on page.
+  const adminType = getUrlParam("role");
+  self.AdminType = ko.observable(adminType || "");
+
   self.tabOpts = {
     qtm: new Tab({
       urlKey: "qtm",
@@ -2060,12 +2065,14 @@ export function CAPViewModel(capIdstring) {
       },
     }),
   };
-  self.tab = ko.observable();
+  self.tabs = new TabsModule(Object.values(self.tabOpts));
 
-  self.tab.subscribe(function (newTab) {
-    // $("#tabs").tabs("option", "active", newTab);
-    Common.Utilities.updateUrlParam("tab", newTab.toString());
-  });
+  // self.tab = ko.observable();
+
+  // self.tab.subscribe(function (newTab) {
+  //   // $("#tabs").tabs("option", "active", newTab);
+  //   Common.Utilities.updateUrlParam("tab", newTab.toString());
+  // });
 
   self.selectedTitleObs = ko.observable();
   self.selectedTitle = ko.pureComputed({
@@ -2108,14 +2115,6 @@ export function CAPViewModel(capIdstring) {
   //   }
   //   LoadSelectedCAP(newSelection);
   // });
-
-  // Default adminType to that provided on page.
-  const adminType = getUrlParam("role");
-  self.AdminType = ko.observable(adminType || "");
-
-  self.AdminType.subscribe(function (val) {
-    console.log("admintype has changed: ", val);
-  });
 
   // Declare our record object arrays for different views (My CARs/CAPs, Awaiting Action, etc)
   self.allBusinessOffices = ko.observableArray([]);
@@ -3560,7 +3559,7 @@ export function CAPViewModel(capIdstring) {
                 );
               }
               vm.selectedTitle(newPlan.Title);
-              vm.tab(TABS.PLANDETAIL);
+              vm.tabs.selectById(vm.tabOpts.detail);
               vm.app.processes.finishTask(appProcessesStates.refreshPlans);
               // m_fnForward();
             });

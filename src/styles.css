@@ -17,6 +17,30 @@
   /* display: none !important; */
 }
 
+.app {
+  --bg-very-light-color: #edf1f2;
+  --bg-light-color: #eefbfb;
+  --bg-dark-color: #1d2b36;
+  --bg-dark-secondary-color: #2a3c48;
+
+  --text-primary: #1e2a36;
+
+  --success-color: #4fbf77;
+  --success-hover-color: #1f8f46;
+
+  --warn-color: #f0bb51;
+  --warn-hover-color: #d6930c;
+
+  --danger-color: rgb(182, 49, 49);
+  --danger-hover-color: rgb(179, 26, 26);
+  --danger-disabled-color: rgb(203, 113, 113);
+
+  --primary-color: #3bbfc3;
+  --primary-muted-color: #b9dfe2;
+
+  --secondary-color: #3c474d;
+}
+
 .btn {
   margin: 0.5rem;
 }
@@ -98,4 +122,43 @@ th .ui.selection.dropdown .menu > .item {
 
 th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   background-color: rgb(249, 249, 249);
+}
+
+.ui-tabs-nav {
+  display: flex;
+  gap: 0.25rem;
+  color: white;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ui-tabs-nav li {
+  text-decoration: none;
+  background-color: var(--secondary-color);
+  border-radius: 0.6rem 0.6rem 0 0;
+  padding: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ui-tabs-secondary .ui-tabs-nav li {
+  border: 1px solid var(--secondary-color);
+  background-color: transparent;
+  color: var(--secondary-color);
+  padding: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.ui-tabs-nav li.active {
+  text-decoration: none;
+  background-color: var(--primary-color);
+}
+
+.ui-tabs-secondary .ui-tabs-nav li.active {
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  background-color: transparent;
 }
