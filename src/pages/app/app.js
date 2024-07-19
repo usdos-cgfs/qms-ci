@@ -1916,7 +1916,8 @@ export function CAPViewModel(capIdstring) {
   };
 
   self.bindingCompleteHandlers = {
-    tableBound: function (nodes, elm) {
+    makeDataTable: makeDataTable,
+    tableBound: function (nodes) {
       // var start = new Date();
       // console.log("Bound", nodes);
       var tableId = nodes.id;

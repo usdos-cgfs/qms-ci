@@ -233,7 +233,7 @@
           </thead>
           <tbody
             data-bind="foreach: allOpenRecordsArray,
-            bindingComplete: bindingCompleteHandlers.tableBound"
+            childrenComplete: () => bindingCompleteHandlers.makeDataTable('tblAllOpenRecords')"
           >
             <tr
               data-bind="css: {'requires-attention': $root.filterRequiresQTMAction($data)}"
