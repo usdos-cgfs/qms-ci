@@ -1958,7 +1958,7 @@ export function CAPViewModel(capIdstring) {
           qaoObj.type = "qao";
           myOffices.push(qaoObj);
         }
-        for (j = 0; j < locations.length; j++) {
+        for (let j = 0; j < locations.length; j++) {
           var qsoLoc = office["QSO_" + locations[j]];
           if (qsoLoc && qsoLoc.get_lookupId() == userId) {
             var adminObj = {};

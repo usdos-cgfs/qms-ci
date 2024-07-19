@@ -43,7 +43,7 @@
   type="text/javascript"
 ></script> -->
 
-<link
+<!-- <link
   rel="stylesheet"
   type="text/css"
   href="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.12.1/redmond/jquery-ui.min.css"
@@ -52,27 +52,32 @@
   language="javascript"
   src="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.12.1/jquery-ui.min.js"
   type="text/javascript"
-></script>
+></script> -->
 
 <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/DataTables/DataTables-1.10.18/css/jquery.dataTables.min.css"
+  href="/sites/CGFS/Style Library/apps/car-cap/lib/datatables/datatables.min.css"
 />
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/DataTables/DataTables-1.10.18/js/jquery.dataTables.min.js"
+  src="/sites/CGFS/Style Library/apps/car-cap/lib/datatables/dataTables.min.js"
   type="text/javascript"
 ></script>
 
+<script
+  type="module"
+  src="/sites/CGFS/Style Library/apps/car-cap/lib/webcomponents/searchselect/searchselect.js"
+></script>
+
 <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/bootstrap/bootstrap.min.css"
+  href="/sites/CGFS/Style Library/apps/car-cap/lib/bootstrap-5.3.0/css/bootstrap.min.css"
 />
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/bootstrap/bootstrap.bundle.min.js"
+  src="/sites/CGFS/Style Library/apps/car-cap/lib/bootstrap-5.3.0/js/bootstrap.bundle.min.js"
   type="text/javascript"
 ></script>
 
@@ -157,32 +162,46 @@
     </div>
   </div>
 
-  <div style="display: none">
+  <div>
     <select
+      class="form-control"
       data-bind="value: AdminType, options: ['', 'qo', 'qtm', 'qtm-b']"
     ></select>
-    <div id="peopleImpersonate" data-bind="people: impersonateUserField"></div>
+    <!-- <div id="peopleImpersonate" data-bind="people: impersonateUserField"></div> -->
   </div>
+
   <div id="tabs" class="tabclass" style="display: none">
-    <ul id="tabList">
-      <li data-bind="visible: AdminType() == ROLES.ADMINTYPE.QTM">
+    <ul id="tabList" class="nav nav-tabs">
+      <li
+        class="nav-item"
+        data-bind="visible: AdminType() == ROLES.ADMINTYPE.QTM"
+      >
         <a href="#tabs-qtm">All Open CARs/CAPs</a>
       </li>
-      <li data-bind="visible: AdminType() == ROLES.ADMINTYPE.QTMB">
+      <li
+        class="nav-item"
+        data-bind="visible: AdminType() == ROLES.ADMINTYPE.QTMB"
+      >
         <a href="#tabs-qtmb">QTM-B Open CARs/CAPs</a>
       </li>
-      <li data-bind="visible: AdminType() == ROLES.ADMINTYPE.USER">
+      <li
+        class="nav-item"
+        data-bind="visible: AdminType() == ROLES.ADMINTYPE.USER"
+      >
         <a href="#tabs-0">My CARs/CAPs</a>
       </li>
-      <li data-bind="visible: AdminType() == ROLES.ADMINTYPE.QO">
+      <li
+        class="nav-item"
+        data-bind="visible: AdminType() == ROLES.ADMINTYPE.QO"
+      >
         <a href="#tabs-5">QO CARs/CAPs</a>
       </li>
-      <li><a href="#tabs-1">CAR/CAP Details</a></li>
+      <li class="nav-item"><a href="#tabs-1">CAR/CAP Details</a></li>
       <li data-bind="visible: AdminType() == ROLES.ADMINTYPE.USER">
         <a href="#tabs-2">Awaiting Action</a>
       </li>
-      <li style="display: none"><a href="#tabs-3">Dash</a></li>
-      <li><a href="#tabs-4">Lookup</a></li>
+      <li class="nav-item" style="display: none"><a href="#tabs-3">Dash</a></li>
+      <li class="nav-item"><a href="#tabs-4">Lookup</a></li>
     </ul>
     <!-- QTM Tab -->
     <div data-bind="visible: AdminType() == ROLES.ADMINTYPE.QTM" id="tabs-qtm">
