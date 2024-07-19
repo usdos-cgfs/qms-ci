@@ -1,3 +1,4 @@
+import { getUrlParam } from "./common/router.js";
 /* 
     ViewModels.js
 
@@ -74,7 +75,7 @@ var ACTIONSTATE = {
 };
 
 function convertModelToViewfield(model) {
-  vf = "<ViewFields>";
+  let vf = "<ViewFields>";
   for (let i = 0; i < model.length; i++) {
     vf = vf + "<FieldRef Name='" + model[i] + "'/>";
   }
@@ -665,7 +666,7 @@ function clearVM() {
 }
 
 // CAP Model View
-function CAPViewModel(capIdstring) {
+export function CAPViewModel(capIdstring) {
   console.log("evaluating viewmodel");
   var self = this;
 
@@ -848,6 +849,7 @@ function CAPViewModel(capIdstring) {
   // });
 
   // Default adminType to that provided on page.
+  const adminType = getUrlParam("role");
   self.AdminType = ko.observable(adminType || "");
 
   self.AdminType.subscribe(function (val) {
@@ -2212,10 +2214,10 @@ function CAPViewModel(capIdstring) {
       }),
     },
   };
-  sortByCreatedDesc = function (item1, item2) {
+  const sortByCreatedDesc = function (item1, item2) {
     return item1.Created < item2.Created ? 1 : -1;
   };
-  sortByTitle = function (item1, item2) {
+  const sortByTitle = function (item1, item2) {
     if (!item1.Title) {
       return -1;
     }
@@ -2227,7 +2229,7 @@ function CAPViewModel(capIdstring) {
     return index1 < index2 ? 1 : -1;
   };
 
-  getNextItemCntByType = function (type) {
+  const getNextItemCntByType = function (type) {
     // Pass CAP or CAR to filter and find the next incrementer
 
     const records = vm.allRecordsArray().filter(function (record) {
@@ -2253,7 +2255,7 @@ function CAPViewModel(capIdstring) {
     return id;
   }
 
-  getNextTitleByType = function (type) {
+  const getNextTitleByType = function (type) {
     const itemCount = getNextItemCntByType(type);
     switch (type) {
       case "CAR":

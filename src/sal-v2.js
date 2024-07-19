@@ -345,11 +345,11 @@ function getUserProperties() {
     headers: requestHeaders,
     success: function (data) {
       sal.globalConfig.currentUserProfile = data.d;
-      vm.requestorTelephone(
-        data.d.UserProfileProperties.results.find(function (prop) {
-          return prop.Key == "WorkPhone";
-        }).Value
-      );
+      // vm.requestorTelephone(
+      //   data.d.UserProfileProperties.results.find(function (prop) {
+      //     return prop.Key == "WorkPhone";
+      //   }).Value
+      // );
     },
     error: function (jqxr, errorCode, errorThrown) {
       console.error(jqxr.responseText);

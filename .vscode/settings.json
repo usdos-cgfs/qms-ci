@@ -1,0 +1,56 @@
+{
+  "editor.formatOnSave": true,
+  "emmet.includeLanguages": { "javascript": "javascriptreact" },
+  "deploy.reloaded": {
+    "packages": [
+      {
+        "name": "All Files",
+        "description": "Application Source Files",
+        "files": ["lib/**", "src/**"],
+        "exclude": ["**.md", "**.json"],
+        "deployOnSave": ["CAR/CAP Style Library"],
+        "removeOnChange": ["CAR/CAP Style Library"],
+        "syncWhenOpen": true
+      },
+      {
+        "name": "Source Only",
+        "description": "Only Files in src folder",
+        "files": ["src/**"],
+        "exclude": ["**.md", "**.json"],
+
+        "deployOnSave": ["CAR/CAP Style Library"],
+        "removeOnChange": ["CAR/CAP Style Library"],
+        "syncWhenOpen": true
+      },
+      {
+        "name": "sal",
+        "description": "Only Files in src folder",
+        "files": ["src/sal/**"],
+        "exclude": ["**.md", "**.json"],
+
+        "deployOnSave": ["CAR/CAP Style Library"],
+        "removeOnChange": ["CAR/CAP Style Library"],
+        "syncWhenOpen": true
+      },
+      {
+        "name": "dist",
+        "description": "Only Files in dist folder",
+        "files": ["dist/**"],
+        "exclude": ["**.md", "**.json"],
+
+        "deployOnSave": ["CAR/CAP Style Library"],
+        "removeOnChange": ["CAR/CAP Style Library"],
+        "syncWhenOpen": true
+      }
+    ],
+    "targets": [
+      {
+        "type": "local",
+        "name": "CAR/CAP Style Library",
+        "description": "Style Library of http://cgfs16index1dev/sites/CGFS",
+
+        "dir": "W:/Style Library/apps/car-cap"
+      }
+    ]
+  }
+}

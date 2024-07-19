@@ -1,3 +1,4 @@
+import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
 
     SPA used by CAP/CAR Submitters, QSO's/
@@ -72,66 +73,6 @@ function isRecordOwner() {
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
 }
-
-// function RejectAction(actionId) {
-//   var valuePair = [];
-//   console.log("finding Action: " + actionId);
-//   for (i = 0; i < vm.ActionListItems().length; i++) {
-//     console.log(vm.ActionListItems()[i].ActionID);
-//     if (vm.ActionListItems()[i].ActionID == actionId) {
-//       action = vm.ActionListItems()[i];
-//       console.log(
-//         "desc: " +
-//           action.ActionDescription +
-//           " person: " +
-//           action.ActionResponsiblePerson.userId
-//       );
-//       if (action.PreviousActionDescription) {
-//         valuePair.push(["ActionDescription", action.PreviousActionDescription]);
-//       }
-
-//       if (action.PreviousActionResponsiblePerson) {
-//         valuePair.push([
-//           "ActionResponsiblePerson",
-//           action.PreviousActionResponsiblePerson.userId,
-//         ]);
-//       }
-
-//       if (action.PreviousTargetDate) {
-//         valuePair.push(["TargetDate", action.PreviousTargetDate]);
-//       }
-
-//       break;
-//     }
-//   }
-// }
-
-// function UpdateRejectAction(action) {
-//   var valuePair = [];
-//   if (action.PreviousActionDescription) {
-//     valuePair.push(["ActionDescription", action.PreviousActionDescription]);
-//   }
-
-//   if (action.PreviousActionResponsiblePerson) {
-//     valuePair.push([
-//       "ActionResponsiblePerson",
-//       action.PreviousActionResponsiblePerson.userId,
-//     ]);
-//   }
-
-//   if (action.PreviousTargetDate) {
-//     valuePair.push(["TargetDate", action.PreviousTargetDate]);
-//   }
-
-//   UpdateActionItemValuePair(actionId, valuePair);
-// }
-
-// function UpdateExtendAction(action) {
-//   // Check the number of extensions this action has already had,
-//   if (action.ExtensionCount < 3) {
-//     console.log("Send to QSO");
-//   }
-// }
 
 // Check if any of our rejections have negated by making it passed their stage.
 function approveUpdateRejections() {
@@ -235,61 +176,6 @@ $("#warnAddEffectivenessDoc").click(function () {
 // CAR Specific
 //Problem description
 
-// // Root Cause
-// $("#buttonNewRootCauseQuestion").click(function () {
-//   if (vm.ProcessStage() == "Developing Action Plan") {
-//     m_fnCreateWhy(vm.CAPID(), OnCallbackFormRefresh);
-//   } else {
-//     alert("Cannot add why at this stage");
-//   }
-// });
-
-// $("#buttonEditFinalRootCause").click(function () {
-//   if (vm.recordIsUserEditable()) {
-//     $("#divDispRootCause").hide();
-//     $("#divEditRootCause").show();
-//   } else if (vm.AdminType() == ROLES.ADMINTYPE.QO && vm.recordIsQOEditable()) {
-//     m_fnEditCAPUser(vm.CAPID(), OnCallbackFormRefresh);
-//   } else {
-//     alert("Cannot edit record in this stage.");
-//   }
-// });
-
-// $("#buttonSaveFinalRootCause").click(function () {
-//   valuePair = [["RootCauseDetermination", vm.RootCauseDetermination()]];
-//   UpdateCAPItemValuePair(vm.CAPID(), valuePair);
-//   m_fnRefresh();
-// });
-
-// $("#selectSimilarBool").on("change", function () {
-//   var sb = $("#selectSimilarBool option:selected").val();
-
-//   console.log("Similar Bool: " + sb);
-//   valuePair = [["SimilarNoncomformityBool", sb]];
-//   UpdateCAPItemValuePair(vm.CAPID(), valuePair);
-// });
-
-// $("#buttonEditSimilarNoncomformity").click(function () {
-//   if (vm.ProcessStage() == "Developing Action Plan") {
-//     // Show the edit options and hide the other stuff
-//     console.log("Showing edit options");
-//     $("#divDispSimilarNoncomformityDesc").hide();
-//     $("#divEditSimilarNoncomformityDesc").show();
-//   } else if (!adminType) {
-//     m_fnEditCAPUser(vm.CAPID(), OnCallbackFormRefresh);
-//   } else {
-//     m_fnEditCAP(vm.CAPID(), OnCallbackFormRefresh);
-//   }
-// });
-
-// $("#buttonSaveSimilarNoncomformity").click(function () {
-//   // Push the changes and hide the edit options
-//   valuePair = [["SimilarNoncomformityDesc", vm.SimilarNoncomformityDesc()]];
-//   UpdateCAPItemValuePair(vm.CAPID(), valuePair);
-
-//   m_fnRefresh();
-// });
-
 // Action List
 $("#buttonSubmitNewAction").click(function () {
   if (vm.controls.allowSubmitNewAction()) {
@@ -367,7 +253,7 @@ function makeDataTable(id) {
               )
                 .appendTo(filterCell.empty())
                 .on("keyup change clear", function () {
-		  const val = this.querySelector('input').value;
+                  const val = this.querySelector("input").value;
                   if (column.search() !== val) {
                     column.search(val).draw();
                   }
