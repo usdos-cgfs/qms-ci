@@ -1,4 +1,5 @@
 import { getUrlParam } from "../../common/router.js";
+import { Tab } from "../../components/tabs/tabs.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -108,12 +109,12 @@ function approveUpdateRejections() {
   });
 }
 
-$("#tabs").on("click", function () {
-  // curPath = location.href;
-  vm.tab($("#tabs").tabs("option", "active"));
+// $("#tabs").on("click", function () {
+//   // curPath = location.href;
+//   vm.tab($("#tabs").tabs("option", "active"));
 
-  //history.pushState({}, "", curPath);
-});
+//   //history.pushState({}, "", curPath);
+// });
 
 /********************************************************************************/
 /*                                        Tab 0                                 */
@@ -1132,7 +1133,7 @@ function initComplete() {
   $("#showme").hide();
 
   $("#tabs").show();
-  $("#tabs").tabs();
+  // $("#tabs").tabs();
 
   var defaultTab = TABS.MYPLANS;
   switch (vm.AdminType()) {
@@ -1986,10 +1987,83 @@ export function CAPViewModel(capIdstring) {
     }),
   };
 
+  self.tabOpts = {
+    qtm: new Tab({
+      urlKey: "qtm",
+      linkText: "All Open CARs/CAPs",
+      template: {
+        id: "tabs-qtm",
+        data: self,
+      },
+      visible: ko.pureComputed(() => {
+        return self.AdminType() == ROLES.ADMINTYPE.QTM;
+      }),
+    }),
+    qtmb: new Tab({
+      urlKey: "qtmb",
+      linkText: "Bangkok Open CARs/CAPs",
+      template: {
+        id: "tabs-qtmb",
+        data: self,
+      },
+      visible: ko.pureComputed(() => {
+        return self.AdminType() == ROLES.ADMINTYPE.QTMB;
+      }),
+    }),
+    myPlans: new Tab({
+      urlKey: "my-plans",
+      linkText: "My CARs/CAPs",
+      template: {
+        id: "tabs-my-plans",
+        data: self,
+      },
+      visible: ko.pureComputed(() => {
+        return self.AdminType() == ROLES.ADMINTYPE.USER;
+      }),
+    }),
+    qo: new Tab({
+      urlKey: "qo",
+      linkText: "QO CARs/CAPs",
+      template: {
+        id: "tabs-qo",
+        data: self,
+      },
+      visible: ko.pureComputed(() => {
+        return self.AdminType() == ROLES.ADMINTYPE.QO;
+      }),
+    }),
+    detail: new Tab({
+      urlKey: "detail",
+      linkText: "CAR/CAP Details",
+      template: {
+        id: "tabs-detail",
+        data: self,
+      },
+    }),
+    awaitingAction: new Tab({
+      urlKey: "awaiting",
+      linkText: "Awaiting Action",
+      template: {
+        id: "tabs-awaiting",
+        data: self,
+      },
+      visible: ko.pureComputed(() => {
+        return self.AdminType() == ROLES.ADMINTYPE.USER;
+      }),
+    }),
+    lookup: new Tab({
+      urlKey: "lookup",
+      linkText: "Lookup",
+      template: {
+        id: "tabs-lookup",
+        data: self,
+      },
+    }),
+  };
   self.tab = ko.observable();
 
   self.tab.subscribe(function (newTab) {
-    $("#tabs").tabs("option", "active", newTab);
+    // $("#tabs").tabs("option", "active", newTab);
     Common.Utilities.updateUrlParam("tab", newTab.toString());
   });
 
