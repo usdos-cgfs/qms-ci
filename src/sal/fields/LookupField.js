@@ -1,3 +1,4 @@
+// import { appContext } from "../../infrastructure/app-db-context.js";
 import {
   LookupModule,
   SearchSelectModule,
@@ -11,7 +12,7 @@ export class LookupField extends BaseField {
     type: entityType,
     isRequired = false,
     Visible,
-    entitySet,
+    appContext,
     options = ko.observableArray(),
     optionsFilter = null,
     optionsText = null,
@@ -32,13 +33,21 @@ export class LookupField extends BaseField {
     this.multiple = multiple;
     this.Value = multiple ? ko.observableArray() : ko.observable();
 
+    this._appContext = appContext;
     this.entityType = entityType;
-    this.entitySet = entitySet;
+    // this.entitySet = entitySet;
     this.lookupCol = lookupCol ?? "Title";
     this.optionsText = optionsText ?? ((item) => item[this.lookupCol]);
     if (optionsFilter) this.optionsFilter = optionsFilter;
 
     this.components = multiple ? SearchSelectModule : LookupModule;
+  }
+
+  _entitySet;
+  get entitySet() {
+    if (!this._entitySet)
+      this._entitySet = this._appContext().Set(this.entityType);
+    return this._entitySet;
   }
 
   isSearch = false;

@@ -1,3 +1,4 @@
+import { businessOfficeStore } from "../infrastructure/store.js";
 import {
   CheckboxField,
   PeopleField,
@@ -5,8 +6,11 @@ import {
   TextAreaField,
   TextField,
   DateField,
+  LookupField,
 } from "../sal/fields/index.js";
 import { ConstrainedEntity } from "../sal/primitives/index.js";
+import { BusinessOffice } from "./index.js";
+import { appContext } from "../infrastructure/app-db-context.js";
 
 export class Plan extends ConstrainedEntity {
   constructor(params) {
@@ -57,7 +61,12 @@ export class Plan extends ConstrainedEntity {
     options: [],
   });
 
-  // BusinessOffice
+  BusinessOffice = new LookupField({
+    displayName: "Business Office",
+    type: BusinessOffice,
+    options: businessOfficeStore,
+    appContext: () => appContext,
+  });
   // CGFSLocation
 
   QSO = new PeopleField({
@@ -107,6 +116,7 @@ export class Plan extends ConstrainedEntity {
       "Active",
       "RecordType",
       "SelfInitiated",
+      "BusinessOffice",
       "QSO",
       "QAO",
       "OFIDescription",
