@@ -202,6 +202,86 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   opacity: 1;
 }
 
+.app-form {
+  padding: 1.5rem;
+  background-color: var(--bg-light-color);
+  /* max-width: 830px; */
+}
+.app-form.bg-dark {
+  color: white;
+  background-color: var(--bg-dark-color);
+}
+
+.app-form .form-header {
+  width: 100%;
+  margin: 0.35rem 0 0.25rem 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.app-form .form-title {
+  font-size: 1.1rem;
+  margin: 0;
+  color: inherit;
+}
+
+.app-form .form-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.app-form .form-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  /* padding: 1.5rem 0; */
+  justify-content: space-between;
+}
+
+.app-form .form-fields.two-wide {
+  max-width: 550px;
+}
+
+.app-form .form-fields.two-wide .form-field-component {
+  width: 45%;
+}
+
+.app-form .form-actions {
+  display: flex;
+  justify-content: end;
+  gap: 1rem;
+  padding: 2rem 0;
+}
+
+.app-form .form-field-component {
+  max-width: 300px;
+  min-width: 200px;
+  flex: 1 0;
+}
+
+.app-form.bg-dark .btn-link {
+  color: var(--primary-muted-color);
+}
+
+.app-form dl {
+  flex: 1 0;
+  padding: 0 1.5rem 0 0;
+}
+
+.app-form dt {
+  font-weight: 300;
+  font-size: 0.75rem;
+  /* padding-bottom: 0.2rem; */
+  text-transform: uppercase;
+}
+
+.app-form dd {
+  font-weight: 500;
+  margin-inline-start: 0;
+  padding-block-end: 0.75rem;
+}
+
 /* UTILITIES */
 
 .pointer {
