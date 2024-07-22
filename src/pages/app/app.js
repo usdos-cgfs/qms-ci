@@ -286,15 +286,6 @@ function makeDataTableDep(id) {
   $(id).css("width", "100%");
 }
 
-window.navigateToRecord = function (record) {
-  vm.CAPID(record.Title);
-  //Common.Utilities.updateUrlParam("capid", record.Title);
-  //LoadSelectedCAP(record.Title);
-  vm.selectedTitle(record.Title);
-
-  vm.tab(TABS.PLANDETAIL);
-};
-
 //TAB 1
 
 // Loading CAP data
@@ -2074,6 +2065,15 @@ export function CAPViewModel(capIdstring) {
   //   // $("#tabs").tabs("option", "active", newTab);
   //   Common.Utilities.updateUrlParam("tab", newTab.toString());
   // });
+
+  self.navigateToRecord = function (record) {
+    vm.CAPID(record.Title);
+    //Common.Utilities.updateUrlParam("capid", record.Title);
+    //LoadSelectedCAP(record.Title);
+    vm.selectedTitle(record.Title);
+
+    vm.tabs.select(self.tabOpts.detail);
+  };
 
   self.selectedTitleObs = ko.observable();
   self.selectedTitle = ko.pureComputed({

@@ -117,12 +117,6 @@
   href="/sites/CGFS/Style Library/apps/car-cap/src/styles.css"
 />
 
-<link
-  rel="stylesheet"
-  type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/src/basic-tool-tip.css"
-/>
-
 <div class="app">
   <div
     id="warnIE"
@@ -243,7 +237,7 @@
               ></td>
               <td
                 class="plan-id"
-                data-bind="click: navigateToRecord.bind($data), text: Title"
+                data-bind="click: $root.navigateToRecord.bind($data), text: Title"
               ></td>
               <td
                 data-bind="text: Common.Utilities.truncateText(Subject, 60), attr: { title: Subject}"
@@ -342,7 +336,7 @@
               ></td>
               <td
                 class="plan-id"
-                data-bind="click: navigateToRecord.bind($data), text: Title"
+                data-bind="click: $root.navigateToRecord.bind($data), text: Title"
               ></td>
               <td
                 data-bind="text: Common.Utilities.truncateText(Subject, 60), attr: { title: Subject}"
@@ -417,7 +411,7 @@
             <tr>
               <td
                 class="plan-id"
-                data-bind="click: navigateToRecord.bind($data), text: Title"
+                data-bind="click: $root.navigateToRecord.bind($data), text: Title"
               ></td>
               <td
                 data-bind="text: Common.Utilities.truncateText(Subject, 60), attr: { title: Subject}"
@@ -490,7 +484,7 @@
               ></td>
               <td
                 class="plan-id"
-                data-bind="click: navigateToRecord.bind($data), text: Title"
+                data-bind="click: $root.navigateToRecord.bind($data), text: Title"
               ></td>
               <td
                 data-bind="text: Common.Utilities.truncateText(Subject, 60), attr: { title: Subject}"
@@ -2575,7 +2569,7 @@
                 <td>
                   <a
                     href="#"
-                    data-bind="click: navigateToRecord.bind($data), text: Title"
+                    data-bind="click: $root.navigateToRecord.bind($data), text: Title"
                   ></a>
                 </td>
                 <td
@@ -2660,7 +2654,7 @@
               <tr>
                 <td data-bind="">
                   <button
-                    data-bind="click: navigateToRecord.bind($data)"
+                    data-bind="click: $root.navigateToRecord.bind($data)"
                     type="button"
                     class="btn btn-outline-secondary"
                   >
@@ -2738,7 +2732,7 @@
             <tr>
               <td
                 class="plan-id"
-                data-bind="click: navigateToRecord.bind($data), text: Title"
+                data-bind="click: $root.navigateToRecord.bind($data), text: Title"
               ></td>
               <td
                 data-bind="text: Common.Utilities.truncateText(Subject, 60), attr: { title: Subject}"
