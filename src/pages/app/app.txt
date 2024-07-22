@@ -157,10 +157,22 @@
   </div>
 
   <div>
-    <select
-      class="form-control"
-      data-bind="value: AdminType, options: ['', 'qo', 'qtm', 'qtm-b']"
-    ></select>
+    <div class="mb-2 w-sm">
+      <div class="card-body d-flex justify-content-start align-items-center">
+        <div>
+          <h5 class="m-0 me-2">Current Role:</h5>
+        </div>
+        <div>
+          <select
+            class="form-control"
+            data-bind="value: AdminType, 
+              options: MyRoles, 
+              optionsText: 'key',
+              optionsValue: 'val'"
+          ></select>
+        </div>
+      </div>
+    </div>
     <!-- <div id="peopleImpersonate" data-bind="people: impersonateUserField"></div> -->
   </div>
 

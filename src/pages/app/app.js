@@ -1,4 +1,4 @@
-import { getUrlParam } from "../../common/router.js";
+import { getUrlParam, setUrlParam } from "../../common/router.js";
 import { Tab, TabsModule } from "../../components/tabs/tabs.js";
 import { makeDataTable } from "../../common/data-table.js";
 // import { CAPViewModel } from "../../vm.js";
@@ -1740,8 +1740,6 @@ export function CAPViewModel(capIdstring) {
   console.log("evaluating viewmodel");
   var self = this;
 
-  // self.AdminTypes = ko.observableArray(["", "qo", "qtm", "qtm-b"]);
-
   // self.currentUser = ko.observable(
   //   $().SPServices.SPGetCurrentUser({
   //     fieldName: "Title",
@@ -1867,7 +1865,20 @@ export function CAPViewModel(capIdstring) {
 
   // Default adminType to that provided on page.
   const adminType = getUrlParam("role");
+
   self.AdminType = ko.observable(adminType || "");
+  self.MyRoles = ko.pureComputed(() => {
+    return Object.entries(ROLES.ADMINTYPE).map(([key, val]) => {
+      return {
+        key,
+        val,
+      };
+    });
+  });
+
+  self.AdminType.subscribe((val) => {
+    setUrlParam("role", val);
+  });
 
   self.tabOpts = {
     qtm: new Tab({

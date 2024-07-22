@@ -163,8 +163,6 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   background-color: transparent;
 }
 
-/* UTILITIES */
-
 .tooltip {
   position: relative;
   display: inline-block;
@@ -202,4 +200,14 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
 .tooltip:hover .tooltiptext {
   visibility: visible;
   opacity: 1;
+}
+
+/* UTILITIES */
+
+.w-sm {
+  width: 300px;
+}
+
+.w-md {
+  width: 600px;
 }
