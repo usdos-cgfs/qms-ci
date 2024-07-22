@@ -59,10 +59,10 @@ export class EntitySet {
 
       // TODO: this is bombing due to circular dependencies,
       // all fields need to be in View
-      // const newEntity = new this.entityType({ ID: null, Title: null });
-      // if (newEntity.FieldMap) {
-      //   Object.keys(newEntity.FieldMap).map((field) => allFieldsSet.add(field));
-      // }
+      const newEntity = new this.entityType();
+      if (newEntity.FieldMap) {
+        Object.keys(newEntity.FieldMap).map((field) => allFieldsSet.add(field));
+      }
       // const fieldMapKeysSet = new Set(...);
       // entityType.Views.All.map((field) => fieldMapKeysSet.add(field));
       this.AllDeclaredFields = [...allFieldsSet];

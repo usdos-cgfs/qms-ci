@@ -1,8 +1,10 @@
 import {
   CheckboxField,
+  PeopleField,
   SelectField,
   TextAreaField,
   TextField,
+  DateField,
 } from "../sal/fields/index.js";
 import { ConstrainedEntity } from "../sal/primitives/index.js";
 
@@ -10,6 +12,14 @@ export class Plan extends ConstrainedEntity {
   constructor(params) {
     super(params);
   }
+
+  isCAP = ko.pureComputed(() => {
+    return this.RecordType.Value() == "CAP";
+  });
+
+  isCAR = ko.pureComputed(() => {
+    return !this.isCAP();
+  });
 
   Active = new CheckboxField({
     displayName: "Active",
@@ -21,6 +31,13 @@ export class Plan extends ConstrainedEntity {
     isRequired: true,
   });
 
+  //   Source = new SelectField({
+  //     displayName: "Source",
+  //     options: ko.pureComputed(() => {
+
+  //     })
+  //   })
+
   SelfInitiated = new SelectField({
     displayName: "Self Initiated",
     options: ["Yes", "No"],
@@ -31,8 +48,81 @@ export class Plan extends ConstrainedEntity {
     displayName: "Item #",
   });
 
+  Subject = new TextField({
+    displayName: "Subject",
+  });
+
+  ProcessStage = new SelectField({
+    displayName: "Current Stage",
+    options: [],
+  });
+
+  // BusinessOffice
+  // CGFSLocation
+
+  QSO = new PeopleField({
+    displayName: "Quality Segment Owner",
+    isRequired: true,
+  });
+
+  QAO = new PeopleField({
+    displayName: "Quality Area Owner",
+    isRequired: true,
+  });
+
+  OFIDescription = new TextAreaField({
+    displayName: "Opportunity for Improvement",
+    isRequired: this.isCAP,
+    isVisible: this.isCAP,
+    classList: ["min-w-full"],
+  });
+
+  DiscoveryDataAnalysis = new TextAreaField({
+    displayName: "Data, Discovery, and Analysis",
+    isRequired: this.isCAP,
+    isVisible: this.isCAP,
+    classList: ["min-w-full"],
+  });
+
+  ProblemResolverName = new PeopleField({
+    displayName: "CAR/CAP Coordinator",
+  });
+
+  SubmittedDate = new DateField({
+    displayName: "Submitted On",
+  });
+
+  SubmittedBy = new PeopleField({
+    displayName: "Submitted By",
+  });
+
+  NextTargetDate = new DateField({
+    displayName: "Next Target Date",
+  });
+
   static Views = {
-    All: ["ID", "Title", "Active", "RecordType", "SelfInitiated"],
+    All: [
+      "ID",
+      "Title",
+      "Active",
+      "RecordType",
+      "SelfInitiated",
+      "QSO",
+      "QAO",
+      "OFIDescription",
+      "DiscoveryDataAnalysis",
+      "SubmittedDate",
+      "SubmittedBy",
+      "ProblemResolverName",
+      "Subject",
+      "SelfInitiated",
+      "Source",
+      "SimilarNoncomformityBool",
+      "SimilarNoncomformityDesc",
+      "ProcessStage",
+      "PreviousStage",
+      "NextTargetDate",
+    ],
   };
 
   static ListDef = {

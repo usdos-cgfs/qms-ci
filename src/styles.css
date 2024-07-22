@@ -288,10 +288,19 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   cursor: pointer;
 }
 
+/* sizing */
 .w-sm {
   width: 300px;
 }
 
 .w-md {
   width: 600px;
+}
+
+.w-large {
+  width: 1028px;
+}
+
+.min-w-full {
+  min-width: 100% !important;
 }

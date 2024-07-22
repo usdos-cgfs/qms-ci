@@ -8,13 +8,17 @@ export class BaseField {
     isRequired = false,
     width,
     classList = [],
-    Visible = ko.pureComputed(() => true),
+    isVisible = true,
   }) {
     this.displayName = displayName;
     this.systemName = systemName;
     this.instructions = instructions;
     this.isRequired = isRequired;
-    this.Visible = Visible;
+
+    this.Visible = ko.pureComputed(() => {
+      return ko.unwrap(isVisible);
+    });
+
     this.width = width ? "col-md-" + width : "col-md-6";
     this.classList = classList;
 
