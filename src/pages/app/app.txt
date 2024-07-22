@@ -67,6 +67,15 @@
 
 <link
   rel="stylesheet"
+  href="/sites/CGFS/Style Library/apps/car-cap/lib/fontawesome-6.5.1/css/fontawesome.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/sites/CGFS/Style Library/apps/car-cap/lib/fontawesome-6.5.1/css/solid.min.css"
+/>
+
+<link
+  rel="stylesheet"
   type="text/css"
   href="/sites/CGFS/Style Library/apps/car-cap/lib/datatables/datatables.min.css"
 />
@@ -118,6 +127,11 @@
 />
 
 <div class="app">
+  <!-- ko foreach: app.currentDialogs -->
+  <div
+    data-bind="component: { name: 'modal-dialog-component', params: $data }"
+  ></div>
+  <!-- /ko -->
   <div
     id="warnIE"
     class="alert alert-warning"
@@ -1513,6 +1527,13 @@
             </table>
             <br />
             <div class="container row">
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                data-bind="click: controls.record.view"
+              >
+                View
+              </button>
               <!-- ko if: controls.record.isEditable() -->
               <button
                 type="button"

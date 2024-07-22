@@ -35,4 +35,31 @@ export const modalDialogTemplate = html`
       </button>
     </div>
   </dialog>
+
+  <style>
+    .modal-dialog {
+      display: none;
+      position: absolute;
+      z-index: 15;
+      width: 615px;
+      min-width: 400px;
+      max-height: 85vh;
+      padding: 0;
+      margin: 0;
+      top: 125px;
+      resize: both;
+    }
+
+    .modal-dialog.active {
+      display: flex;
+    }
+
+    .draggable {
+      position: absolute;
+    }
+
+    .draggable .grabber {
+      cursor: move;
+    }
+  </style>
 `;

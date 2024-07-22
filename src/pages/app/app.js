@@ -1,6 +1,13 @@
 import { getUrlParam, setUrlParam } from "../../common/router.js";
 import { Tab, TabsModule } from "../../components/tabs/tabs.js";
 import { makeDataTable } from "../../common/data-table.js";
+
+import { InitSal } from "../../sal/infrastructure/index.js";
+import { appContext } from "../../infrastructure/app-db-context.js";
+
+import * as ModalDialog from "../../sal/components/modal/index.js";
+import * as FormManager from "../../sal/infrastructure/form_manager.js";
+
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
 
@@ -1060,6 +1067,7 @@ var loadStart,
 function initApp() {
   loadStart = new Date();
   initSal();
+  InitSal();
   Common.Init();
   vm = new CAPViewModel();
   vm.app.processes.addTask(appProcessesStates.init);
@@ -1792,6 +1800,7 @@ export function CAPViewModel(capIdstring) {
         return self.app.processes.tasks().length;
       }),
     },
+    currentDialogs: ModalDialog.currentDialogs,
   };
 
   self.bindingCompleteHandlers = {
@@ -3516,6 +3525,18 @@ export function CAPViewModel(capIdstring) {
         args,
         OnCallbackFormRefresh
       );
+    },
+    view: async function () {
+      const id = self.selectedRecord.ID();
+      const plan = await appContext.Plans.FindById(id);
+
+      const planViewForm = FormManager.DispForm(plan);
+      const options = {
+        title: "View Plan (ID:" + plan.Title + ")",
+        form: planViewForm,
+      };
+
+      ModalDialog.showModalDialog(options);
     },
     isCloseable: ko.pureComputed(function () {
       if (!vm.selectedRecord.Active()) {

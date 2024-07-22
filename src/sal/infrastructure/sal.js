@@ -22,8 +22,9 @@
 
 window.console = window.console || { log: function () {} };
 
-window.sal = window.sal ?? {};
-var sal = window.sal;
+// window.sal = window.sal ?? {};
+// var sal = window.sal;
+const sal = {};
 
 const serverRelativeUrl =
   _spPageContextInfo.webServerRelativeUrl == "/"
