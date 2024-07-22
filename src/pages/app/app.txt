@@ -207,10 +207,11 @@
         <h2>There are currently no CARs or CAPs in your office/location.</h2>
       </div>
       <div data-bind="visible: allOpenRecordsArray().length > 0">
+        <!-- ko with: allOpenRecordsArray, as: 'allOpenRecordsArray' -->
         <table
           id="tblAllOpenRecords"
           class="table table-striped table-hover w-100"
-          data-bind=""
+          data-bind="descendantsComplete: $root.bindingCompleteHandlers.tableBound"
         >
           <thead>
             <tr>
@@ -224,11 +225,19 @@
               <th>Status</th>
               <th>Type</th>
             </tr>
+            <tr>
+              <th data-filter="bool-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="search-filter" column-width="max"></th>
+              <th data-filter="select-filter" column-width="max"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+            </tr>
           </thead>
-          <tbody
-            data-bind="foreach: allOpenRecordsArray,
-            childrenComplete: () => bindingCompleteHandlers.makeDataTable('tblAllOpenRecords')"
-          >
+          <tbody data-bind="foreach: allOpenRecordsArray">
             <tr
               data-bind="css: {'requires-attention': $root.filterRequiresQTMAction($data)}"
             >
@@ -256,20 +265,9 @@
               <td data-bind="text: RecordType"></td>
             </tr>
           </tbody>
-          <tfoot>
-            <tr>
-              <th data-filter="bool-filter"></th>
-              <th data-filter="select-filter"></th>
-              <th data-filter="search-filter" column-width="max"></th>
-              <th data-filter="select-filter" column-width="max"></th>
-              <th data-filter="select-filter"></th>
-              <th data-filter="select-filter"></th>
-              <th data-filter="select-filter"></th>
-              <th data-filter="select-filter"></th>
-              <th data-filter="select-filter"></th>
-            </tr>
-          </tfoot>
+          <tfoot></tfoot>
         </table>
+        <!-- /ko -->
       </div>
     </div>
   </div>
@@ -297,11 +295,14 @@
       >
         <h2>There are currently no CARs or CAPs in your office/location.</h2>
       </div>
-      <div data-bind="visible: qtmbOpenRecordsArray().length > 0">
+      <div
+        data-bind="visible: qtmbOpenRecordsArray().length > 0,
+        with: qtmbOpenRecordsArray, as: 'qtmbOpenRecordsArray'"
+      >
         <table
           id="tblQTMBOpenRecords"
           class="display"
-          data-bind="descendantsComplete: bindingCompleteHandlers.tableBound"
+          data-bind="descendantsComplete: $root.bindingCompleteHandlers.tableBound"
         >
           <thead>
             <tr>
@@ -316,15 +317,15 @@
               <th>Type</th>
             </tr>
             <tr>
-              <th class="bool-filter"></th>
-              <th class="select-filter"></th>
-              <th class="search-filter"></th>
-              <th class="select-filter"></th>
-              <th class="select-filter"></th>
-              <th class="select-filter"></th>
-              <th class="select-filter"></th>
-              <th class="select-filter"></th>
-              <th class="select-filter"></th>
+              <th data-filter="bool-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="search-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
             </tr>
           </thead>
           <tbody data-bind="foreach: qtmbOpenRecordsArray">
@@ -381,11 +382,14 @@
       >
         <h2>You currently have no associated CARs or CAPs.</h2>
       </div>
-      <div data-bind="visible: myOpenRecordsArray().length > 0">
+      <div
+        data-bind="visible: myOpenRecordsArray().length > 0,
+        with: myOpenRecordsArray, as: 'myOpenRecordsArray'"
+      >
         <table
           id="tblMyOpenRecords"
           class="display"
-          data-bind="descendantsComplete: bindingCompleteHandlers.tableBound"
+          data-bind="descendantsComplete: $root.bindingCompleteHandlers.tableBound"
         >
           <thead>
             <tr>
@@ -398,13 +402,13 @@
               <th>Type</th>
             </tr>
             <tr>
-              <th class="select-filter"></th>
-              <th class="search-filter" column-width="max"></th>
-              <th class="select-filter"></th>
-              <th class="select-filter"></th>
-              <th class="select-filter"></th>
-              <th class="select-filter" column-width="max"></th>
-              <th class="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="search-filter" column-width="max"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter" column-width="max"></th>
+              <th data-filter="select-filter"></th>
             </tr>
           </thead>
           <tbody data-bind="foreach: myOpenRecordsArray">
@@ -445,11 +449,14 @@
       <div class="empty-table" data-bind="visible: qoOpenRecords().length == 0">
         <h2>There are currently no CARs or CAPs in your office/location.</h2>
       </div>
-      <div data-bind="visible: qoOpenRecords().length > 0">
+      <div
+        data-bind="visible: qoOpenRecords().length > 0,
+        with: qoOpenRecords, as: 'qoOpenRecords'"
+      >
         <table
           id="tblQOOpenRecords"
           class="display"
-          data-bind="descendantsComplete: bindingCompleteHandlers.tableBound"
+          data-bind="descendantsComplete: $root.bindingCompleteHandlers.tableBound"
         >
           <thead>
             <tr>
@@ -464,15 +471,15 @@
               <th>Type</th>
             </tr>
             <tr>
-              <th class="bool-filter"></th>
-              <th class="select-filter"></th>
-              <th class="search-filter"></th>
-              <th class="select-filter"></th>
-              <th class="select-filter"></th>
-              <th class="select-filter"></th>
-              <th class="select-filter"></th>
-              <th class="select-filter"></th>
-              <th class="select-filter"></th>
+              <th data-filter="bool-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="search-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
             </tr>
           </thead>
           <tbody data-bind="foreach: qoOpenRecords">
@@ -2546,17 +2553,20 @@
         >
           <h2>You currently have no CARs/CAPs awaiting action.</h2>
         </div>
-        <div data-bind="visible: myAwaitingActionRecords().length > 0">
+        <div
+          data-bind="visible: myAwaitingActionRecords().length > 0,
+          with: myAwaitingActionRecords, as: 'myAwaitingActionRecords'"
+        >
           <table
             id="tblMyAwaitingActionRecords"
             class="display"
-            data-bind="descendantsComplete: bindingCompleteHandlers.tableBound"
+            data-bind="descendantsComplete: $root.bindingCompleteHandlers.tableBound"
           >
             <thead>
               <tr>
                 <th>Item #</th>
                 <th>Subject</th>
-                <th data-bind="visible: AdminType">Business Office</th>
+                <th data-bind="visible: $root.AdminType">Business Office</th>
                 <th>CGFS Location</th>
                 <th>Next Target Date</th>
                 <th>Coordinator</th>
@@ -2594,7 +2604,7 @@
               <tr>
                 <th>Item #</th>
                 <th>Subject</th>
-                <th data-bind="visible: AdminType">Business Office</th>
+                <th data-bind="visible: $root.AdminType">Business Office</th>
                 <th>CGFS Location</th>
                 <th>Next Target Date</th>
                 <th>Coordinator</th>
@@ -2632,11 +2642,14 @@
                           </tr>
                       </thead>
                   </table>-->
-        <div data-bind="visible: myAwaitingActionActions().length > 0">
+        <div
+          data-bind="visible: myAwaitingActionActions().length > 0,
+          with: myAwaitingActionActions, as: 'myAwaitingActionActions'"
+        >
           <table
             id="tblAwaitingAction"
             class="table"
-            data-bind="descendantsComplete: bindingCompleteHandlers.tableBound"
+            data-bind="descendantsComplete: $root.bindingCompleteHandlers.tableBound"
           >
             <thead>
               <tr>
@@ -2709,12 +2722,14 @@
       <button type="button" id="btnRequestAllRecords" class="btn btn-primary">
         Update List
       </button>
-      <div data-bind="visible: allRecordsArray().length > 0">
-        <!-- ko with: allRecordsArray -->
+      <div
+        data-bind="visible: allRecordsArray().length > 0,
+        with: allRecordsArray, as: 'allRecordsArray'"
+      >
         <table
           id="tblLookupRecords"
           class="table table-striped table-hover w-100"
-          data-bind="descendantsComplete: $parent.bindingCompleteHandlers.tableBound"
+          data-bind="descendantsComplete: $root.bindingCompleteHandlers.tableBound"
         >
           <thead>
             <tr>
@@ -2727,8 +2742,18 @@
               <th>Status</th>
               <th>Type</th>
             </tr>
+            <tr>
+              <th data-filter="select-filter"></th>
+              <th data-filter="search-filter" column-width="max"></th>
+              <th data-filter="select-filter" column-width="max"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+              <th data-filter="select-filter"></th>
+            </tr>
           </thead>
-          <tbody data-bind="foreach: $data">
+          <tbody data-bind="foreach: allRecordsArray">
             <tr>
               <td
                 class="plan-id"
@@ -2748,20 +2773,8 @@
               <td data-bind="text: RecordType"></td>
             </tr>
           </tbody>
-          <tfoot>
-            <tr>
-              <th data-filter="select-filter"></th>
-              <th data-filter="search-filter" column-width="max"></th>
-              <th data-filter="select-filter" column-width="max"></th>
-              <th data-filter="select-filter"></th>
-              <th data-filter="select-filter"></th>
-              <th data-filter="select-filter"></th>
-              <th data-filter="select-filter"></th>
-              <th data-filter="select-filter"></th>
-            </tr>
-          </tfoot>
+          <tfoot></tfoot>
         </table>
-        <!-- /ko -->
       </div>
     </div>
   </div>

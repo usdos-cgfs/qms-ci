@@ -20,7 +20,8 @@ export function makeDataTable(tableId) {
       ">" +
       ">",
     buttons: ["copy", "csv", "excel", "pdf", "print"],
-    order: [[0, "desc"]],
+    bSortCellsTop: true,
+    order: [[4, "desc"]],
     iDisplayLength: 25,
     deferRender: true,
     bDestroy: true,
@@ -33,7 +34,7 @@ export function makeDataTable(tableId) {
           var tbl = $(column.header()).closest("table");
           // Set the row we want our filter to show up in
           // var filterCell = tbl.find("thead tr:eq(1) th").eq(column.index());
-          var filterCell = $(column.footer());
+          var filterCell = tbl.find("thead tr:eq(1) th").eq(column.index());
 
           var select = $(
             '<search-select class=""><option value=""></option></search-select>'

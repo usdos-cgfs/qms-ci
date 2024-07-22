@@ -193,98 +193,6 @@ $("#buttonSubmitNewAction").click(function () {
 $("#btnRequestAllRecords").click(LoadMainData);
 
 // Tab 0 My CAP Table configuration:
-// columDefs option is used to set style for the first column of the table value
-// initComplete option is used to set the dropdown filters for all columns
-function makeDataTableDep(id) {
-  //check if this is already a datatable
-  if ($(id).hasClass("dataTable")) {
-    return;
-  }
-  var table = $(id).DataTable({
-    // columnDefs: [{ width: "10%", targets: 0 }],
-    order: [[4, "asc"]],
-    iDisplayLength: 25,
-    bSortCellsTop: true,
-    deferRender: true,
-    bDestroy: true,
-    initComplete: function () {
-      //var table = this.api().table().node();
-      this.api()
-        .columns()
-        .every(function () {
-          var column = this;
-          var tbl = $(column.header()).closest("table");
-          var filterCell = tbl.find("thead tr:eq(1) th").eq(column.index());
-          // var select = $(
-          //   '<select class="form-select"><option value=""></option></select>'
-          // );
-          var select = $(
-            '<select class="ui long compact dropdown search selection multiple"><option value=""></option></select>'
-          );
-          switch (filterCell.attr("class")) {
-            case "select-filter":
-              select.attr("multiple", "true");
-            case "single-select-filter":
-              select.appendTo(filterCell.empty()).on("change", function () {
-                var vals = $(this).val();
-                if (!vals) {
-                  vals = [];
-                } else {
-                  vals = vals.map(function (value) {
-                    return value
-                      ? "^" + $.fn.dataTable.util.escapeRegex(value) + "$"
-                      : null;
-                  });
-                }
-                var val = vals.join("|");
-                column.search(val, true, false).draw();
-              });
-
-              column
-                .data()
-                .unique()
-                .sort()
-                .each(function (d, j) {
-                  select.append('<option value="' + d + '">' + d + "</option>");
-                });
-              break;
-            case "search-filter":
-              $(
-                '<div class="ui fluid input">' +
-                  '<input type="text" placeholder="Search..." style="width: 100%"/>' +
-                  "</div>"
-              )
-                .appendTo(filterCell.empty())
-                .on("keyup change clear", function () {
-                  const val = this.querySelector("input").value;
-                  if (column.search() !== val) {
-                    column.search(val).draw();
-                  }
-                });
-              break;
-            case "bool-filter":
-              // Does this row contain data?
-              var checkbox = $('<input type="checkbox"></input>')
-                .appendTo(filterCell.empty())
-                .change(function () {
-                  if (this.checked) {
-                    column.search("true").draw();
-                  } else {
-                    column.search("").draw();
-                  }
-                });
-              break;
-            default:
-          }
-          if (filterCell.attr("column-width")) {
-            // Clear width
-            tbl.find("thead tr:eq(0) th").eq(column.index()).width("");
-          }
-        });
-    },
-  });
-  $(id).css("width", "100%");
-}
 
 //TAB 1
 
@@ -1889,14 +1797,9 @@ export function CAPViewModel(capIdstring) {
   };
 
   self.bindingCompleteHandlers = {
-    makeDataTable: makeDataTable,
     tableBound: function (nodes) {
-      // var start = new Date();
-      // console.log("Bound", nodes);
       var tableId = nodes.id;
       makeDataTable(tableId);
-      // $(tableId + " .dropdown").dropdown();
-      // console.log(tableId, new Date() - start);
     },
   };
   self.stageDescriptionsArray = ko.pureComputed(function () {
