@@ -391,24 +391,6 @@ function LoadSelectedCAP(capid) {
  * Logic for action items
  ************************************************************/
 
-function UpdateImplementationDate() {
-  if (
-    vm.selectedRecord.ProcessStageKey() != "DevelopingActionPlan" &&
-    vm.AdminType() != ROLES.ADMINTYPE.QTM
-  ) {
-    // If we aren't creating items for the first time, our target date
-    // shouldn't be updated here.
-    return;
-  }
-  let maxDate = vm.section.Actions.findLastActionTargetDate();
-
-  maxDate = vm.controls.record.extension.totalExtensionDate(maxDate);
-  valuePair = [["ImplementationTargetDate", maxDate.toISOString()]];
-  console.log(valuePair);
-  var planId = vm.selectedRecord.ID();
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
-}
-
 /**********************************************************************************************/
 /*                               APPROVALS AND REJECTIONS EVENT HANDLERS                                  */
 /**********************************************************************************************/
@@ -943,7 +925,7 @@ function OnActionEditCallback(result, value) {
     vm.app.processes.addTask(appProcessesStates.newAction);
     app.listRefs.Actions.getListItems("", function (actions) {
       vm.allActionsArray(actions);
-      UpdateImplementationDate();
+      vm.controls.record.updateImplementationDate();
       vm.app.processes.finishTask(appProcessesStates.newAction);
     });
   }
@@ -955,7 +937,7 @@ function OnActionCreateCallback(result, value) {
     // The user has modified the Action, the Associated CAP must be updated.
     app.listRefs.Actions.getListItems("", function (actions) {
       vm.allActionsArray(actions);
-      UpdateImplementationDate();
+      vm.controls.record.updateImplementationDate();
       vm.app.processes.finishTask(appProcessesStates.newAction);
     });
   }
@@ -2072,7 +2054,7 @@ export function CAPViewModel(capIdstring) {
     //LoadSelectedCAP(record.Title);
     vm.selectedTitle(record.Title);
 
-    vm.tabs.select(self.tabOpts.detail);
+    vm.tabs.selectTab(self.tabOpts.detail);
   };
 
   self.selectedTitleObs = ko.observable();
@@ -3006,7 +2988,7 @@ export function CAPViewModel(capIdstring) {
           //action.ImplementationStatus = 'In progress';
           app.listRefs.Actions.getListItems("", vm.allActionsArray);
 
-          UpdateImplementationDate();
+          vm.controls.record.updateImplementationDate();
           m_fnRefresh();
         });
       },
@@ -3045,7 +3027,7 @@ export function CAPViewModel(capIdstring) {
           //action.ImplementationStatus = 'In progress';
           app.listRefs.Actions.getListItems("", vm.allActionsArray);
 
-          UpdateImplementationDate();
+          vm.controls.record.updateImplementationDate();
           m_fnRefresh();
         });
       },
@@ -3853,6 +3835,23 @@ export function CAPViewModel(capIdstring) {
         valuePair,
         m_fnRefresh
       );
+    },
+    updateImplementationDate: function () {
+      if (
+        vm.selectedRecord.ProcessStageKey() != "DevelopingActionPlan" &&
+        vm.AdminType() != ROLES.ADMINTYPE.QTM
+      ) {
+        // If we aren't creating items for the first time, our target date
+        // shouldn't be updated here.
+        return;
+      }
+      let maxDate = vm.section.Actions.findLastActionTargetDate();
+
+      maxDate = vm.controls.record.extension.totalExtensionDate(maxDate);
+      const valuePair = [["ImplementationTargetDate", maxDate.toISOString()]];
+      console.log(valuePair);
+      var planId = vm.selectedRecord.ID();
+      app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
     },
   };
 

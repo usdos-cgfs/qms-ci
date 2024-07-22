@@ -1457,7 +1457,7 @@
                     <a href="javascript:;">
                       <span
                         class="ui-icon ui-icon-refresh"
-                        data-bind="click: UpdateImplementationDate.bind()"
+                        data-bind="click: $root.controls.record.updateImplementationDate.bind()"
                       ></span>
                     </a>
                     <!-- /ko -->
