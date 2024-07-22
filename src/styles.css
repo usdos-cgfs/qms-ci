@@ -204,6 +204,10 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
 
 /* UTILITIES */
 
+.pointer {
+  cursor: pointer;
+}
+
 .w-sm {
   width: 300px;
 }
