@@ -11,6 +11,7 @@ export class DbContext {
   utilities = {
     copyFileAsync,
   };
+
   virtualSets = new Map();
 
   Set = (entityType) => {
@@ -23,7 +24,7 @@ export class DbContext {
     if (set) return set;
 
     if (!this.virtualSets.has(key)) {
-      const newSet = new EntitySet(listDef);
+      const newSet = new EntitySet(entityType);
       this.virtualSets.set(key, newSet);
       return newSet;
     }
