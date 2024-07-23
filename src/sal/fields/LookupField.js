@@ -45,8 +45,9 @@ export class LookupField extends BaseField {
 
   _entitySet;
   get entitySet() {
-    if (!this._entitySet)
+    if (!this._entitySet) {
       this._entitySet = this._appContext().Set(this.entityType);
+    }
     return this._entitySet;
   }
 
