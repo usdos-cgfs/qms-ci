@@ -12,6 +12,7 @@ import {
   sourcesStore,
 } from "../../infrastructure/store.js";
 import { Plan } from "../../entities/plan.js";
+import { NewPlanForm } from "../../forms/plan/new/new-plan-form.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -4188,11 +4189,13 @@ class App {
   clickNewPlan() {
     const plan = new Plan();
 
-    const planEditForm = FormManager.NewForm(plan, Plan.Views.New);
+    // const planEditForm = FormManager.NewForm(plan, Plan.Views.New);
+
+    const newPlanForm = new NewPlanForm({});
 
     const options = {
       title: "Create a new CAR or CAP",
-      form: planEditForm,
+      form: newPlanForm,
     };
 
     ModalDialog.showModalDialog(options);
