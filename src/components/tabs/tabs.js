@@ -11,7 +11,9 @@ export class TabsModule {
 
     // Set default tab
     const defaultTabId = getUrlParam(urlParam);
-    this.selectById(this.selectById(defaultTabId));
+    if (defaultTabId) {
+      this.selectById(defaultTabId);
+    }
   }
 
   tabOpts = ko.observableArray();
