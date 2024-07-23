@@ -1,5 +1,5 @@
 import { BaseForm } from "../../../sal/components/forms/index.js";
-import { Plan } from "../../../entities/index.js";
+import { BusinessOffice, Plan } from "../../../entities/index.js";
 import {
   directRegisterComponent,
   html,
@@ -13,7 +13,24 @@ export class NewPlanForm extends BaseForm {
     super({ entity, view: Plan.Views.New });
 
     this.onComplete = onComplete;
+
+    const _entity = ko.unwrap(entity);
+    if (!_entity) return;
+    _entity.BusinessOffice.Value.subscribe(this.officeLocationChangeHandler);
+    _entity.CGFSLocation.Value.subscribe(this.officeLocationChangeHandler);
   }
+
+  officeLocationChangeHandler = (newVal) => {
+    if (!newVal) return;
+    const entity = ko.unwrap(this.entity);
+    if (!entity) return;
+    const office = ko.unwrap(entity.BusinessOffice.Value);
+    const location = ko.unwrap(entity.CGFSLocation.Value);
+    if (!office || !location) return;
+
+    entity.QAO.set(office.QAO.get());
+    entity.QSO.set(office.getQSOByLocation(location)?.get());
+  };
 
   async clickSubmit() {
     this.saving(true);
