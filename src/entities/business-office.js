@@ -1,6 +1,6 @@
 import { PeopleField, TextField } from "../sal/fields/index.js";
 import { ConstrainedEntity } from "../sal/primitives/index.js";
-import { LOCATION } from "./plan.js";
+import { LOCATION } from "../constants.js";
 
 export class BusinessOffice extends ConstrainedEntity {
   constructor(params) {

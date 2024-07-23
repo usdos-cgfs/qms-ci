@@ -9,19 +9,10 @@ import {
   LookupField,
   dateFieldTypes,
 } from "../sal/fields/index.js";
+import { PLANTYPE, LOCATION } from "../constants.js";
 import { ConstrainedEntity } from "../sal/primitives/index.js";
 import { BusinessOffice, RECORDSOURCETYPES } from "./index.js";
 import { appContext } from "../infrastructure/app-db-context.js";
-
-export const LOCATION = {
-  ALL: "All",
-  CHARLESTON: "Charleston",
-  BANGKOK: "Bangkok",
-  WASHINGTON: "Washington",
-  PARIS: "Paris",
-  SOFIA: "Sofia",
-  MANILA: "Manila",
-};
 
 export class Plan extends ConstrainedEntity {
   constructor(params) {
@@ -29,16 +20,20 @@ export class Plan extends ConstrainedEntity {
   }
 
   isCAP = ko.pureComputed(() => {
-    return ko.unwrap(this.RecordType.Value) == "CAP";
+    return ko.unwrap(this.RecordType.Value) == PLANTYPE.CAP;
   });
 
   isCAR = ko.pureComputed(() => {
-    return ko.unwrap(this.RecordType.Value) == "CAR";
+    return ko.unwrap(this.RecordType.Value) == PLANTYPE.CAR;
+  });
+
+  isSelfInitiated = ko.pureComputed(() => {
+    return ko.unwrap(this.SelfInitiated.Value) == "Yes";
   });
 
   isSelfInitiatedCAR = ko.pureComputed(() => {
     return (
-      ko.unwrap(this.RecordType.Value) == "CAR" &&
+      ko.unwrap(this.RecordType.Value) == PLANTYPE.CAR &&
       ko.unwrap(this.SelfInitiated.Value) == "Yes"
     );
   });
@@ -164,20 +159,24 @@ export class Plan extends ConstrainedEntity {
 
   // Other
 
-  ProblemResolverName = new PeopleField({
-    displayName: "CAR/CAP Coordinator",
-  });
-
   SubmittedDate = new DateField({
     displayName: "Submitted On",
   });
 
-  SubmittedBy = new PeopleField({
-    displayName: "Submitted By",
+  ProcessStage = new SelectField({
+    displayName: "Status",
   });
 
   NextTargetDate = new DateField({
     displayName: "Next Target Date",
+  });
+
+  ProblemResolverName = new PeopleField({
+    displayName: "CAR/CAP Coordinator",
+  });
+
+  Author = new PeopleField({
+    displayName: "Submitted By",
   });
 
   static Views = {
@@ -194,7 +193,6 @@ export class Plan extends ConstrainedEntity {
       "OFIDescription",
       "DiscoveryDataAnalysis",
       "SubmittedDate",
-      "SubmittedBy",
       "ProblemResolverName",
       "Subject",
       "SelfInitiated",
@@ -204,6 +202,7 @@ export class Plan extends ConstrainedEntity {
       "ProcessStage",
       "PreviousStage",
       "NextTargetDate",
+      "Author",
     ],
     New: [
       "RecordType",
