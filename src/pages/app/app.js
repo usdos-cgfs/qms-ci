@@ -11,7 +11,7 @@ import {
   businessOfficeStore,
   sourcesStore,
 } from "../../infrastructure/store.js";
-import { Plan } from "../../entities/plan.js";
+import { Plan, LOCATION } from "../../entities/index.js";
 import { NewPlanForm } from "../../forms/plan/new/new-plan-form.js";
 
 // import { CAPViewModel } from "../../vm.js";
@@ -1126,16 +1126,6 @@ window.ROLES = {
 };
 
 var EXTENSIONDAYS = 45;
-
-var LOCATION = {
-  ALL: "All",
-  CHARLESTON: "Charleston",
-  BANGKOK: "Bangkok",
-  WASHINGTON: "Washington",
-  PARIS: "Paris",
-  SOFIA: "Sofia",
-  MANILA: "Manila",
-};
 
 var DOCTYPES = {
   SUPPORT: "Support",

@@ -13,6 +13,16 @@ import { ConstrainedEntity } from "../sal/primitives/index.js";
 import { BusinessOffice, RECORDSOURCETYPES } from "./index.js";
 import { appContext } from "../infrastructure/app-db-context.js";
 
+export const LOCATION = {
+  ALL: "All",
+  CHARLESTON: "Charleston",
+  BANGKOK: "Bangkok",
+  WASHINGTON: "Washington",
+  PARIS: "Paris",
+  SOFIA: "Sofia",
+  MANILA: "Manila",
+};
+
 export class Plan extends ConstrainedEntity {
   constructor(params) {
     super(params);
@@ -82,7 +92,10 @@ export class Plan extends ConstrainedEntity {
     appContext: () => appContext,
   });
 
-  // CGFSLocation
+  CGFSLocation = new SelectField({
+    displayName: "Location",
+    options: Object.values(LOCATION),
+  });
 
   QSO = new PeopleField({
     displayName: "Quality Segment Owner",
@@ -175,6 +188,7 @@ export class Plan extends ConstrainedEntity {
       "RecordType",
       "SelfInitiated",
       "BusinessOffice",
+      "CGFSLocation",
       "QSO",
       "QAO",
       "OFIDescription",
@@ -193,8 +207,9 @@ export class Plan extends ConstrainedEntity {
     ],
     New: [
       "RecordType",
-      "BusinessOffice",
       "Source",
+      "BusinessOffice",
+      "CGFSLocation",
       "QSO",
       "QAO",
       "OFIDescription",
