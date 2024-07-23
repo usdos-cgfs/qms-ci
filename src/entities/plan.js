@@ -19,25 +19,28 @@ export class Plan extends ConstrainedEntity {
   }
 
   isCAP = ko.pureComputed(() => {
-    return this.RecordType.Value() == "CAP";
+    return ko.unwrap(this.RecordType.Value) == "CAP";
   });
 
   isCAR = ko.pureComputed(() => {
-    return !this.isCAP();
+    return ko.unwrap(this.RecordType.Value) == "CAR";
   });
 
   isSelfInitiatedCAR = ko.pureComputed(() => {
-    return this.isCAR() && this.SelfInitiated.Value();
+    return (
+      ko.unwrap(this.RecordType.Value) == "CAR" &&
+      ko.unwrap(this.SelfInitiated.Value) == "Yes"
+    );
   });
 
   sourceOptions = ko.pureComputed(() => {
-    const recordTypeSources = sourcesStore()?.filter(
+    let recordTypeSources = sourcesStore()?.filter(
       (source) =>
         source.RecordType.Value() == RECORDSOURCETYPES.BOTH ||
         source.RecordType.Value() == this.RecordType.Value()
     );
 
-    if (this.isCAR() && this.SelfInitiated.Value()) {
+    if (this.isSelfInitiatedCAR()) {
       recordTypeSources = recordTypeSources.filter(
         (source) => source.SelfInitiated.Value() == this.SelfInitiated.Value()
       );
@@ -100,7 +103,8 @@ export class Plan extends ConstrainedEntity {
   SelfInitiated = new SelectField({
     displayName: "Self Initiated",
     options: ["Yes", "No"],
-    isRequired: true,
+    defaultValue: "Yes",
+    isRequired: this.isCAR,
     isVisible: this.isCAR,
   });
 
@@ -109,6 +113,7 @@ export class Plan extends ConstrainedEntity {
     isRequired: this.isCAR,
     isVisible: this.isCAR,
     classList: ["min-w-full"],
+    isRichText: true,
   });
 
   ContainmentAction = new TextAreaField({
@@ -116,6 +121,7 @@ export class Plan extends ConstrainedEntity {
     isRequired: this.isSelfInitiatedCAR,
     isVisible: this.isSelfInitiatedCAR,
     classList: ["min-w-full"],
+    isRichText: true,
   });
 
   ContainmentActionDate = new DateField({
@@ -132,6 +138,7 @@ export class Plan extends ConstrainedEntity {
     isRequired: this.isCAP,
     isVisible: this.isCAP,
     classList: ["min-w-full"],
+    isRichText: true,
   });
 
   DiscoveryDataAnalysis = new TextAreaField({
@@ -185,12 +192,16 @@ export class Plan extends ConstrainedEntity {
     ],
     New: [
       "RecordType",
-      "SelfInitiated",
       "BusinessOffice",
+      "Source",
       "QSO",
       "QAO",
       "OFIDescription",
       "DiscoveryDataAnalysis",
+      "SelfInitiated",
+      "ProblemDescription",
+      "ContainmentAction",
+      "ContainmentActionDate",
     ],
   };
 

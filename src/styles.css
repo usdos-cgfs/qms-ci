@@ -202,7 +202,53 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   opacity: 1;
 }
 
+.tasks.blocking {
+  position: fixed;
+  top: 85px;
+  height: 100vh;
+}
+
+.tasks.running {
+  position: fixed;
+  bottom: 0.2rem;
+  right: 1.75rem;
+}
+
+.tasks ul {
+  list-style: none;
+  font-size: 1rem;
+}
+
+.dimmer {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  color: var(--primary-muted-color);
+  background-color: #1d2b36e3;
+}
+
+.dimmer.active {
+  display: flex;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid var(--primary-muted-color);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
 /* SAL FORMS */
+
 .app-form {
   padding: 1.5rem;
   background-color: var(--bg-light-color);
@@ -236,7 +282,6 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  /* padding: 1.5rem 0; */
   justify-content: space-between;
 }
 
@@ -284,6 +329,14 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
 }
 
 /* SAL FIELDS */
+.form-field-component .form-control {
+  width: 100%;
+}
+
+.form-field-component .form-select {
+  width: 100%;
+}
+
 .form-field-component .sp-peoplepicker-topLevel {
   width: 100%;
   display: block;
@@ -293,6 +346,13 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   border-radius: 4px;
   padding: 4px;
   font-size: 1rem;
+}
+
+.richtext-field .ql-toolbar {
+  background-color: var(--bg-very-light-color);
+}
+.richtext-field .ql-toolbar button {
+  min-width: 0;
 }
 
 /* UTILITIES */

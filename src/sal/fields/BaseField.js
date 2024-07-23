@@ -6,6 +6,7 @@ export class BaseField {
     systemName,
     instructions = null,
     isRequired = false,
+    defaultValue,
     width,
     classList = [],
     isVisible = true,
@@ -21,6 +22,8 @@ export class BaseField {
 
     this.width = width ? "col-md-" + width : "col-md-6";
     this.classList = classList;
+
+    if (defaultValue) this.Value(defaultValue);
 
     this.addFieldRequirement(isRequiredValidationRequirement(this));
   }

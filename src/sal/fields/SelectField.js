@@ -8,14 +8,20 @@ export class SelectField extends BaseField {
   constructor({
     displayName,
     isRequired = false,
-    Visible,
+    isVisible,
     options,
     multiple = false,
     optionsText,
     instructions,
+    defaultValue,
   }) {
-    super({ Visible, displayName, isRequired, instructions });
-    this.Options(options);
+    super({ isVisible, displayName, isRequired, instructions, defaultValue });
+    this._options = options;
+
+    this.Options = ko.pureComputed(() => {
+      return ko.unwrap(options);
+    });
+
     this.multiple = multiple;
     this.Value = multiple ? ko.observableArray() : ko.observable();
     this.optionsText = optionsText;
@@ -41,5 +47,5 @@ export class SelectField extends BaseField {
     this.Value(val);
   };
 
-  Options = ko.observableArray();
+  // Options = ko.observableArray();
 }
