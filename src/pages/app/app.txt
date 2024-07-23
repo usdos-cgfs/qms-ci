@@ -157,24 +157,13 @@
   </div>
 
   <div
-    class="ui page dimmer"
+    class="tasks blocking dimmer"
     data-bind="css: {'active': vm.app.processes.dimmerActivity}"
   >
-    <div class="ui text loader">
-      <table
-        class="ui very compact basic inverted fixed table"
-        id="busy-message"
-      >
-        <tbody>
-          <!-- ko foreach: app.processes.tasks -->
-          <tr>
-            <td class="ui right floated" data-bind="text: task"></td>
-            <td data-bind="text: active() ? '' : 'Done'"></td>
-          </tr>
-          <!-- /ko -->
-        </tbody>
-      </table>
-    </div>
+    <span class="loader"></span>
+    <ul class="" data-bind="foreach: app.processes.tasks()">
+      <li data-bind="text: task + '... '"></li>
+    </ul>
   </div>
 
   <div>
