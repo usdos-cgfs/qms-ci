@@ -78,6 +78,7 @@ export class Plan extends ConstrainedEntity {
   Source = new SelectField({
     displayName: "Source",
     options: this.sourceOptions,
+    isRequired: true,
   });
 
   BusinessOffice = new LookupField({
@@ -85,11 +86,13 @@ export class Plan extends ConstrainedEntity {
     type: BusinessOffice,
     options: businessOfficeStore,
     appContext: () => appContext,
+    isRequired: true,
   });
 
   CGFSLocation = new SelectField({
     displayName: "Location",
     options: Object.values(LOCATION),
+    isRequired: true,
   });
 
   QSO = new PeopleField({
@@ -104,6 +107,8 @@ export class Plan extends ConstrainedEntity {
 
   Subject = new TextField({
     displayName: "Subject",
+    isRequired: true,
+    classList: ["min-w-full"],
   });
 
   // CAR
@@ -211,6 +216,7 @@ export class Plan extends ConstrainedEntity {
       "CGFSLocation",
       "QSO",
       "QAO",
+      "Subject",
       "OFIDescription",
       "DiscoveryDataAnalysis",
       "SelfInitiated",

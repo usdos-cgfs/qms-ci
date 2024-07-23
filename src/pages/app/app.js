@@ -3915,6 +3915,35 @@ export function CAPViewModel(capIdstring) {
   };
 
   /******************************** Lock Editing Logic ***************************/
+
+  self.onNewPlanCreated = function (result, args) {
+    if (result !== SP.UI.DialogResult.OK) {
+      return;
+    }
+    vm.app.processes.addTask(appProcessesStates.refreshPlans);
+    const userId = vm.currentUserObj.id();
+    app.listRefs.Plans.getListItems("", function (items) {
+      vm.allRecordsArray(items);
+
+      // Update Title
+      const newPlan = items.findLast(
+        (item) => item.Author.get_lookupId() == userId
+      );
+      const newTitle = getNextTitleByType(newPlan.RecordType);
+      if (newTitle != newPlan.Title) {
+        newPlan.Title = newTitle;
+        app.listRefs.Plans.updateListItem(
+          newPlan.ID,
+          [["Title", newTitle]],
+          () => {}
+        );
+      }
+      vm.selectedTitle(newPlan.Title);
+      vm.tabs.selectTab(vm.tabOpts.detail);
+      vm.app.processes.finishTask(appProcessesStates.refreshPlans);
+      // m_fnForward();
+    });
+  };
 }
 
 class App {
@@ -3933,6 +3962,7 @@ class App {
     const options = {
       title: "Create a new CAR or CAP",
       form: newPlanForm,
+      dialogReturnValueCallback: this.onNewPlanCreated,
     };
 
     ModalDialog.showModalDialog(options);

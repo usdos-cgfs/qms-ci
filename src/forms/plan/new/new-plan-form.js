@@ -46,7 +46,7 @@ export class NewPlanForm extends BaseForm {
 
     try {
       const result = await addNewPlan(entity);
-      this.onComplete(SP.UI.DialogResult.OK);
+      if (result?.isSuccess) this.onComplete(SP.UI.DialogResult.OK);
     } catch (e) {
       alert(e);
     }

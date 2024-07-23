@@ -1,5 +1,6 @@
 import { Page } from "./entities/index.js";
 import { SPList, copyFileAsync } from "./infrastructure/index.js";
+import { Result } from "./shared/index.js";
 
 const DEBUG = false;
 
@@ -199,7 +200,7 @@ export class EntitySet {
       folderPath
     );
     mapObjectToEntity({ ID: newId }, entity);
-    return;
+    return Result.Success(entity);
   };
 
   UpdateEntity = async function (entity, fields = null) {

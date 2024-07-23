@@ -119,10 +119,12 @@ export class TextAreaModule extends BaseFieldModule {
     Value.subscribe((val) => {
       if (val == "") {
         editor.setText("");
+        return;
       }
       if (editor.root.innerHTML == val) return;
 
-      editor.pasteHTML(val);
+      editor.root.innerHTML == val;
+      // editor.setText(val);
     });
 
     editor.on("text-change", function (delta, oldDelta, source) {
