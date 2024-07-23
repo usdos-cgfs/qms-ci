@@ -338,6 +338,11 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
 }
 
 /* SAL FIELDS */
+
+.form-field-component label {
+  width: 100%;
+}
+
 .form-field-component .form-control {
   width: 100%;
 }
