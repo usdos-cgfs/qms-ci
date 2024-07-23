@@ -85,6 +85,13 @@
   type="text/javascript"
 ></script>
 
+<!-- Main Quill library -->
+<link
+  href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css"
+  rel="stylesheet"
+/>
+<script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
+
 <script
   type="module"
   src="/sites/CGFS/Style Library/apps/car-cap/lib/webcomponents/searchselect/searchselect.js"

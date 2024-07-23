@@ -146,6 +146,7 @@ export class Plan extends ConstrainedEntity {
     isRequired: this.isCAP,
     isVisible: this.isCAP,
     classList: ["min-w-full"],
+    isRichText: true,
   });
 
   // Other

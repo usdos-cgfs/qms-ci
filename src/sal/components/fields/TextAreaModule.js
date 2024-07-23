@@ -33,7 +33,7 @@ const editTemplate = html`
     </div>
     <!-- /ko -->
     <!-- ko ifnot: isRichText -->
-    <label class="fw-semibold"
+    <label class="fw-semibold w-full"
       ><span data-bind="text: displayName"></span
       ><span data-bind="if: isRequired" class="fw-bold text-danger">*</span>:
       <!-- ko if: instructions -->

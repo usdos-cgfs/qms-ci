@@ -247,6 +247,15 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   animation: rotation 1s linear infinite;
 }
 
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* SAL FORMS */
 
 .app-form {
@@ -355,6 +364,11 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   min-width: 0;
 }
 
+.richtext-field .ql-container {
+  overflow: auto;
+  resize: vertical;
+}
+
 /* UTILITIES */
 
 .pointer {
@@ -372,6 +386,10 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
 
 .w-large {
   width: 1028px;
+}
+
+.w-full {
+  width: 100%;
 }
 
 .min-w-full {
