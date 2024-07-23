@@ -120,6 +120,9 @@ export class TextAreaModule extends BaseFieldModule {
       if (val == "") {
         editor.setText("");
       }
+      if (editor.root.innerHTML == val) return;
+
+      editor.pasteHTML(val);
     });
 
     editor.on("text-change", function (delta, oldDelta, source) {
