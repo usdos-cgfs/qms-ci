@@ -1,4 +1,4 @@
-import { businessOfficeStore } from "../infrastructure/store.js";
+import { businessOfficeStore, sourcesStore } from "../infrastructure/store.js";
 import {
   CheckboxField,
   PeopleField,
@@ -7,9 +7,10 @@ import {
   TextField,
   DateField,
   LookupField,
+  dateFieldTypes,
 } from "../sal/fields/index.js";
 import { ConstrainedEntity } from "../sal/primitives/index.js";
-import { BusinessOffice } from "./index.js";
+import { BusinessOffice, RECORDSOURCETYPES } from "./index.js";
 import { appContext } from "../infrastructure/app-db-context.js";
 
 export class Plan extends ConstrainedEntity {
@@ -25,9 +26,40 @@ export class Plan extends ConstrainedEntity {
     return !this.isCAP();
   });
 
+  isSelfInitiatedCAR = ko.pureComputed(() => {
+    return this.isCAR() && this.SelfInitiated.Value();
+  });
+
+  sourceOptions = ko.pureComputed(() => {
+    const recordTypeSources = sourcesStore()?.filter(
+      (source) =>
+        source.RecordType.Value() == RECORDSOURCETYPES.BOTH ||
+        source.RecordType.Value() == this.RecordType.Value()
+    );
+
+    if (this.isCAR() && this.SelfInitiated.Value()) {
+      recordTypeSources = recordTypeSources.filter(
+        (source) => source.SelfInitiated.Value() == this.SelfInitiated.Value()
+      );
+    }
+
+    return recordTypeSources.map((source) => source.Title.toString());
+  });
+
   Active = new CheckboxField({
     displayName: "Active",
   });
+
+  Title = new TextField({
+    displayName: "Item #",
+  });
+
+  ProcessStage = new SelectField({
+    displayName: "Current Stage",
+    options: [],
+  });
+
+  // NEW FORM
 
   RecordType = new SelectField({
     displayName: "Record Type",
@@ -35,30 +67,9 @@ export class Plan extends ConstrainedEntity {
     isRequired: true,
   });
 
-  //   Source = new SelectField({
-  //     displayName: "Source",
-  //     options: ko.pureComputed(() => {
-
-  //     })
-  //   })
-
-  SelfInitiated = new SelectField({
-    displayName: "Self Initiated",
-    options: ["Yes", "No"],
-    isRequired: true,
-  });
-
-  Title = new TextField({
-    displayName: "Item #",
-  });
-
-  Subject = new TextField({
-    displayName: "Subject",
-  });
-
-  ProcessStage = new SelectField({
-    displayName: "Current Stage",
-    options: [],
+  Source = new SelectField({
+    displayName: "Source",
+    options: this.sourceOptions,
   });
 
   BusinessOffice = new LookupField({
@@ -67,6 +78,7 @@ export class Plan extends ConstrainedEntity {
     options: businessOfficeStore,
     appContext: () => appContext,
   });
+
   // CGFSLocation
 
   QSO = new PeopleField({
@@ -78,6 +90,42 @@ export class Plan extends ConstrainedEntity {
     displayName: "Quality Area Owner",
     isRequired: true,
   });
+
+  Subject = new TextField({
+    displayName: "Subject",
+  });
+
+  // CAR
+
+  SelfInitiated = new SelectField({
+    displayName: "Self Initiated",
+    options: ["Yes", "No"],
+    isRequired: true,
+    isVisible: this.isCAR,
+  });
+
+  ProblemDescription = new TextAreaField({
+    displayName: "Problem Description",
+    isRequired: this.isCAR,
+    isVisible: this.isCAR,
+    classList: ["min-w-full"],
+  });
+
+  ContainmentAction = new TextAreaField({
+    displayName: "Containment Action",
+    isRequired: this.isSelfInitiatedCAR,
+    isVisible: this.isSelfInitiatedCAR,
+    classList: ["min-w-full"],
+  });
+
+  ContainmentActionDate = new DateField({
+    displayName: "Containment Action Date",
+    isRequired: this.isSelfInitiatedCAR,
+    isVisible: this.isSelfInitiatedCAR,
+    type: dateFieldTypes.date,
+  });
+
+  // CAP
 
   OFIDescription = new TextAreaField({
     displayName: "Opportunity for Improvement",
@@ -92,6 +140,8 @@ export class Plan extends ConstrainedEntity {
     isVisible: this.isCAP,
     classList: ["min-w-full"],
   });
+
+  // Other
 
   ProblemResolverName = new PeopleField({
     displayName: "CAR/CAP Coordinator",
@@ -132,6 +182,15 @@ export class Plan extends ConstrainedEntity {
       "ProcessStage",
       "PreviousStage",
       "NextTargetDate",
+    ],
+    New: [
+      "RecordType",
+      "SelfInitiated",
+      "BusinessOffice",
+      "QSO",
+      "QAO",
+      "OFIDescription",
+      "DiscoveryDataAnalysis",
     ],
   };
 
