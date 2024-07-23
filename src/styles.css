@@ -202,6 +202,7 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   opacity: 1;
 }
 
+/* SAL FORMS */
 .app-form {
   padding: 1.5rem;
   background-color: var(--bg-light-color);
@@ -280,6 +281,18 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   font-weight: 500;
   margin-inline-start: 0;
   padding-block-end: 0.75rem;
+}
+
+/* SAL FIELDS */
+.form-field-component .sp-peoplepicker-topLevel {
+  width: 100%;
+  display: block;
+  background-color: white;
+  color: var(--text-primary);
+  border: none;
+  border-radius: 4px;
+  padding: 4px;
+  font-size: 1rem;
 }
 
 /* UTILITIES */

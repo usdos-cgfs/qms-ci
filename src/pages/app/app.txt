@@ -400,6 +400,15 @@
         >
           New
         </button>
+
+        <button
+          id=""
+          type="button"
+          class="btn btn-outline-success"
+          data-bind="click: $root.clickNewPlan"
+        >
+          New 2
+        </button>
       </div>
       <br />
       <div

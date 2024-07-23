@@ -7,6 +7,11 @@ import { appContext } from "../../infrastructure/app-db-context.js";
 
 import * as ModalDialog from "../../sal/components/modal/index.js";
 import * as FormManager from "../../sal/infrastructure/form_manager.js";
+import {
+  businessOfficeStore,
+  sourcesStore,
+} from "../../infrastructure/store.js";
+import { Plan } from "../../entities/plan.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -1064,12 +1069,12 @@ function initComplete() {
 var loadStart,
   loadFinish = 0;
 
-function initApp() {
+async function initApp() {
   loadStart = new Date();
   initSal();
   InitSal();
   Common.Init();
-  vm = new CAPViewModel();
+  vm = await App.Create();
   vm.app.processes.addTask(appProcessesStates.init);
   initStaticListRefs();
 
@@ -4172,6 +4177,46 @@ export function CAPViewModel(capIdstring) {
   };
 
   /******************************** Lock Editing Logic ***************************/
+}
+
+class App {
+  constructor() {
+    const app = new CAPViewModel();
+    Object.assign(this, app);
+  }
+
+  clickNewPlan() {
+    const plan = new Plan();
+
+    const planEditForm = FormManager.NewForm(plan, Plan.Views.New);
+
+    const options = {
+      title: "Create a new CAR or CAP",
+      form: planEditForm,
+    };
+
+    ModalDialog.showModalDialog(options);
+  }
+
+  /******************************** Application Logic ***************************/
+  async init() {
+    stores: {
+      const businessOfficesPromise =
+        await appContext.BusinessOffices.ToList().then(businessOfficeStore);
+
+      const recordSourcesPromise = await appContext.RecordSources.ToList().then(
+        sourcesStore
+      );
+
+      await Promise.all([businessOfficeStore, recordSourcesPromise]);
+    }
+  }
+
+  static async Create() {
+    const app = new App();
+    await app.init();
+    return app;
+  }
 }
 
 window.vm = {};
