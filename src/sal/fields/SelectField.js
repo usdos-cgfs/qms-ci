@@ -5,17 +5,9 @@ import {
 import { BaseField } from "./index.js";
 
 export class SelectField extends BaseField {
-  constructor({
-    displayName,
-    isRequired = false,
-    isVisible,
-    options,
-    multiple = false,
-    optionsText,
-    instructions,
-    defaultValue,
-  }) {
-    super({ isVisible, displayName, isRequired, instructions, defaultValue });
+  constructor(params) {
+    super(params);
+    const { options, multiple = false, optionsText } = params;
     this._options = options;
 
     this.Options = ko.pureComputed(() => {

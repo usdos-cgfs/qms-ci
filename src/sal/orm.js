@@ -208,7 +208,8 @@ export class EntitySet {
     writeableEntity.ID =
       typeof entity.ID == "function" ? entity.ID() : entity.ID;
     if (DEBUG) console.log(writeableEntity);
-    return this.ListRef.updateListItemAsync(writeableEntity);
+    const result = await this.ListRef.updateListItemAsync(writeableEntity);
+    return Result.Success(result);
   };
 
   RemoveEntity = async function (entity) {

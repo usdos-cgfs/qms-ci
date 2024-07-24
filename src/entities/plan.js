@@ -80,6 +80,7 @@ export class Plan extends ConstrainedEntity {
     displayName: "Source",
     options: this.sourceOptions,
     isRequired: true,
+    classList: ["min-w-full"],
   });
 
   BusinessOffice = new LookupField({
@@ -118,6 +119,7 @@ export class Plan extends ConstrainedEntity {
     displayName: "Self Initiated",
     options: ["Yes", "No"],
     defaultValue: "Yes",
+    instructions: "Are you opening this on behalf of your own business office?",
     isRequired: this.isCAR,
     isVisible: this.isCAR,
   });
@@ -242,6 +244,7 @@ export class Plan extends ConstrainedEntity {
       "ProblemResolverName",
     ],
     SubmitterEdit: [
+      "Source",
       "BusinessOffice",
       "CGFSLocation",
       "QSO",

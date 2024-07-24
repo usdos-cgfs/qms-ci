@@ -9,8 +9,8 @@ import { addNewPlan } from "../../../services/plan-service.js";
 const componentName = "edit-plan-form";
 
 export class EditPlanForm extends BaseForm {
-  constructor({ entity, onComplete }) {
-    super({ entity, view: Plan.Views.QTMEdit });
+  constructor({ entity, view, onComplete }) {
+    super({ entity, view });
 
     this.onComplete = onComplete;
 
@@ -45,7 +45,7 @@ export class EditPlanForm extends BaseForm {
     const entity = ko.unwrap(this.entity);
 
     try {
-      const result = await addNewPlan(entity);
+      const result = await editPlan(entity);
       if (result?.isSuccess) this.onComplete(SP.UI.DialogResult.OK);
     } catch (e) {
       alert(e);

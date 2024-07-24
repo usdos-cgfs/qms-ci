@@ -51,7 +51,9 @@ export async function addNewPlan(plan) {
   return appContext.Plans.AddEntity(plan);
 }
 
-async function submitNewCAR(plan) {}
+export async function editPlan(plan, view) {
+  return appContext.Plans.UpdateEntity(plan, view);
+}
 
 const PlanErrors = {
   recordTypeNotSetError: new ValidationError(

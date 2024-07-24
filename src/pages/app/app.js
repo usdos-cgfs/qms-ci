@@ -3250,12 +3250,19 @@ export function CAPViewModel(capIdstring) {
     }),
     edit: async function () {
       const id = self.selectedRecord.ID();
-      const plan = await appContext.Plans.FindById(id);
+      const entity = await appContext.Plans.FindById(id);
 
-      const form = new EditPlanForm({ entity: plan });
+      let view;
+      if (self.selectedRecord.curUserHasRole(ROLES.ADMINTYPE.QTM)) {
+        view = Plan.Views.QTMEdit;
+      } else {
+        view = Plan.Views.SubmitterEdit;
+      }
+
+      const form = new EditPlanForm({ entity: entity, view });
 
       const options = {
-        title: `Editing ${plan.Title}`,
+        title: `Editing ${entity.Title}`,
         form,
         dialogReturnValueCallback: OnCallbackFormRefresh,
       };
