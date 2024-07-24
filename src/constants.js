@@ -28,6 +28,16 @@ export const LOCATION = {
   MANILA: "Manila",
 };
 
+export const ACTIONSTATES = {
+  PLANAPPROVAL: "Pending Plan Approval",
+  INPROGRESS: "In progress",
+  COMPLETED: "Completed",
+  COMPLETEDAPPROVAL: "Completed: Requires Approval",
+  QSOAPPROVAL: "Requires Approval QSO",
+  QAOAPPROVAL: "Requires Approval QAO",
+  QTMAPPROVAL: "Requires Approval QTM",
+};
+
 export const stageDescriptions = {
   Editing: {
     stage: "Editing",

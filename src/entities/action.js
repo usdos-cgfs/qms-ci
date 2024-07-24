@@ -1,6 +1,8 @@
+import { ACTIONSTATES } from "../constants.js";
 import {
   DateField,
   PeopleField,
+  SelectField,
   TextAreaField,
   TextField,
 } from "../sal/fields/index.js";
@@ -38,12 +40,18 @@ export class Action extends ConstrainedEntity {
     isRequired: true,
   });
 
-  ExtensionCount = new TextField({
+  RevisionCount = new TextField({
     displayName: "Extension Count",
     isEditable: false,
     attr: {
       type: "number",
     },
+  });
+
+  ImplementationStatus = new SelectField({
+    displayName: "Status",
+    options: Object.values(ACTIONSTATES),
+    isEditable: false,
   });
 
   static Views = {
@@ -54,7 +62,15 @@ export class Action extends ConstrainedEntity {
       "ActionDescription",
       "TargetDate",
       "ActionResponsiblePerson",
-      "ExtensionCount",
+      "RevisionCount",
+      "ImplementationStatus",
+    ],
+    Edit: [
+      "ActionDescription",
+      "TargetDate",
+      "ActionResponsiblePerson",
+      "RevisionCount",
+      "ImplementationStatus",
     ],
   };
 

@@ -36,7 +36,7 @@ export class EditActionForm extends BaseForm {
     const entity = ko.unwrap(this.entity);
 
     try {
-      const result = await editAction(entity);
+      const result = await editAction(this._plan, entity);
       if (result?.isSuccess) this.onComplete(SP.UI.DialogResult.OK);
       else alert(result.error);
     } catch (e) {
