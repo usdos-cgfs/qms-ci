@@ -389,21 +389,12 @@
     <div class="card-body">
       <div>
         <button
-          id="linkSubmitNewCAP"
-          type="button"
-          class="btn btn-outline-success"
-          data-bind="click: controls.record.new"
-        >
-          New
-        </button>
-
-        <button
           id=""
           type="button"
           class="btn btn-outline-success"
           data-bind="click: $root.clickNewPlan"
         >
-          New 2
+          New
         </button>
       </div>
       <br />

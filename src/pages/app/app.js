@@ -14,6 +14,7 @@ import {
 import { Plan } from "../../entities/index.js";
 import { NewPlanForm } from "../../forms/plan/new/new-plan-form.js";
 import { ROLES, LOCATION, stageDescriptions } from "../../constants.js";
+import { EditPlanForm } from "../../forms/plan/edit/edit-plan-form.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -3247,7 +3248,21 @@ export function CAPViewModel(capIdstring) {
       // }
       return false;
     }),
-    edit: function () {
+    edit: async function () {
+      const id = self.selectedRecord.ID();
+      const plan = await appContext.Plans.FindById(id);
+
+      const form = new EditPlanForm({ entity: plan });
+
+      const options = {
+        title: `Editing ${plan.Title}`,
+        form,
+        dialogReturnValueCallback: OnCallbackFormRefresh,
+      };
+
+      ModalDialog.showModalDialog(options);
+    },
+    editDep: function () {
       var args = {
         id: self.selectedRecord.ID(),
       };
@@ -3966,6 +3981,10 @@ class App {
     };
 
     ModalDialog.showModalDialog(options);
+  }
+
+  async clickEditPlan() {
+    const plan = await appContext.Plans.FindById();
   }
 
   /******************************** Application Logic ***************************/

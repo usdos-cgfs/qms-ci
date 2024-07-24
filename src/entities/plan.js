@@ -224,6 +224,29 @@ export class Plan extends ConstrainedEntity {
       "ContainmentAction",
       "ContainmentActionDate",
     ],
+    QTMEdit: [
+      "Title",
+      "Source",
+      "BusinessOffice",
+      "CGFSLocation",
+      "QSO",
+      "QAO",
+      "Subject",
+      "OFIDescription",
+      "DiscoveryDataAnalysis",
+      "SelfInitiated",
+      "ProblemDescription",
+      "ContainmentAction",
+      "ContainmentActionDate",
+      "ProblemResolverName",
+    ],
+    SubmitterEdit: [
+      "BusinessOffice",
+      "CGFSLocation",
+      "QSO",
+      "QAO",
+      "ProblemDescription",
+    ],
   };
 
   static ListDef = {
