@@ -12,7 +12,7 @@ const editTemplate = html`
         class="form-check-input"
         type="checkbox"
         role="switch"
-        data-bind="checked: Value"
+        data-bind="checked: Value, enable: Enable"
       />
       <!-- ko if: instructions -->
       <div

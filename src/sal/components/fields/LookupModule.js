@@ -21,9 +21,10 @@ const editTemplate = html`
       id=""
       multiple="true"
       data-bind="options: Options, 
-  selectedOptions: Value,
-  optionsText: optionsText,
-  class: ValidationClass"
+        selectedOptions: Value,
+        optionsText: optionsText,
+        class: ValidationClass
+        enable: Enable"
     ></select>
     <div class="fw-light flex justify-between">
       <p class="fst-italic">Hold ctrl to select multiple</p>
@@ -38,10 +39,11 @@ const editTemplate = html`
       name=""
       id=""
       data-bind="options: Options, 
-    optionsCaption: 'Select...', 
-    value: Value,
-    optionsText: optionsText,
-    class: ValidationClass"
+        optionsCaption: 'Select...', 
+        value: Value,
+        optionsText: optionsText,
+        class: ValidationClass
+        enable: Enable"
     ></select>
     <!-- /ko -->
     <!-- /ko -->

@@ -10,6 +10,7 @@ export class BaseField {
     width,
     classList = [],
     isVisible = true,
+    isEditable = true,
   }) {
     this.displayName = displayName;
     this.systemName = systemName;
@@ -18,6 +19,10 @@ export class BaseField {
 
     this.Visible = ko.pureComputed(() => {
       return ko.unwrap(isVisible);
+    });
+
+    this.Enable = ko.pureComputed(() => {
+      return ko.unwrap(isEditable);
     });
 
     this.width = width ? "col-md-" + width : "col-md-6";

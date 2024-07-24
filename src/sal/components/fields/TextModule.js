@@ -10,7 +10,10 @@ const editTemplate = html`
     ><span data-bind="if: isRequired" class="fw-bold text-danger">*</span>:
     <input
       class="form-control"
-      data-bind="textInput: Value, class: ValidationClass, attr: attr"
+      data-bind="textInput: Value, 
+        class: ValidationClass, 
+        attr: attr, 
+        enable: Enable"
     />
     <!-- ko if: instructions -->
     <div

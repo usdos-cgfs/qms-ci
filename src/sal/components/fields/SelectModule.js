@@ -18,7 +18,8 @@ const editTemplate = html`
         optionsCaption: 'Select...', 
         optionsText: optionsText,
         selectedOptions: Value,
-        class: ValidationClass"
+        class: ValidationClass
+        enable: Enable"
     ></select>
     <div class="fst-italic fw-light">Hold ctrl to select multiple.</div>
     <!-- /ko -->
@@ -31,7 +32,8 @@ const editTemplate = html`
         optionsCaption: 'Select...', 
         optionsText: optionsText,
         value: Value,
-        class: ValidationClass"
+        class: ValidationClass
+        enable: Enable"
     ></select>
     <!-- /ko -->
     <!-- ko if: instructions -->

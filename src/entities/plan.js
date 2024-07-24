@@ -60,6 +60,7 @@ export class Plan extends ConstrainedEntity {
 
   Title = new TextField({
     displayName: "Item #",
+    isEditable: false,
   });
 
   ProcessStage = new SelectField({

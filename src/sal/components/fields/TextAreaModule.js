@@ -48,7 +48,10 @@ const editTemplate = html`
         cols="30"
         rows="10"
         class="form-control"
-        data-bind="textInput: Value, class: ValidationClass, attr: attr"
+        data-bind="textInput: Value, 
+        class: ValidationClass, 
+        attr: attr
+        enable: Enable"
       ></textarea>
     </label>
     <!-- /ko -->
