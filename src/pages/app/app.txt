@@ -921,16 +921,13 @@
                 </div>
                 <br />
                 <div id="divSubmitTargetVerification">
-                  <label for="dateTargetVerification"
-                    >Set a target effectiveness verification date:</label
-                  ><br />
-                  <input
-                    type="text"
-                    id="dateTargetVerification"
-                    data-bind="jqueryDateField: selectedRecord.EffectivenessVerificationTargetD"
-                  />
-                  <br />
-
+                  <div
+                    class="form-field-component"
+                    data-bind="component: {
+                      name: controls.stage3.targetVerificationDate.components.new, 
+                      params: controls.stage3.targetVerificationDate
+                    }"
+                  ></div>
                   <button
                     type="button"
                     id="buttonSubmitImplement"

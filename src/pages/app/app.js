@@ -15,6 +15,7 @@ import { Plan } from "../../entities/index.js";
 import { NewPlanForm } from "../../forms/plan/new/new-plan-form.js";
 import { ROLES, LOCATION, stageDescriptions } from "../../constants.js";
 import { EditPlanForm } from "../../forms/plan/edit/edit-plan-form.js";
+import { DateField } from "../../sal/fields/DateField.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -3715,6 +3716,9 @@ export function CAPViewModel(capIdstring) {
   };
 
   self.controls.stage3 = {
+    targetVerificationDate: new DateField({
+      displayName: "Effectiveness Verification Target Date",
+    }),
     enableImplementingActionPlan: ko.pureComputed(function () {
       // if (!self.controls.stage3.showImplementingActionPlan()) {
       //   return false;
@@ -3732,7 +3736,7 @@ export function CAPViewModel(capIdstring) {
         ["ProcessStage", stageDescriptions.ImplementationApproval.stage],
         [
           "EffectivenessVerificationTargetD",
-          self.selectedRecord.EffectivenessVerificationTargetD.date().toISOString(),
+          self.controls.stage3.targetVerificationDate.get(),
         ],
         ["SubmittedImplementDate", new Date().toISOString()],
       ];
@@ -3858,10 +3862,7 @@ export function CAPViewModel(capIdstring) {
         return self.NumOpenActions() > 0;
       }),
       VerificationTargetDate: ko.pureComputed(function () {
-        return (
-          self.selectedRecord.EffectivenessVerificationTargetD.date().getTime() ==
-          0
-        );
+        return !self.controls.stage3.targetVerificationDate.Value();
       }),
       AddSupportDoc: ko.pureComputed(function () {
         return !self.SupportDocuments().length;
