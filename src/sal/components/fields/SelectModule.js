@@ -11,14 +11,12 @@ const editTemplate = html`
     <!-- ko if: multiple -->
     <select
       class="form-select"
-      name=""
-      id=""
       multiple="true"
       data-bind="options: Options, 
         optionsCaption: 'Select...', 
         optionsText: optionsText,
         selectedOptions: Value,
-        class: ValidationClass
+        class: ValidationClass,
         enable: Enable"
     ></select>
     <div class="fst-italic fw-light">Hold ctrl to select multiple.</div>
@@ -26,13 +24,11 @@ const editTemplate = html`
     <!-- ko ifnot: multiple -->
     <select
       class="form-select"
-      name=""
-      id=""
       data-bind="options: Options, 
         optionsCaption: 'Select...', 
         optionsText: optionsText,
         value: Value,
-        class: ValidationClass
+        class: ValidationClass,
         enable: Enable"
     ></select>
     <!-- /ko -->
