@@ -3,8 +3,8 @@ import {
   PeopleField,
   TextAreaField,
   TextField,
-} from "../sal/fields";
-import { ConstrainedEntity } from "../sal/primitives";
+} from "../sal/fields/index.js";
+import { ConstrainedEntity } from "../sal/primitives/index.js";
 
 export class Action extends ConstrainedEntity {
   constructor(params) {
@@ -58,7 +58,7 @@ export class Action extends ConstrainedEntity {
     ],
   };
 
-  static Listdef = {
+  static ListDef = {
     name: "CAP_Actions",
     title: "CAP_Actions",
   };

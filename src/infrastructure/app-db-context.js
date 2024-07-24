@@ -1,4 +1,9 @@
-import { BusinessOffice, Plan, RecordSource } from "../entities/index.js";
+import {
+  Action,
+  BusinessOffice,
+  Plan,
+  RecordSource,
+} from "../entities/index.js";
 import { EntitySet, DbContext } from "../sal/index.js";
 
 class ApplicationDbContext extends DbContext {
@@ -6,9 +11,11 @@ class ApplicationDbContext extends DbContext {
     super();
   }
 
-  Plans = new EntitySet(Plan);
+  Actions = new EntitySet(Action);
 
   BusinessOffices = new EntitySet(BusinessOffice);
+
+  Plans = new EntitySet(Plan);
 
   RecordSources = new EntitySet(RecordSource);
 }

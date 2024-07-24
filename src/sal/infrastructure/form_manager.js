@@ -5,8 +5,13 @@ export function NewForm(entity, view = null) {
   return new DefaultForm({ entity, view, displayMode: FieldDisplayModes.new });
 }
 
-export function EditForm(entity, view = null) {
-  return new DefaultForm({ entity, view, displayMode: FieldDisplayModes.edit });
+export function EditForm({ entity, view = null, onSubmit }) {
+  return new DefaultForm({
+    entity,
+    view,
+    onSubmit,
+    displayMode: FieldDisplayModes.edit,
+  });
 }
 
 export function DispForm(entity, view = null) {

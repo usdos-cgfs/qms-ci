@@ -16,6 +16,7 @@ import { NewPlanForm } from "../../forms/plan/new/new-plan-form.js";
 import { ROLES, LOCATION, stageDescriptions } from "../../constants.js";
 import { EditPlanForm } from "../../forms/plan/edit/edit-plan-form.js";
 import { DateField } from "../../sal/fields/DateField.js";
+import { editAction } from "../../services/actions-service.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -2616,7 +2617,20 @@ export function CAPViewModel(capIdstring) {
           "ImplementingActionPlan",
         ].includes(self.selectedRecord.ProcessStageKey());
       },
-      editClick: function (action) {
+      editClick: async function (action) {
+        const entity = await appContext.Actions.FindById(action.ID);
+
+        const form = FormManager.EditForm({ entity, onSubmit: editAction });
+
+        const options = {
+          title: "Editing Action " + entity.ActionID.Value(),
+          form,
+          dialogReturnValueCallback: OnActionEditCallback,
+        };
+
+        ModalDialog.showModalDialog(options);
+      },
+      editClickDeprecated: function (action) {
         app.listRefs.Actions.showModal(
           "EditForm.aspx",
           action.Title,
