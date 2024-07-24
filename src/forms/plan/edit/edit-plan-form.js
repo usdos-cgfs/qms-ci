@@ -4,7 +4,7 @@ import {
   directRegisterComponent,
   html,
 } from "../../../sal/infrastructure/index.js";
-import { addNewPlan } from "../../../services/plan-service.js";
+import { editPlan } from "../../../services/plan-service.js";
 
 const componentName = "edit-plan-form";
 
