@@ -10,6 +10,7 @@ const editTemplate = html`
     ><span data-bind="if: isRequired" class="fw-bold text-danger">*</span>:
     <!-- ko ifnot: spGroupId -->
     <div
+      class="form-control py-0"
       data-bind="attr: {id: getUniqueId()}, 
       people: Value, 
       pickerOptions: pickerOptions,
