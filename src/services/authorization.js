@@ -60,4 +60,4 @@ class User extends People {
   };
 }
 
-export const currentUser = User.Create();
+export const currentUser = await User.Create();

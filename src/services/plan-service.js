@@ -39,7 +39,7 @@ export async function addNewPlan(plan) {
 
     plan.NextTargetDate.set(target_deadline);
 
-    const user = await currentUser();
+    const user = currentUser;
 
     plan.ProblemResolverName.set(user);
   }
