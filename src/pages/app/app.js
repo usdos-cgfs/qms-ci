@@ -17,6 +17,7 @@ import { ROLES, LOCATION, stageDescriptions } from "../../constants.js";
 import { EditPlanForm } from "../../forms/plan/edit/edit-plan-form.js";
 import { DateField } from "../../sal/fields/DateField.js";
 import { editAction } from "../../services/actions-service.js";
+import { EditActionForm } from "../../forms/actions/edit/edit-action-form.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -2619,8 +2620,10 @@ export function CAPViewModel(capIdstring) {
       },
       editClick: async function (action) {
         const entity = await appContext.Actions.FindById(action.ID);
+        const planId = self.selectedRecord.ID();
+        const plan = await appContext.Plans.FindById(planId);
 
-        const form = FormManager.EditForm({ entity, onSubmit: editAction });
+        const form = new EditActionForm({ entity, plan });
 
         const options = {
           title: "Editing Action " + entity.ActionID.Value(),
