@@ -19,6 +19,8 @@ export async function addNewPlan(plan) {
     const loc = ko.unwrap(plan.CGFSLocation.Value);
     if (loc == LOCATION.BANGKOK) {
       plan.ProcessStage.Value(stageDescriptions.ProblemApprovalQTMB.stage);
+    } else {
+      plan.ProcessStage.Value(stageDescriptions.ProblemApprovalQTM.stage);
     }
   }
 
@@ -42,9 +44,10 @@ export async function addNewPlan(plan) {
     const user = currentUser;
 
     plan.ProblemResolverName.set(user);
-  }
 
-  plan.SubmittedDate.Value(new Date());
+    // We only mark it as submitted once it's been approved.
+    plan.SubmittedDate.Value(new Date());
+  }
 
   plan.Active.Value(true);
 
