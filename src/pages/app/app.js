@@ -2438,7 +2438,6 @@ export function CAPViewModel(capIdstring) {
 
         const form = FormManager.NewForm({
           entity: rootCauseWhy,
-          onSubmit: () => appContext.RootCauseWhys.AddEntity(rootCauseWhy),
         });
 
         const options = {
@@ -2609,11 +2608,6 @@ export function CAPViewModel(capIdstring) {
         const form = FormManager.EditForm({
           entity: supportingDocument,
           view: SupportingDocument.Views.Edit,
-          onSubmit: () =>
-            appContext.SupportingDocuments.UpdateEntity(
-              supportingDocument,
-              SupportingDocument.Views.Edit
-            ),
         });
 
         const options = {
