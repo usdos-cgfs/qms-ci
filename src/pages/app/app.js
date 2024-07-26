@@ -11,7 +11,12 @@ import {
   businessOfficeStore,
   sourcesStore,
 } from "../../infrastructure/store.js";
-import { Action, Plan, SupportingDocument } from "../../entities/index.js";
+import {
+  Action,
+  Plan,
+  RootCauseWhy,
+  SupportingDocument,
+} from "../../entities/index.js";
 
 import { ROLES, LOCATION, stageDescriptions } from "../../constants.js";
 
@@ -2419,18 +2424,45 @@ export function CAPViewModel(capIdstring) {
     },
     RootCause: {
       new: function () {
-        var args = {
-          capID: self.selectedRecord.Title(),
-          num: self.RootCauseWhy().length ? self.RootCauseWhy().length + 1 : 1,
+        const rootCauseWhy = new RootCauseWhy();
+
+        const planNum = self.selectedRecord.Title();
+        const actionNumber = self.RootCauseWhy().length
+          ? self.RootCauseWhy().length + 1
+          : 1;
+
+        const title = `${planNum}-${actionNumber}`;
+
+        rootCauseWhy.Title.Value(title);
+        rootCauseWhy.Number.Value(actionNumber);
+
+        const form = FormManager.NewForm({
+          entity: rootCauseWhy,
+          onSubmit: () => appContext.RootCauseWhys.AddEntity(rootCauseWhy),
+        });
+
+        const options = {
+          title: "New Why",
+          form,
+          dialogReturnValueCallback: OnCallbackFormRefresh,
         };
-        app.listRefs.Whys.showModal(
-          "NewForm.aspx",
-          "New Why",
-          args,
-          OnCallbackFormRefresh
-        );
+
+        ModalDialog.showModalDialog(options);
       },
-      editWhy: function (why) {
+      editWhy: async function (why) {
+        const rootCauseWhy = await appContext.RootCauseWhys.FindById(why.ID);
+
+        const form = FormManager.EditForm({ entity: rootCauseWhy });
+
+        const options = {
+          title: "Edit Why",
+          form,
+          dialogReturnValueCallback: OnCallbackFormRefresh,
+        };
+
+        ModalDialog.showModalDialog(options);
+      },
+      editWhyDeprecated: function (why) {
         var args = {
           id: why.ID,
         };

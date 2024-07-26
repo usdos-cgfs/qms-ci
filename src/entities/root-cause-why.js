@@ -1,4 +1,4 @@
-import { TextAreaField, TextField } from "../sal/fields";
+import { TextAreaField, TextField } from "../sal/fields/index.js";
 import { ConstrainedEntity } from "../sal/primitives/index.js";
 
 export class RootCauseWhy extends ConstrainedEntity {
@@ -19,11 +19,13 @@ export class RootCauseWhy extends ConstrainedEntity {
   Question = new TextAreaField({
     displayName: "Question",
     isRequired: true,
+    classList: ["min-w-full"],
   });
 
   Answer = new TextAreaField({
     displayName: "Answer",
     isRequired: true,
+    classList: ["min-w-full"],
   });
 
   static Views = {

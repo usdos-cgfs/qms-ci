@@ -1,5 +1,8 @@
 import { FormDisplayModes } from "../../../enums/display_modes.js";
+import { DomainError } from "../../../primitives/index.js";
+import { Result } from "../../../shared/index.js";
 import { BaseForm, html } from "../index.js";
+import { appContext } from "../../../../infrastructure/app-db-context.js";
 
 const componentName = "default-constrained-entity-form";
 
@@ -12,10 +15,37 @@ export class DefaultForm extends BaseForm {
     // this.entityView = new ConstrainedEntityView({ entity, view });
     this.displayMode(displayMode);
 
-    this._submitAction = onSubmit;
+    if (onSubmit) this._submitAction = onSubmit;
   }
 
-  _submitAction;
+  // Default submit action:
+  // Add, Edit based on displayMode
+  _submitAction = () => {
+    const entity = ko.unwrap(this.entity);
+
+    // guess the default action for this form type;
+    const entitySet = appContext.Set(entity.constructor);
+    if (!entitySet)
+      return Result.Failure(
+        new DomainError({
+          source: "default-form",
+          entity,
+          description: "Could not find entityset",
+        })
+      );
+
+    const displayMode = ko.unwrap(this.displayMode);
+    const view = ko.unwrap(this.view);
+
+    switch (displayMode) {
+      case FormDisplayModes.new:
+        return entitySet.AddEntity(entity);
+      case FormDisplayModes.edit:
+        return entitySet.UpdateEntity(entity, view);
+    }
+
+    return Result.Success("Nothing to do");
+  };
 
   displayMode = ko.observable();
 
