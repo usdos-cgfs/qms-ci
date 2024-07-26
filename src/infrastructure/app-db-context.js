@@ -3,6 +3,7 @@ import {
   BusinessOffice,
   Plan,
   RecordSource,
+  SupportingDocument,
 } from "../entities/index.js";
 import { EntitySet, DbContext } from "../sal/index.js";
 
@@ -18,6 +19,8 @@ class ApplicationDbContext extends DbContext {
   Plans = new EntitySet(Plan);
 
   RecordSources = new EntitySet(RecordSource);
+
+  SupportingDocuments = new EntitySet(SupportingDocument);
 }
 
 export const appContext = new ApplicationDbContext();

@@ -18,6 +18,11 @@ export const PLANTYPE = {
   CAR: "CAR",
 };
 
+export const SUPPORTINGDOCUMENTTYPES = {
+  SUPPORT: "Support",
+  EFFECTIVENESS: "Effectiveness",
+};
+
 export const LOCATION = {
   ALL: "All",
   CHARLESTON: "Charleston",

@@ -2530,7 +2530,20 @@ export function CAPViewModel(capIdstring) {
           }
         );
       },
-      view: function (doc) {
+      view: async function (doc) {
+        const supportingDocument =
+          await appContext.SupportingDocuments.FindById(doc.ID);
+
+        const form = FormManager.DispForm({ entity: supportingDocument });
+
+        const options = {
+          title: "View Document",
+          form,
+        };
+
+        ModalDialog.showModalDialog(options);
+      },
+      viewDeprecated: function (doc) {
         app.listRefs.SupportDocs.showModal(
           "DispForm.aspx",
           doc.FileLeafRef,
