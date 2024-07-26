@@ -18,7 +18,12 @@ import {
   SupportingDocument,
 } from "../../entities/index.js";
 
-import { ROLES, LOCATION, stageDescriptions } from "../../constants.js";
+import {
+  ROLES,
+  LOCATION,
+  stageDescriptions,
+  SUPPORTINGDOCUMENTTYPES,
+} from "../../constants.js";
 
 import {
   EditActionForm,
@@ -2572,6 +2577,29 @@ export function CAPViewModel(capIdstring) {
         ].includes(self.selectedRecord.ProcessStage());
       }),
       new: function () {
+        const planNum = self.selectedRecord.Title();
+
+        const supportingDocument = new SupportingDocument();
+        supportingDocument.Record.Value(planNum);
+        supportingDocument.DocType.Value(SUPPORTINGDOCUMENTTYPES.SUPPORT);
+
+        const folderPath = planNum;
+
+        const form = FormManager.UploadForm({
+          entity: supportingDocument,
+          folderPath,
+          view: SupportingDocument.Views.Edit,
+        });
+
+        const options = {
+          title: "Upload New Supporting Document",
+          form,
+          dialogReturnValueCallback: m_fnRefresh,
+        };
+
+        ModalDialog.showModalDialog(options);
+      },
+      newDeprecated: function () {
         var args = {
           capID: self.selectedRecord.Title(),
           docType: DOCTYPES.SUPPORT,

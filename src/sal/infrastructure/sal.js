@@ -2279,6 +2279,31 @@ export function SPList(listDef) {
     });
   }
 
+  async function ensureFolder(relativeFolderPath) {
+    const response = await fetchSharePointData(
+      `/web/GetFolderByServerRelativeUrl('${relativeFolderPath}')`
+    );
+    if (response) return true;
+
+    //else we need to upsert
+    // }
+
+    // async function createFolder(relativeFolderPath) {
+    return await fetchSharePointData(
+      `/web/folders`,
+      "POST",
+      {
+        "Content-Type": "application/json;odata=verbose",
+      },
+      {
+        body: JSON.stringify({
+          __metadata: { type: "SP.Folder" },
+          ServerRelativeUrl: relativeFolderPath,
+        }),
+      }
+    );
+  }
+
   const UPLOADCHUNKSIZE = 10485760; // PnPJs
   // const UPLOADCHUNKSIZE = 262144000; // SPO
 
@@ -2445,6 +2470,9 @@ https://learn.microsoft.com/en-us/previous-versions/office/developer/sharepoint-
     }
 
     const serverRelFolderPath = getServerRelativeFolderPath(relFolderPath);
+
+    if (!(await ensureFolder(serverRelFolderPath))) return;
+
     let result = null;
     if (file.size > UPLOADCHUNKSIZE) {
       const job = () =>
@@ -2580,7 +2608,8 @@ async function fetchSharePointData(
   uri,
   method = "GET",
   headers = {},
-  opts = {}
+  opts = {},
+  responseType = "json"
 ) {
   const siteEndpoint = uri.startsWith("http")
     ? uri
@@ -2600,10 +2629,20 @@ async function fetchSharePointData(
       return;
     }
     console.error(response);
+    return;
   }
   try {
-    const result = await response.json();
-    return result;
+    let result;
+    switch (responseType) {
+      case "json":
+        return response.json();
+        break;
+      case "blob":
+        return response.blob();
+        break;
+      default:
+        return response;
+    }
   } catch (e) {
     return;
   }

@@ -313,6 +313,32 @@ export class EntitySet {
 
   // Other Functions
   // Upload file directly from browser "File" object e.g. from input field
+  UploadFileWithEntity = async function ({
+    file,
+    entity,
+    view,
+    folderPath,
+    progress,
+  }) {
+    const filename = entity.FileName.Value();
+    const updates = mapEntityToObject.bind(this)(
+      entity,
+      view ?? this.AllDeclaredFields
+    );
+
+    const itemId = await this.ListRef.uploadFileToFolderAndUpdateMetadata(
+      file,
+      filename,
+      folderPath,
+      updates,
+      progress
+    );
+
+    await this.LoadEntity(entity);
+
+    return Result.Success(entity);
+  };
+
   UploadFileToFolderAndUpdateMetadata = async function (
     file,
     filename,
