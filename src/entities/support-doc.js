@@ -19,18 +19,18 @@ export class SupportingDocument extends ConstrainedEntity {
   });
 
   Title = new TextField({
+    displayName: "Title",
+  });
+
+  FileName = new TextField({
     displayName: "Name",
+    systemName: "FileLeafRef",
   });
 
   DocType = new SelectField({
     displayName: "Document Type",
     options: Object.values(SUPPORTINGDOCUMENTTYPES),
     isRequired: true,
-  });
-
-  FileName = new TextField({
-    displayName: "Name",
-    systemName: "FileLeafRef",
   });
 
   FileRef = new TextField({
@@ -61,14 +61,15 @@ export class SupportingDocument extends ConstrainedEntity {
       "ID",
       "Record",
       "Title",
-      "DocType",
       "FileLeafRef",
+      "DocType",
       "FileRef",
       "Modified",
       "Editor",
       "Created",
       "Author",
     ],
+    Edit: ["Record", "Title", "FileLeafRef", "DocType"],
   };
 
   static ListDef = {

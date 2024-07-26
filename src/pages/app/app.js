@@ -11,7 +11,7 @@ import {
   businessOfficeStore,
   sourcesStore,
 } from "../../infrastructure/store.js";
-import { Action, Plan } from "../../entities/index.js";
+import { Action, Plan, SupportingDocument } from "../../entities/index.js";
 import { NewPlanForm } from "../../forms/plan/new/new-plan-form.js";
 import { ROLES, LOCATION, stageDescriptions } from "../../constants.js";
 import { EditPlanForm } from "../../forms/plan/edit/edit-plan-form.js";
@@ -2543,15 +2543,27 @@ export function CAPViewModel(capIdstring) {
 
         ModalDialog.showModalDialog(options);
       },
-      viewDeprecated: function (doc) {
-        app.listRefs.SupportDocs.showModal(
-          "DispForm.aspx",
-          doc.FileLeafRef,
-          {
-            id: doc.ID,
-          },
-          function () {}
-        );
+      edit: async function (doc) {
+        const supportingDocument =
+          await appContext.SupportingDocuments.FindById(doc.ID);
+
+        const form = FormManager.EditForm({
+          entity: supportingDocument,
+          view: SupportingDocument.Views.Edit,
+          onSubmit: () =>
+            appContext.SupportingDocuments.UpdateEntity(
+              supportingDocument,
+              SupportingDocument.Views.Edit
+            ),
+        });
+
+        const options = {
+          title: "Edit Document",
+          form,
+          dialogReturnValueCallback: m_fnRefresh,
+        };
+
+        ModalDialog.showModalDialog(options);
       },
     },
     Actions: {
