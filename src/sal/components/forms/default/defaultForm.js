@@ -41,7 +41,7 @@ export class DefaultForm extends BaseForm {
     try {
       const result = await this._submitAction(entity);
       if (result?.isSuccess) this.onComplete(SP.UI.DialogResult.OK);
-      else alert(result.error);
+      else alert(result?.error);
     } catch (e) {
       alert(e);
     }

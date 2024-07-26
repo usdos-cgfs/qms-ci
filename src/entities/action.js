@@ -41,7 +41,7 @@ export class Action extends ConstrainedEntity {
   });
 
   RevisionCount = new TextField({
-    displayName: "Extension Count",
+    displayName: "Revision Count",
     isEditable: false,
     attr: {
       type: "number",
@@ -64,6 +64,12 @@ export class Action extends ConstrainedEntity {
       "ActionResponsiblePerson",
       "RevisionCount",
       "ImplementationStatus",
+    ],
+    New: [
+      "ActionID",
+      "ActionDescription",
+      "TargetDate",
+      "ActionResponsiblePerson",
     ],
     Edit: [
       "ActionDescription",

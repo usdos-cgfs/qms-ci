@@ -11,12 +11,16 @@ import {
   businessOfficeStore,
   sourcesStore,
 } from "../../infrastructure/store.js";
-import { Plan } from "../../entities/index.js";
+import { Action, Plan } from "../../entities/index.js";
 import { NewPlanForm } from "../../forms/plan/new/new-plan-form.js";
 import { ROLES, LOCATION, stageDescriptions } from "../../constants.js";
 import { EditPlanForm } from "../../forms/plan/edit/edit-plan-form.js";
 import { DateField } from "../../sal/fields/DateField.js";
-import { editAction } from "../../services/actions-service.js";
+import {
+  editAction,
+  getNextActionId,
+  submitNewAction,
+} from "../../services/actions-service.js";
 import { EditActionForm } from "../../forms/actions/edit/edit-action-form.js";
 
 // import { CAPViewModel } from "../../vm.js";
@@ -2583,25 +2587,28 @@ export function CAPViewModel(capIdstring) {
         ];
         app.listRefs.Actions.updateListItem(action.ID, vp, m_fnRefresh);
       },
-      new: function () {
-        // Get the next action item number
-        var actionNoMax = 1;
-        self.ActionListItems().forEach((action) => {
-          let actionNo = parseInt(action.ActionID.split("-")[2].split("A")[1]);
-          if (actionNo >= actionNoMax) {
-            actionNoMax = actionNo + 1;
-          }
+      new: async function () {
+        const planNum = self.selectedRecord.Title();
+        const nextActionId = getNextActionId(planNum, self.ActionListItems());
+
+        const action = new Action();
+
+        action.Title.Value(planNum);
+        action.ActionID.Value(nextActionId);
+
+        const form = FormManager.NewForm({
+          entity: action,
+          view: Action.Views.New,
+          onSubmit: () => submitNewAction(null, action),
         });
-        var args = {
-          capID: self.selectedRecord.Title(),
-          count: actionNoMax,
+
+        const options = {
+          title: "New Action",
+          form,
+          dialogReturnValueCallback: OnActionCreateCallback,
         };
-        app.listRefs.Actions.showModal(
-          "NewForm.aspx",
-          "New Action",
-          args,
-          OnActionCreateCallback
-        );
+
+        ModalDialog.showModalDialog(options);
       },
       isEditable: function (action) {
         if (!self.selectedRecord.curUserHasRole(ROLES.IMPLEMENTOR)) {
@@ -2632,17 +2639,6 @@ export function CAPViewModel(capIdstring) {
         };
 
         ModalDialog.showModalDialog(options);
-      },
-      editClickDeprecated: function (action) {
-        app.listRefs.Actions.showModal(
-          "EditForm.aspx",
-          action.Title,
-          {
-            id: action.ID,
-            stage: self.selectedRecord.ProcessStage(),
-          },
-          OnActionEditCallback
-        );
       },
       requiresApproval: function (action) {
         if (vm.AdminType()) {
