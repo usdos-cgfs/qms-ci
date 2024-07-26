@@ -2544,21 +2544,33 @@
                 </thead>
                 <tbody data-bind="foreach: $root.EffectivenessDocuments">
                   <tr>
-                    <td data-bind="text: Title"></td>
+                    <td class="align-middle" data-bind="text: Title"></td>
                     <td>
                       <a
+                        class="btn btn-link"
                         title="Click to download"
                         data-bind="attr: {href: $root.formatDocDownloadLink(FileRef)}, text: FileLeafRef"
                       ></a>
                     </td>
                     <td>
-                      <a
+                      <button
+                        type="button"
+                        class="btn btn-link"
                         title="View Document"
-                        href="javascript:void(0)"
                         data-bind="click: $parent.proof.documents.view.bind($data)"
                       >
-                        <span class="ui-icon ui-icon-search">View Doc</span>
-                      </a>
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                      </button>
+                      <!-- ko if: $root.section.EffectivenessDocs.isEditable() -->
+                      <button
+                        type="button"
+                        class="btn btn-link"
+                        title="Edit Document"
+                        data-bind="click: $parent.proof.documents.edit"
+                      >
+                        <i class="fa-solid fa-pen-to-square"></i>
+                      </button>
+                      <!-- /ko -->
                     </td>
                   </tr>
                 </tbody>

@@ -31,6 +31,7 @@ export class SupportingDocument extends ConstrainedEntity {
     displayName: "Document Type",
     options: Object.values(SUPPORTINGDOCUMENTTYPES),
     isRequired: true,
+    isEditable: false,
   });
 
   FileRef = new TextField({

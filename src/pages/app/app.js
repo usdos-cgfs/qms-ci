@@ -2599,23 +2599,6 @@ export function CAPViewModel(capIdstring) {
 
         ModalDialog.showModalDialog(options);
       },
-      newDeprecated: function () {
-        var args = {
-          capID: self.selectedRecord.Title(),
-          docType: DOCTYPES.SUPPORT,
-        };
-        app.listRefs.SupportDocs.createFolderRec(
-          vm.selectedRecord.Title(),
-          function () {
-            app.listRefs.SupportDocs.uploadNewDocument(
-              vm.selectedRecord.Title(),
-              "New Support Document",
-              args,
-              m_fnRefresh
-            );
-          }
-        );
-      },
       view: async function (doc) {
         const supportingDocument =
           await appContext.SupportingDocuments.FindById(doc.ID);
@@ -2965,31 +2948,59 @@ export function CAPViewModel(capIdstring) {
             );
           }),
           new: function () {
-            var args = {
-              capID: self.selectedRecord.Title(),
-              docType: DOCTYPES.EFFECTIVENESS,
+            const planNum = self.selectedRecord.Title();
+
+            const supportingDocument = new SupportingDocument();
+            supportingDocument.Record.Value(planNum);
+            supportingDocument.DocType.Value(
+              SUPPORTINGDOCUMENTTYPES.EFFECTIVENESS
+            );
+
+            const folderPath = planNum;
+
+            const form = FormManager.UploadForm({
+              entity: supportingDocument,
+              folderPath,
+              view: SupportingDocument.Views.Edit,
+            });
+
+            const options = {
+              title: "Upload New Proof of Effectiveness Document",
+              form,
+              dialogReturnValueCallback: m_fnRefresh,
             };
-            app.listRefs.SupportDocs.createFolderRec(
-              vm.selectedRecord.Title(),
-              function () {
-                app.listRefs.SupportDocs.uploadNewDocument(
-                  vm.selectedRecord.Title(),
-                  "New Effectiveness Document",
-                  args,
-                  OnCallbackFormRefresh
-                );
-              }
-            );
+
+            ModalDialog.showModalDialog(options);
           },
-          view: function (doc) {
-            app.listRefs.SupportDocs.showModal(
-              "DispForm.aspx",
-              doc.FileLeafRef,
-              {
-                id: doc.ID,
-              },
-              function () {}
-            );
+          view: async function (doc) {
+            const supportingDocument =
+              await appContext.SupportingDocuments.FindById(doc.ID);
+
+            const form = FormManager.DispForm({ entity: supportingDocument });
+
+            const options = {
+              title: "View Document",
+              form,
+            };
+
+            ModalDialog.showModalDialog(options);
+          },
+          edit: async function (doc) {
+            const supportingDocument =
+              await appContext.SupportingDocuments.FindById(doc.ID);
+
+            const form = FormManager.EditForm({
+              entity: supportingDocument,
+              view: SupportingDocument.Views.Edit,
+            });
+
+            const options = {
+              title: "Edit Document",
+              form,
+              dialogReturnValueCallback: m_fnRefresh,
+            };
+
+            ModalDialog.showModalDialog(options);
           },
         },
       },
