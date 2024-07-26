@@ -3426,7 +3426,7 @@ export function CAPViewModel(capIdstring) {
       const id = self.selectedRecord.ID();
       const plan = await appContext.Plans.FindById(id);
 
-      const planViewForm = FormManager.DispForm(plan);
+      const planViewForm = FormManager.DispForm({ entity: plan });
       const options = {
         title: "View Plan (ID:" + plan.Title + ")",
         form: planViewForm,
