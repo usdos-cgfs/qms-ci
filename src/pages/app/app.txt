@@ -1970,10 +1970,11 @@
               >Containment Action Date</b
             >
             <br />
-            <input
-              type="text"
-              data-bind="jqueryDateField: section.ContainmentAction.actionDate"
-            />
+            <div
+              data-bind="component: { 
+                name: section.ContainmentAction.actionDate.components.edit, 
+                params: section.ContainmentAction.actionDate}"
+            ></div>
             <br />
             <button
               type="button"

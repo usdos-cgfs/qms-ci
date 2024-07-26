@@ -2381,7 +2381,7 @@ export function CAPViewModel(capIdstring) {
         displayName: "Containment Action",
         isRichText: true,
       }),
-      actionDate: new DateField({ type: "date" }),
+      actionDate: new DateField({ displayName: "Containment Action Date" }),
       edit: function () {
         self.section.ContainmentAction.field.Value(
           self.selectedRecord.ContainmentAction()
@@ -2391,7 +2391,7 @@ export function CAPViewModel(capIdstring) {
           self.selectedRecord.ContainmentActionDate.isDate() &&
           self.selectedRecord.ContainmentActionDate.date().getTime()
         ) {
-          self.section.ContainmentAction.actionDate.date(
+          self.section.ContainmentAction.actionDate.set(
             self.selectedRecord.ContainmentActionDate.date()
           );
         }
@@ -2402,9 +2402,8 @@ export function CAPViewModel(capIdstring) {
           ["ContainmentAction", self.section.ContainmentAction.field.Value()],
           [
             "ContainmentActionDate",
-            self.section.ContainmentAction.actionDate.isDate()
-              ? self.section.ContainmentAction.actionDate.date().toISOString()
-              : new Date(0).toISOString(),
+            self.section.ContainmentAction.actionDate.get() ??
+              new Date(0).toISOString(),
           ],
         ];
         self.section.ContainmentAction.isEditing(false);

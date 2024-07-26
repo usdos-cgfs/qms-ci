@@ -443,7 +443,16 @@ function DateField(newOpts, newDate) {
   this.dateFormat = ko.pureComputed({
     read: function () {
       if (self.date().getTime()) {
-        return self.date().format(self.format);
+        const date = self.date(); // Date in local time
+
+        // Extract UTC components
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, "0"); // Months are zero-based
+        const day = String(date.getUTCDate()).padStart(2, "0");
+
+        // Format the date as yyyy-MM-dd
+        const formattedDate = `${year}-${month}-${day}`;
+        return formattedDate;
       }
       return "";
     },
