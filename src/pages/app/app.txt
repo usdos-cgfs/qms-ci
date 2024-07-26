@@ -1339,7 +1339,7 @@
                   <!-- ko if: section.Info.coordinator.isEditable() -->
                   <button
                     type="button"
-                    class="button button-outline"
+                    class="btn btn-primary"
                     data-bind="click: section.Info.coordinator.edit"
                   >
                     Edit
@@ -1349,18 +1349,20 @@
                   <!-- ko if: section.Info.coordinator.isEditing() -->
                   <div
                     id="peopleTempCoordinator"
-                    data-bind="people: section.Info.coordinator.tempCoordinator"
+                    data-bind="component: {
+                      name: section.Info.coordinator.tempCoordinator.components.edit,
+                      params: section.Info.coordinator.tempCoordinator}"
                   ></div>
                   <button
                     type="button"
-                    class="button button-outline"
+                    class="btn btn-success"
                     data-bind="click: section.Info.coordinator.save"
                   >
                     Save
                   </button>
                   <button
                     type="button"
-                    class="button button-outline"
+                    class="btn btn-danger"
                     data-bind="click: section.Info.coordinator.cancel"
                   >
                     Cancel
@@ -1794,7 +1796,7 @@
             <!-- ko ifnot: section.OpportunityForImprovement.isEditing() -->
             <p
               id="pProblemDescription"
-              data-bind="text: selectedRecord.OFIDescription()
+              data-bind="html: selectedRecord.OFIDescription()
                         visible: !section.OpportunityForImprovement.isEditing()"
             ></p>
             <button
@@ -1808,11 +1810,11 @@
             </button>
             <!-- /ko -->
             <!-- ko if: section.OpportunityForImprovement.isEditing() -->
-            <textarea
-              id=""
-              class="form-control"
-              data-bind="textInput: section.OpportunityForImprovement.value"
-            ></textarea>
+            <div
+              data-bind="component: { 
+              name: section.OpportunityForImprovement.field.components.edit, 
+              params: section.OpportunityForImprovement.field}"
+            ></div>
             <br />
             <button
               type="button"
@@ -1844,7 +1846,7 @@
             <!-- ko ifnot: section.DiscoveryDataAnalysis.isEditing() -->
             <p
               id="pProblemDescription"
-              data-bind="text: selectedRecord.DiscoveryDataAnalysis()
+              data-bind="html: selectedRecord.DiscoveryDataAnalysis()
                        visible: !section.DiscoveryDataAnalysis.isEditing()"
             ></p>
             <button
@@ -1858,11 +1860,11 @@
             </button>
             <!-- /ko -->
             <!-- ko if: section.DiscoveryDataAnalysis.isEditing() -->
-            <textarea
-              id=""
-              class="form-control"
-              data-bind="textInput: section.DiscoveryDataAnalysis.value"
-            ></textarea>
+            <div
+              data-bind="component: { 
+              name: section.DiscoveryDataAnalysis.field.components.edit, 
+              params: section.DiscoveryDataAnalysis.field}"
+            ></div>
             <br />
             <button
               type="button"
@@ -1895,7 +1897,7 @@
           <!-- ko ifnot: section.ProblemDescription.isEditing() -->
           <p
             id="pProblemDescription"
-            data-bind="text: selectedRecord.ProblemDescription()
+            data-bind="html: selectedRecord.ProblemDescription()
                     visible: !section.ProblemDescription.isEditing()"
           ></p>
           <button
@@ -1909,11 +1911,11 @@
           </button>
           <!-- /ko -->
           <!-- ko if: section.ProblemDescription.isEditing() -->
-          <textarea
-            id="textareaProblemDescription"
-            class="form-control"
-            data-bind="textInput: section.ProblemDescription.value"
-          ></textarea>
+          <div
+            data-bind="component: { 
+              name: section.ProblemDescription.field.components.edit, 
+              params: section.ProblemDescription.field}"
+          ></div>
           <br />
           <button
             type="button"
@@ -1944,7 +1946,7 @@
           <div id="divDispContainmentAction">
             <p
               id="pContainmentAction"
-              data-bind="text: selectedRecord.ContainmentAction()"
+              data-bind="html: selectedRecord.ContainmentAction()"
             ></p>
             <button
               type="button"
@@ -1959,11 +1961,11 @@
           <!-- /ko -->
           <!-- ko if: section.ContainmentAction.isEditing() -->
           <div id="divEditContainmentAction">
-            <textarea
-              id="textareaContainmentAction"
-              class="form-control"
-              data-bind="textInput: section.ContainmentAction.value"
-            ></textarea>
+            <div
+              data-bind="component: { 
+                name: section.ContainmentAction.field.components.edit, 
+                params: section.ContainmentAction.field}"
+            ></div>
             <b id="headerContainmentActionDate" class="edit"
               >Containment Action Date</b
             >

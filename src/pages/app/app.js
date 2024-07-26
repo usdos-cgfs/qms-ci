@@ -12,16 +12,25 @@ import {
   sourcesStore,
 } from "../../infrastructure/store.js";
 import { Action, Plan, SupportingDocument } from "../../entities/index.js";
-import { NewPlanForm } from "../../forms/plan/new/new-plan-form.js";
+
 import { ROLES, LOCATION, stageDescriptions } from "../../constants.js";
-import { EditPlanForm } from "../../forms/plan/edit/edit-plan-form.js";
-import { DateField } from "../../sal/fields/DateField.js";
+
+import {
+  EditActionForm,
+  EditPlanForm,
+  NewPlanForm,
+} from "../../forms/index.js";
+
 import {
   editAction,
   getNextActionId,
   submitNewAction,
 } from "../../services/actions-service.js";
-import { EditActionForm } from "../../forms/actions/edit/edit-action-form.js";
+import {
+  DateField,
+  PeopleField,
+  TextAreaField,
+} from "../../sal/fields/index.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -1566,9 +1575,11 @@ export function CAPViewModel(capIdstring) {
     });
   });
 
-  self.impersonateUserField = new PeopleField();
+  self.impersonateUserField = new PeopleField({
+    displayName: "Impersonate User",
+  });
 
-  self.impersonateUserField.ensuredPeople.subscribe(function (people) {
+  self.impersonateUserField.Value.subscribe(function (people) {
     if (people.length) {
       self.currentUser(people[0]);
       self.currentUserObj.id(people[0].get_id());
@@ -2167,10 +2178,12 @@ export function CAPViewModel(capIdstring) {
           }
           return false;
         }),
-        tempCoordinator: new PeopleField(),
+        tempCoordinator: new PeopleField({
+          displayName: "CAR/CAP Coordinator",
+        }),
         edit: function () {
           if (self.selectedRecord.ProblemResolverName.ensuredPeople().length) {
-            self.section.Info.coordinator.tempCoordinator.addPeople(
+            self.section.Info.coordinator.tempCoordinator.set(
               self.selectedRecord.ProblemResolverName.ensuredPeople()[0]
             );
           }
@@ -2178,12 +2191,9 @@ export function CAPViewModel(capIdstring) {
         },
         save: function () {
           self.selectedRecord.ProblemResolverName.removeAllPeople();
-          var valuePair = [
-            [
-              "ProblemResolverName",
-              self.section.Info.coordinator.tempCoordinator.getValueForWrite(),
-            ],
-          ];
+          const coord = self.section.Info.coordinator.tempCoordinator.Value();
+          const coordString = `${coord.ID};#${coord.LoginName};#`;
+          var valuePair = [["ProblemResolverName", coordString]];
           self.section.Info.coordinator.isEditing(false);
           app.listRefs.Plans.updateListItem(
             self.selectedRecord.ID(),
@@ -2216,16 +2226,22 @@ export function CAPViewModel(capIdstring) {
 
         return false;
       }),
-      value: ko.observable(),
+      field: new TextAreaField({
+        displayName: "Opportunity for Improvement",
+        isRichText: true,
+      }),
       edit: function () {
-        self.section.OpportunityForImprovement.value(
+        self.section.OpportunityForImprovement.field.Value(
           self.selectedRecord.OFIDescription()
         );
         self.section.OpportunityForImprovement.isEditing(true);
       },
       save: function () {
         var valuepair = [
-          ["OFIDescription", self.section.OpportunityForImprovement.value()],
+          [
+            "OFIDescription",
+            self.section.OpportunityForImprovement.field.Value(),
+          ],
         ];
         self.section.OpportunityForImprovement.isEditing(false);
         app.listRefs.Plans.updateListItem(
@@ -2258,16 +2274,22 @@ export function CAPViewModel(capIdstring) {
 
         return false;
       }),
-      value: ko.observable(),
+      field: new TextAreaField({
+        displayName: "Data Discovery and Analysis",
+        isRichText: true,
+      }),
       edit: function () {
-        self.section.DiscoveryDataAnalysis.value(
+        self.section.DiscoveryDataAnalysis.field.Value(
           self.selectedRecord.DiscoveryDataAnalysis()
         );
         self.section.DiscoveryDataAnalysis.isEditing(true);
       },
       save: function () {
         var valuepair = [
-          ["DiscoveryDataAnalysis", self.section.DiscoveryDataAnalysis.value()],
+          [
+            "DiscoveryDataAnalysis",
+            self.section.DiscoveryDataAnalysis.field.Value(),
+          ],
         ];
         self.section.DiscoveryDataAnalysis.isEditing(false);
         app.listRefs.Plans.updateListItem(
@@ -2306,16 +2328,19 @@ export function CAPViewModel(capIdstring) {
 
         return false;
       }),
-      value: ko.observable(),
+      field: new TextAreaField({
+        displayName: "Problem Description",
+        isRichText: true,
+      }),
       edit: function () {
-        self.section.ProblemDescription.value(
+        self.section.ProblemDescription.field.Value(
           self.selectedRecord.ProblemDescription()
         );
         self.section.ProblemDescription.isEditing(true);
       },
       save: function () {
         var valuepair = [
-          ["ProblemDescription", self.section.ProblemDescription.value()],
+          ["ProblemDescription", self.section.ProblemDescription.field.Value()],
         ];
         self.section.ProblemDescription.isEditing(false);
         app.listRefs.Plans.updateListItem(
@@ -2352,10 +2377,13 @@ export function CAPViewModel(capIdstring) {
         }
         return false;
       }),
-      value: ko.observable(),
+      field: new TextAreaField({
+        displayName: "Containment Action",
+        isRichText: true,
+      }),
       actionDate: new DateField({ type: "date" }),
       edit: function () {
-        self.section.ContainmentAction.value(
+        self.section.ContainmentAction.field.Value(
           self.selectedRecord.ContainmentAction()
         );
         // If our datetime is set
@@ -2371,7 +2399,7 @@ export function CAPViewModel(capIdstring) {
       },
       save: function () {
         var valuepair = [
-          ["ContainmentAction", self.section.ContainmentAction.value()],
+          ["ContainmentAction", self.section.ContainmentAction.field.Value()],
           [
             "ContainmentActionDate",
             self.section.ContainmentAction.actionDate.isDate()
