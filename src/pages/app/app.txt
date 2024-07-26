@@ -2323,7 +2323,7 @@
                   <!-- /ko  -->
                 </td>
                 <td data-bind="text: ActionID"></td>
-                <td data-bind="text: ActionDescription"></td>
+                <td data-bind="html: ActionDescription"></td>
                 <td
                   data-bind="text: ActionResponsiblePerson.get_lookupValue()"
                 ></td>
