@@ -19,6 +19,6 @@ export function EditForm({ entity, view = null, onSubmit }) {
   });
 }
 
-export function DispForm(entity, view = null) {
+export function DispForm({ entity, view = null }) {
   return new DefaultForm({ entity, view, displayMode: FieldDisplayModes.view });
 }
