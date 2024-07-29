@@ -2,6 +2,8 @@ import { People } from "../sal/entities/index.js";
 
 import { getUserPropsAsync } from "../sal/infrastructure/index.js";
 
+export const currentRole = ko.observable();
+
 class User extends People {
   constructor({
     ID,

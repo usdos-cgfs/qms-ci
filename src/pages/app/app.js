@@ -50,6 +50,8 @@ import {
   runningTasks,
   tasks,
 } from "../../services/tasks-service.js";
+import { CancelPlanForm } from "../../forms/plan/cancel/cancel-plan-form.js";
+import { currentRole } from "../../services/authorization.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -1611,7 +1613,9 @@ export function CAPViewModel(capIdstring) {
   // Default adminType to that provided on page.
   const adminType = getUrlParam("role");
 
-  self.AdminType = ko.observable(adminType || "");
+  self.AdminType = currentRole;
+
+  self.AdminType(adminType || "");
   self.MyRoles = ko.pureComputed(() => {
     return Object.entries(ROLES.ADMINTYPE).map(([key, val]) => {
       return {
@@ -3442,8 +3446,19 @@ export function CAPViewModel(capIdstring) {
         });
       }
     },
-    displayCloseDialog: function () {
-      $("#close-modal").modal("show");
+    displayCloseDialog: async function () {
+      // $("#close-modal").modal("show");
+      const planId = self.selectedPlan()?.ID;
+      const plan = await appContext.Plans.FindById(planId);
+      const form = new CancelPlanForm({ entity: plan });
+
+      const options = {
+        title: "Are you sure you want to close this plan?",
+        form,
+        dialogReturnValueCallback: OnCallbackFormRefresh,
+      };
+
+      ModalDialog.showModalDialog(options);
     },
     isOpenable: ko.pureComputed(function () {
       if (vm.selectedRecord.Active()) {
@@ -3457,7 +3472,7 @@ export function CAPViewModel(capIdstring) {
     open: function () {
       if (confirm("Are you sure you want to Re-Open this record?")) {
         const openTask = addTask(tasks.opening);
-        valuePair = [
+        const valuePair = [
           ["ProcessStage", vm.selectedRecord.PreviousStage()],
           ["Active", "1"],
           ["CloseDate", null],

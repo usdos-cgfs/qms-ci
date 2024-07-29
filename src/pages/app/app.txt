@@ -1133,7 +1133,7 @@
         </div>
       </div>
     </div>
-    <div class="ui modal" display="none" id="close-modal">
+    <div class="modal" display="none" id="close-modal">
       <div class="header">Are you sure you want to close this plan?</div>
       <div class="content">
         <div class="ui warning message">

@@ -1,8 +1,9 @@
 import { LOCATION, PLANTYPE, stageDescriptions } from "../constants.js";
+import { Plan } from "../entities/plan.js";
 import { appContext } from "../infrastructure/app-db-context.js";
 import { ValidationError } from "../sal/primitives/index.js";
 import { Result } from "../sal/shared/index.js";
-import { currentUser } from "./authorization.js";
+import { currentRole, currentUser } from "./authorization.js";
 
 export async function addNewPlan(plan) {
   console.log("inserting plan", plan);
@@ -62,6 +63,26 @@ export async function editPlan(plan, view) {
   plan.flatten();
 
   return appContext.Plans.UpdateEntity(plan, view);
+}
+
+export async function cancelPlan(plan) {
+  // Switch userCurrentRole
+
+  const userRole = ko.unwrap(currentRole);
+
+  plan.PreviousStage.Value(plan.ProcessStage.toString());
+
+  let nextStage =
+    userRole == ROLES.ADMINTYPE.USER
+      ? stageDescriptions.ClosedRecalled.stage
+      : stageDescriptions.ClosedRejected.stage;
+
+  plan.ProcessStage.Value(nextStage);
+
+  plan.CloseDate.Value(new Date());
+  plan.Active.Value(false);
+
+  return appContext.Plans.UpdateEntity(plan, Plan.Views.CancelSubmit);
 }
 
 const PlanErrors = {

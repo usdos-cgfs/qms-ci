@@ -63,11 +63,6 @@ export class Plan extends ConstrainedEntity {
     isEditable: false,
   });
 
-  ProcessStage = new SelectField({
-    displayName: "Current Stage",
-    options: [],
-  });
-
   // NEW FORM
 
   RecordType = new SelectField({
@@ -187,6 +182,12 @@ export class Plan extends ConstrainedEntity {
     displayName: "Status",
   });
 
+  PreviousStage = new TextField({
+    displayName: "Previous Stage",
+    isVisible: false,
+    isEditable: false,
+  });
+
   NextTargetDate = new DateField({
     displayName: "Next Target Date",
   });
@@ -199,6 +200,19 @@ export class Plan extends ConstrainedEntity {
     displayName: "CAR/CAP Coordinator Name",
     isVisible: true,
     isEditable: false,
+  });
+
+  CloseDate = new DateField({
+    displayName: "Closed On",
+    type: dateFieldTypes.datetime,
+  });
+
+  CancelReason = new TextAreaField({
+    displayName: "Cancellation Reason",
+    instructions: "Please provide a reason for cancelling this plan.",
+    isRichText: true,
+    classList: ["min-w-full"],
+    isRequired: true,
   });
 
   Author = new PeopleField({
@@ -254,6 +268,8 @@ export class Plan extends ConstrainedEntity {
       "ProcessStage",
       "PreviousStage",
       "NextTargetDate",
+      "CancelReason",
+      "CloseDate",
       "Author",
       "AuthorName",
     ],
@@ -347,6 +363,14 @@ export class Plan extends ConstrainedEntity {
       "QAO",
       "QAOName",
       "ProblemDescription",
+    ],
+    Cancel: ["CancelReason"],
+    CancelSubmit: [
+      "Active",
+      "CancelReason",
+      "ProcessStage",
+      "CloseDate",
+      "PreviousStage",
     ],
   };
 
