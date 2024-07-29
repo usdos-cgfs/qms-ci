@@ -41,6 +41,7 @@ import {
   PeopleField,
   TextAreaField,
 } from "../../sal/fields/index.js";
+import { editPlan } from "../../services/plan-service.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -272,10 +273,14 @@ function loadSelectedRecordByObj(record) {
   LoadSelectedCAP(record.Title);
 }
 // IMPORTANT - use this section to hide and show elements to the user based on permission level.
-function LoadSelectedCAP(capid) {
+async function LoadSelectedCAP(capid) {
   vm.app.processes.addTask(appProcessesStates.view);
 
   var capid = capid.Title ? capid.Title : capid;
+
+  // New Application Structure
+  const plan = await appContext.Plans.FindByTitle(capid);
+  if (plan?.results.length) vm.selectedPlan(plan.results.pop());
 
   // Check if we are being passed an object
   //capid = capid.Title;
@@ -1202,6 +1207,7 @@ var CIItemListDef = {
     ID: { type: "Text" },
     Active: { type: "Bool" },
     Author: { type: "Person" },
+    AuthorName: { type: "Text" },
     CloseDate: { type: "Date" },
     CancelReason: { type: "Text" },
     Created: { type: "Date" },
@@ -1210,12 +1216,15 @@ var CIItemListDef = {
     BusinessOffice: { type: "Text" },
     CGFSLocation: { type: "Text" },
     QSO: { type: "Person" },
+    QSOName: { type: "Text" },
     QAO: { type: "Person" },
+    QAOName: { type: "Text" },
     OFIDescription: { type: "Text" },
     DiscoveryDataAnalysis: { type: "Text" },
     SubmittedDate: { type: "Date" },
     SubmittedBy: { type: "Text" },
     ProblemResolverName: { type: "Person" },
+    CoordinatorName: { type: "Text" },
     Subject: { type: "Text" },
     QSOAdjudicationDate: { type: "Date" },
     QSOApprovalStatus: { type: "Text" },
@@ -1271,12 +1280,15 @@ var CAPModel = [
   "BusinessOffice",
   "CGFSLocation",
   "QSO",
+  "QSOName",
   "QAO",
+  "QAOName",
   "OFIDescription",
   "DiscoveryDataAnalysis",
   "SubmittedDate",
   "SubmittedBy",
   "ProblemResolverName",
+  "CoordinatorName",
   "Subject",
   "QSOAdjudicationDate",
   "QSOApprovalStatus",
@@ -1322,6 +1334,8 @@ var CAPModel = [
   "PreviousStage",
   "NextTargetDate",
   "PlanSubmissionTargetDate",
+  "Author",
+  "AuthorName",
 ];
 
 var ActionListDef = {
@@ -1743,7 +1757,7 @@ export function CAPViewModel(capIdstring) {
   //   Common.Utilities.updateUrlParam("tab", newTab.toString());
   // });
 
-  self.navigateToRecord = function (record) {
+  self.navigateToRecord = async function (record) {
     vm.CAPID(record.Title);
     //Common.Utilities.updateUrlParam("capid", record.Title);
     //LoadSelectedCAP(record.Title);
@@ -3007,6 +3021,8 @@ export function CAPViewModel(capIdstring) {
     },
   };
 
+  self.selectedPlan = ko.observable();
+
   // This is just initializing an object with corresponding observables
   // based off the list def
   self.selectedRecord =
@@ -3383,14 +3399,21 @@ export function CAPViewModel(capIdstring) {
       const id = self.selectedRecord.ID();
       const entity = await appContext.Plans.FindById(id);
 
-      let view;
+      // Two separate views, since we don't want the "Flattened Name" fields on the forms.
+      let formView, submitView;
       if (self.selectedRecord.curUserHasRole(ROLES.ADMINTYPE.QTM)) {
-        view = Plan.Views.QTMEdit;
+        formView = Plan.Views.QTMEditForm;
+        submitView = Plan.Views.QTMEditSubmit;
       } else {
-        view = Plan.Views.SubmitterEdit;
+        formView = Plan.Views.SubmitterEditForm;
+        submitView = Plan.Views.SubmitterEditSubmit;
       }
 
-      const form = new EditPlanForm({ entity: entity, view });
+      const form = FormManager.EditForm({
+        entity: entity,
+        view: formView,
+        onSubmit: () => editPlan(entity, submitView),
+      });
 
       const options = {
         title: `Editing ${entity.Title}`,
@@ -3400,35 +3423,16 @@ export function CAPViewModel(capIdstring) {
 
       ModalDialog.showModalDialog(options);
     },
-    editDep: function () {
-      var args = {
-        id: self.selectedRecord.ID(),
-      };
-      var form;
-      if (self.selectedRecord.curUserHasRole(ROLES.ADMINTYPE.QTM)) {
-        form = "EditFormQTM.aspx";
-        args.role = ROLES.ADMINTYPE.QTM;
-      } else if (self.selectedRecord.curUserHasRole(ROLES.IMPLEMENTOR)) {
-        args.role = ROLES.ADMINTYPE.IMPLEMENTOR;
-        form = "EditFormUser.aspx";
-      } else {
-        form = "EditFormUser.aspx";
-        args.role = ROLES.ADMINTYPE.SUBMITTER;
-      }
-      app.listRefs.Plans.showModal(
-        form,
-        self.selectedTitle(),
-        args,
-        OnCallbackFormRefresh
-      );
-    },
     view: async function () {
       const id = self.selectedRecord.ID();
       const plan = await appContext.Plans.FindById(id);
 
-      const planViewForm = FormManager.DispForm({ entity: plan });
+      const planViewForm = FormManager.DispForm({
+        entity: plan,
+        view: Plan.Views.View,
+      });
       const options = {
-        title: "View Plan (ID:" + plan.Title + ")",
+        title: "View Plan " + plan.Title,
         form: planViewForm,
       };
 

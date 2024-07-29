@@ -104,7 +104,7 @@ export class Plan extends ConstrainedEntity {
 
   QSOName = new TextField({
     displayName: "QSO Name",
-    isVisible: false,
+    isVisible: true,
     isEditable: false,
   });
 
@@ -115,7 +115,7 @@ export class Plan extends ConstrainedEntity {
 
   QAOName = new TextField({
     displayName: "QAO Name",
-    isVisible: false,
+    isVisible: true,
     isEditable: false,
   });
 
@@ -197,7 +197,7 @@ export class Plan extends ConstrainedEntity {
 
   CoordinatorName = new TextField({
     displayName: "CAR/CAP Coordinator Name",
-    isVisible: false,
+    isVisible: true,
     isEditable: false,
   });
 
@@ -207,9 +207,26 @@ export class Plan extends ConstrainedEntity {
 
   AuthorName = new TextField({
     displayName: "Submitted By Name",
-    isVisible: false,
+    isVisible: true,
     isEditable: false,
   });
+
+  flatten() {
+    const plan = this;
+    console.log("Flattening Plan: ", plan.Title.Value());
+
+    const coordinatorName = ko.unwrap(plan.ProblemResolverName.Value)?.Title;
+    plan.CoordinatorName.Value(coordinatorName);
+
+    const qaoName = ko.unwrap(plan.QAO.Value)?.Title;
+    plan.QAOName.Value(qaoName);
+
+    const qsoName = ko.unwrap(plan.QSO.Value)?.Title;
+    plan.QSOName.Value(qsoName);
+
+    const authorName = ko.unwrap(plan.Author.Value)?.Title;
+    plan.AuthorName.Value(authorName);
+  }
 
   static Views = {
     All: [
@@ -240,6 +257,29 @@ export class Plan extends ConstrainedEntity {
       "Author",
       "AuthorName",
     ],
+    View: [
+      "Title",
+      "Active",
+      "RecordType",
+      "SelfInitiated",
+      "BusinessOffice",
+      "CGFSLocation",
+      "QSOName",
+      "QAOName",
+      "OFIDescription",
+      "DiscoveryDataAnalysis",
+      "SubmittedDate",
+      "CoordinatorName",
+      "Subject",
+      "SelfInitiated",
+      "Source",
+      "SimilarNoncomformityBool",
+      "SimilarNoncomformityDesc",
+      "ProcessStage",
+      "PreviousStage",
+      "NextTargetDate",
+      "AuthorName",
+    ],
     New: [
       "RecordType",
       "Source",
@@ -255,7 +295,7 @@ export class Plan extends ConstrainedEntity {
       "ContainmentAction",
       "ContainmentActionDate",
     ],
-    QTMEdit: [
+    QTMEditForm: [
       "Title",
       "Source",
       "BusinessOffice",
@@ -271,12 +311,41 @@ export class Plan extends ConstrainedEntity {
       "ContainmentActionDate",
       "ProblemResolverName",
     ],
-    SubmitterEdit: [
+    QTMEditSubmit: [
+      "Title",
+      "Source",
+      "BusinessOffice",
+      "CGFSLocation",
+      "QSO",
+      "QSOName",
+      "QAO",
+      "QAOName",
+      "Subject",
+      "OFIDescription",
+      "DiscoveryDataAnalysis",
+      "SelfInitiated",
+      "ProblemDescription",
+      "ContainmentAction",
+      "ContainmentActionDate",
+      "ProblemResolverName",
+      "CoordinatorName",
+    ],
+    SubmitterEditForm: [
       "Source",
       "BusinessOffice",
       "CGFSLocation",
       "QSO",
       "QAO",
+      "ProblemDescription",
+    ],
+    SubmitterEditSubmit: [
+      "Source",
+      "BusinessOffice",
+      "CGFSLocation",
+      "QSO",
+      "QSOName",
+      "QAO",
+      "QAOName",
       "ProblemDescription",
     ],
   };

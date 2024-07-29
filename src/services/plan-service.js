@@ -49,12 +49,18 @@ export async function addNewPlan(plan) {
     plan.SubmittedDate.Value(new Date());
   }
 
+  plan.flatten();
+
+  plan.AuthorName.Value(currentUser.Title);
+
   plan.Active.Value(true);
 
   return appContext.Plans.AddEntity(plan);
 }
 
 export async function editPlan(plan, view) {
+  plan.flatten();
+
   return appContext.Plans.UpdateEntity(plan, view);
 }
 

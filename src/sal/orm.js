@@ -94,6 +94,19 @@ export class EntitySet {
     return newEntity;
   };
 
+  FindByTitle = async (title, fields = this.AllDeclaredFields) => {
+    // Hit our cache first
+
+    const result = await this.FindByColumnValue(
+      [{ column: "Title", value: title }],
+      {},
+      {},
+      fields
+    );
+
+    return result;
+  };
+
   // TODO: Feature - Queries should return options to read e.g. toList, first, toCursor
   /**
    * Takes an array of columns and filter values with an optional comparison operator

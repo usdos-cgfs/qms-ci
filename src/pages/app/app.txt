@@ -1275,250 +1275,243 @@
           <!-- /ko -->
           <div>
             <table id="tblcap4" class="table">
-              <!--<tr>
-                                          <td>Record ID:</td>
-                                          <td><span data-bind="text: CAPID()"></span></td>
-                                      </tr>-->
-              <tr>
-                <td>Subject:</td>
-                <td>
-                  <span data-bind="text: selectedRecord.Subject()"></span>
-                </td>
-              </tr>
-              <tr>
-                <td>BusinessOffice:</td>
-                <td>
-                  <span
-                    data-bind="text: selectedRecord.BusinessOffice() ? 
-                                              selectedRecord.BusinessOffice().get_lookupValue() : ''"
-                  ></span>
-                </td>
-              </tr>
-              <tr>
-                <td>CGFS Location:</td>
-                <td>
-                  <span data-bind="text: selectedRecord.CGFSLocation()"></span>
-                </td>
-              </tr>
-              <tr>
-                <td>QSO:</td>
-                <td>
-                  <span
-                    data-bind="text: selectedRecord.QSO.getValueForHuman()"
-                  ></span>
-                </td>
-              </tr>
-              <tr>
-                <td>QAO:</td>
-                <td>
-                  <span
-                    data-bind="text: selectedRecord.QAO.getValueForHuman()"
-                  ></span>
-                </td>
-              </tr>
-              <tr>
-                <td>Source:</td>
-                <td>
-                  <span data-bind="text: selectedRecord.Source()"></span>
-                </td>
-              </tr>
-              <tr data-bind="visible: IsCAR()">
-                <td>Self-Initiated:</td>
-                <td>
-                  <span data-bind="text: selectedRecord.SelfInitiated()"></span>
-                </td>
-              </tr>
-              <tr id="trProblemResolver">
-                <td>CAR/CAP Coordinator:</td>
-                <td>
-                  <!-- ko if: !section.Info.coordinator.isEditing() -->
-                  <span
-                    data-bind="text: selectedRecord.ProblemResolverName.getValueForHuman()"
-                  >
-                  </span>
-                  <!-- ko if: section.Info.coordinator.isEditable() -->
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    data-bind="click: section.Info.coordinator.edit"
-                  >
-                    Edit
-                  </button>
-                  <!-- /ko -->
-                  <!-- /ko -->
-                  <!-- ko if: section.Info.coordinator.isEditing() -->
-                  <div
-                    id="peopleTempCoordinator"
-                    data-bind="component: {
+              <tbody>
+                <!-- ko with: selectedPlan -->
+                <tr>
+                  <td>Subject:</td>
+                  <td>
+                    <span data-bind="text: Subject.toString()"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>BusinessOffice:</td>
+                  <td>
+                    <span data-bind="text: BusinessOffice.toString()"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>CGFS Location:</td>
+                  <td>
+                    <span data-bind="text: CGFSLocation.toString()"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>QSO:</td>
+                  <td data-bind="">
+                    <span data-bind="text: QSOName.toString()"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>QAO:</td>
+                  <td>
+                    <span data-bind="text: QAOName.toString()"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Source:</td>
+                  <td>
+                    <span data-bind="text: Source.toString()"></span>
+                  </td>
+                </tr>
+                <tr data-bind="visible: isCAR()">
+                  <td>Self-Initiated:</td>
+                  <td>
+                    <span data-bind="text: SelfInitiated.toString()"></span>
+                  </td>
+                </tr>
+                <!-- /ko -->
+                <tr id="trProblemResolver">
+                  <td>CAR/CAP Coordinator:</td>
+                  <td>
+                    <!-- ko if: !section.Info.coordinator.isEditing() -->
+                    <span
+                      data-bind="text: selectedPlan()?.CoordinatorName.toString()"
+                    >
+                    </span>
+                    <!-- ko if: section.Info.coordinator.isEditable() -->
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      data-bind="click: section.Info.coordinator.edit"
+                    >
+                      Edit
+                    </button>
+                    <!-- /ko -->
+                    <!-- /ko -->
+                    <!-- ko if: section.Info.coordinator.isEditing() -->
+                    <div
+                      id="peopleTempCoordinator"
+                      data-bind="component: {
                       name: section.Info.coordinator.tempCoordinator.components.edit,
                       params: section.Info.coordinator.tempCoordinator}"
-                  ></div>
-                  <button
-                    type="button"
-                    class="btn btn-success"
-                    data-bind="click: section.Info.coordinator.save"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    class="btn btn-danger"
-                    data-bind="click: section.Info.coordinator.cancel"
-                  >
-                    Cancel
-                  </button>
-                  <!-- /ko -->
-                  <!-- <div
+                    ></div>
+                    <button
+                      type="button"
+                      class="btn btn-success"
+                      data-bind="click: section.Info.coordinator.save"
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-danger"
+                      data-bind="click: section.Info.coordinator.cancel"
+                    >
+                      Cancel
+                    </button>
+                    <!-- /ko -->
+                    <!-- <div
                                               id="peopleRecordCoordinator"
                                               class="editable-field"
                                               data-bind="people: selectedRecordObj.ProblemResolverName"
                                               ></div> -->
-                </td>
-              </tr>
-              <!-- ko if: selectedRecord.SubmittedDate.date().getTime() -->
-              <tr data-bind="">
-                <td>Submitted Date:</td>
-                <td>
-                  <span
-                    data-bind="text: selectedRecord.SubmittedDate.date().toDateString()"
-                  ></span>
-                </td>
-              </tr>
-              <!-- /ko -->
-              <tr>
-                <td>Submitted By:</td>
-                <td>
-                  <span
-                    data-bind="text: selectedRecord.Author.getValueForHuman()"
-                  ></span>
-                </td>
-              </tr>
-              <tr>
-                <td>Completed Actions:</td>
-                <td>
-                  <!--<span data-bind="text: NumActions()"></span>:<span data-bind="text: NumOpenActions()"></span>-->
+                  </td>
+                </tr>
+                <!-- ko if: selectedRecord.SubmittedDate.date().getTime() -->
+                <tr data-bind="">
+                  <td>Submitted Date:</td>
+                  <td>
+                    <span
+                      data-bind="text: selectedRecord.SubmittedDate.date().toDateString()"
+                    ></span>
+                  </td>
+                </tr>
+                <!-- /ko -->
+                <tr>
+                  <td>Submitted By:</td>
+                  <td>
+                    <span
+                      data-bind="text: selectedRecord.Author.getValueForHuman()"
+                    ></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Completed Actions:</td>
+                  <td>
+                    <!--<span data-bind="text: NumActions()"></span>:<span data-bind="text: NumOpenActions()"></span>-->
 
-                  <div class="progress" style="height: 20px">
-                    <div
-                      class="progress-bar bg-info"
-                      role="progressbar"
-                      data-bind="style: {width: ActionPercentage(), color: ActionPercentage() == '0%' ? 'black' : 'white'}, 
+                    <div class="progress" style="height: 20px">
+                      <div
+                        class="progress-bar bg-info"
+                        role="progressbar"
+                        data-bind="style: {width: ActionPercentage(), color: ActionPercentage() == '0%' ? 'black' : 'white'}, 
                                                   css: ActionProgressBarClass()"
-                      aria-valuenow="25"
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                    >
-                      <span
-                        data-bind="text: vm.NumClosedActions() + '/' + vm.NumActions()"
-                      ></span>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Extension Count:</td>
-                <td>
-                  <span
-                    data-bind="text: selectedRecord.ExtensionCount()"
-                  ></span>
-                  <!-- ko if: controls.record.extension.showExtensionRequestSection() -->
-                  <!-- ko if: !selectedRecord.ExtensionRequested() -->
-                  <button
-                    type="button"
-                    class="btn btn-outline-success"
-                    data-bind="click: controls.record.extension.requestExtension"
-                  >
-                    Request Extension
-                  </button>
-                  <!-- /ko -->
-                  <!-- ko if: selectedRecord.ExtensionRequested() -->
-                  <button
-                    type="button"
-                    class="btn btn-outline-danger"
-                    data-bind="click: controls.record.extension.cancelRequest"
-                  >
-                    Cancel Extension Request
-                  </button>
-                  <!-- /ko  -->
-                  <!-- /ko -->
-                  <!-- ko if: controls.record.extension.showApproval() -->
-                  <div class="card" style="width: 20rem">
-                    <div class="card-body">
-                      <h5 class="card-title">
+                        aria-valuenow="25"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      >
                         <span
-                          data-bind="text: controls.record.extension.extensionApprover"
+                          data-bind="text: vm.NumClosedActions() + '/' + vm.NumActions()"
                         ></span>
-                        Extension Approval
-                      </h5>
-
-                      <div class="content">
-                        <button
-                          type="button"
-                          class="mt-auto btn btn-outline-success"
-                          data-bind="click: controls.record.extension.approveRequest"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          type="button"
-                          class="mt-auto btn bottom attached btn-outline-danger"
-                          data-bind="click: controls.record.extension.cancelRequest"
-                        >
-                          Reject
-                        </button>
                       </div>
                     </div>
-                  </div>
-                  <!-- /ko -->
-                </td>
-              </tr>
-              <tr>
-                <td>Target Implementation Date:</td>
-                <td>
-                  <div class="info-row-spread">
-                    <!-- ko if: selectedRecord.ImplementationTargetDate.date().getTime() -->
-                    <div
-                      data-bind="text: selectedRecord.ImplementationTargetDate.date().toDateString()"
-                    ></div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Extension Count:</td>
+                  <td>
+                    <span
+                      data-bind="text: selectedRecord.ExtensionCount()"
+                    ></span>
+                    <!-- ko if: controls.record.extension.showExtensionRequestSection() -->
+                    <!-- ko if: !selectedRecord.ExtensionRequested() -->
+                    <button
+                      type="button"
+                      class="btn btn-outline-success"
+                      data-bind="click: controls.record.extension.requestExtension"
+                    >
+                      Request Extension
+                    </button>
                     <!-- /ko -->
-                    <!-- ko if: vm.AdminType() == ROLES.ADMINTYPE.QTM -->
-                    <a href="javascript:;">
-                      <span
-                        class="ui-icon ui-icon-refresh"
-                        data-bind="click: $root.controls.record.updateImplementationDate.bind()"
-                      ></span>
-                    </a>
+                    <!-- ko if: selectedRecord.ExtensionRequested() -->
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger"
+                      data-bind="click: controls.record.extension.cancelRequest"
+                    >
+                      Cancel Extension Request
+                    </button>
+                    <!-- /ko  -->
                     <!-- /ko -->
-                  </div>
-                </td>
-              </tr>
-              <tr data-bind="">
-                <td>Target Verification Date:</td>
-                <td>
-                  <!-- ko if: vm.selectedRecord.EffectivenessVerificationTargetD.date().getTime() -->
-                  <span
-                    data-bind="text: selectedRecord.EffectivenessVerificationTargetD.date().toDateString()"
-                  ></span>
-                  <!-- /ko -->
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <a
-                    style="color: #007bff"
-                    data-bind="attr: {href: contactQTM()}"
-                    >Contact QTM regarding this record.</a
-                  >
-                </td>
-                <td>
-                  <a
-                    style="color: #007bff"
-                    data-bind="attr: {href: printUrl()}"
-                    target="_blank"
-                    >View a Print Friendly Version.</a
-                  >
-                </td>
-              </tr>
+                    <!-- ko if: controls.record.extension.showApproval() -->
+                    <div class="card" style="width: 20rem">
+                      <div class="card-body">
+                        <h5 class="card-title">
+                          <span
+                            data-bind="text: controls.record.extension.extensionApprover"
+                          ></span>
+                          Extension Approval
+                        </h5>
+
+                        <div class="content">
+                          <button
+                            type="button"
+                            class="mt-auto btn btn-outline-success"
+                            data-bind="click: controls.record.extension.approveRequest"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            type="button"
+                            class="mt-auto btn bottom attached btn-outline-danger"
+                            data-bind="click: controls.record.extension.cancelRequest"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /ko -->
+                  </td>
+                </tr>
+                <tr>
+                  <td>Target Implementation Date:</td>
+                  <td>
+                    <div class="info-row-spread">
+                      <!-- ko if: selectedRecord.ImplementationTargetDate.date().getTime() -->
+                      <div
+                        data-bind="text: selectedRecord.ImplementationTargetDate.date().toDateString()"
+                      ></div>
+                      <!-- /ko -->
+                      <!-- ko if: vm.AdminType() == ROLES.ADMINTYPE.QTM -->
+                      <a href="javascript:;">
+                        <span
+                          class="ui-icon ui-icon-refresh"
+                          data-bind="click: $root.controls.record.updateImplementationDate.bind()"
+                        ></span>
+                      </a>
+                      <!-- /ko -->
+                    </div>
+                  </td>
+                </tr>
+                <tr data-bind="">
+                  <td>Target Verification Date:</td>
+                  <td>
+                    <!-- ko if: vm.selectedRecord.EffectivenessVerificationTargetD.date().getTime() -->
+                    <span
+                      data-bind="text: selectedRecord.EffectivenessVerificationTargetD.date().toDateString()"
+                    ></span>
+                    <!-- /ko -->
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      style="color: #007bff"
+                      data-bind="attr: {href: contactQTM()}"
+                      >Contact QTM regarding this record.</a
+                    >
+                  </td>
+                  <td>
+                    <a
+                      style="color: #007bff"
+                      data-bind="attr: {href: printUrl()}"
+                      target="_blank"
+                      >View a Print Friendly Version.</a
+                    >
+                  </td>
+                </tr>
+              </tbody>
             </table>
             <br />
             <div class="container row">
