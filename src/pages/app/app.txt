@@ -1133,33 +1133,6 @@
         </div>
       </div>
     </div>
-    <div class="modal" display="none" id="close-modal">
-      <div class="header">Are you sure you want to close this plan?</div>
-      <div class="content">
-        <div class="ui warning message">
-          If closed, QTM will have to re-open this plan.
-        </div>
-        <div class="form">
-          <div class="field">
-            <label for="close-reason">
-              Please provide a reason for cancelling this plan: </label
-            ><br />
-            <textarea
-              class="container-fluid"
-              name="close-reason"
-              id="close-reason"
-              data-bind="value: selectedRecord.CancelReason"
-            ></textarea>
-          </div>
-        </div>
-      </div>
-      <div class="actions">
-        <div class="ui deny secondary basic button">Nevermind</div>
-        <div class="ui red button" data-bind="click: controls.record.close">
-          Cancel Plan
-        </div>
-      </div>
-    </div>
     <div class="ui modal" id="rejectionInformation" display="none">
       <div class="header">
         <h5 class="title">Reject Reason</h5>

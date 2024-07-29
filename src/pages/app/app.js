@@ -3427,25 +3427,6 @@ export function CAPViewModel(capIdstring) {
       }
       return false;
     }),
-    close: function () {
-      $("#close-modal").modal("hide");
-      var valuePair = [];
-      if (vm.AdminType() == ROLES.ADMINTYPE.USER) {
-        closePlan(self.selectedRecord.ID(), {
-          title: self.selectedRecord.Title(),
-          newStage: "Closed: Closed by Submitter",
-          prevStage: vm.selectedRecord.ProcessStage(),
-          cancelReason: vm.selectedRecord.CancelReason(),
-        });
-      } else {
-        closePlan(self.selectedRecord.ID(), {
-          title: self.selectedRecord.Title(),
-          newStage: "Closed: Rejected",
-          prevStage: vm.selectedRecord.ProcessStage(),
-          cancelReason: vm.selectedRecord.CancelReason(),
-        });
-      }
-    },
     displayCloseDialog: async function () {
       // $("#close-modal").modal("show");
       const planId = self.selectedPlan()?.ID;
