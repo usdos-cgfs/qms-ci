@@ -1133,39 +1133,43 @@
         </div>
       </div>
     </div>
-    <div class="ui modal" id="rejectionInformation" display="none">
-      <div class="header">
-        <h5 class="title">Reject Reason</h5>
-      </div>
-      <div class="content">
-        <p>Please provide a reject reason:</p>
-        <textarea
-          class="container-fluid"
-          data-bind="value: rejectReason"
-        ></textarea>
-        <!-- ko if: controls.pipeline.showStage4() -->
-        <select data-bind="value: effectivenessRejectReason">
-          <option value="Not Effective">Not Effective</option>
-          <option value="Lack of Evidence">Lack of Evidence</option>
-        </select>
-        <!-- /ko -->
-      </div>
-      <div class="actions">
-        <button
-          type="button"
-          class="ui secondary basic button deny"
-          data-dismiss="modal"
-        >
-          Close
-        </button>
-        <button
-          type="button"
-          class="ui red button"
-          data-bind="click: controls.rejectStageSubmit"
-          data-dismiss="modal"
-        >
-          Reject
-        </button>
+    <div class="modal" id="rejectionInformation">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="title">Reject Reason</h5>
+          </div>
+          <div class="modal-body">
+            <p>Please provide a reject reason:</p>
+            <textarea
+              class="container-fluid"
+              data-bind="value: rejectReason"
+            ></textarea>
+            <!-- ko if: controls.pipeline.showStage4() -->
+            <select data-bind="value: effectivenessRejectReason">
+              <option value="Not Effective">Not Effective</option>
+              <option value="Lack of Evidence">Lack of Evidence</option>
+            </select>
+            <!-- /ko -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-bind="click: controls.rejectStageSubmit"
+              data-bs-dismiss="modal"
+            >
+              Reject
+            </button>
+          </div>
+        </div>
       </div>
     </div>
     <div id="injectTab1"></div>
@@ -1197,11 +1201,10 @@
             role="alert"
             data-bind="css: {'alert-info': !Active, 'alert-danger': Active}"
           >
-            <a class="close" data-dismiss="alert">x</a>
             <h4
               style="cursor: pointer"
-              data-toggle="collapse"
-              data-bind="attr: {'data-target': '#collapse' + $index()}"
+              data-bs-toggle="collapse"
+              data-bind="attr: {'data-bs-target': '#collapse' + $index()}"
             >
               Rejected:
               <span data-bind="text: Stage"></span>

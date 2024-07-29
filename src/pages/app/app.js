@@ -475,8 +475,8 @@ function m_fnRejectProblemQTMB() {
   var ts = new Date().toISOString();
 
   var valuePair = [
-    ["QTMBProblemAdjudication", "Rejected"],
-    ["QTMBAdjudicationDate", ts],
+    ["QMSBProblemAdjudication", "Rejected"],
+    ["QMSBAdjudicationDate", ts],
     ["ProcessStage", "Editing"],
   ];
 
@@ -3671,7 +3671,11 @@ export function CAPViewModel(capIdstring) {
   };
 
   self.controls.rejectStage = function (next) {
-    $("#rejectionInformation").modal("show");
+    // $("#rejectionInformation").modal("show");
+    const myModal = new bootstrap.Modal(
+      document.getElementById("rejectionInformation")
+    );
+    myModal.show();
   };
 
   self.controls.rejectStageSubmit = function () {
