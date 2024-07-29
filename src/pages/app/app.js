@@ -43,6 +43,14 @@ import {
 } from "../../sal/fields/index.js";
 import { editPlan } from "../../services/plan-service.js";
 
+import {
+  addTask,
+  blockingTasks,
+  finishTask,
+  runningTasks,
+  tasks,
+} from "../../services/tasks-service.js";
+
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
 
@@ -241,10 +249,10 @@ $("#btnRequestAllRecords").click(LoadMainData);
 // Loading CAP data
 // This is where we structure the query for what get's loaded on main tab page and the drop-down on the specific record page.
 function LoadMainData(next) {
-  vm.app.processes.addTask(appProcessesStates.refreshPlans);
+  const refreshTask = addTask(tasks.refreshPlans);
   next = next ? next : function () {};
   var dataLoadIncrementer = new Incremental(0, 3, () => {
-    vm.app.processes.finishTask(appProcessesStates.refreshPlans);
+    finishTask(refreshTask);
     next();
   });
   // Let's load our Actions and our Items
@@ -274,7 +282,7 @@ function loadSelectedRecordByObj(record) {
 }
 // IMPORTANT - use this section to hide and show elements to the user based on permission level.
 async function LoadSelectedCAP(capid) {
-  vm.app.processes.addTask(appProcessesStates.view);
+  const viewTask = addTask(tasks.view);
 
   var capid = capid.Title ? capid.Title : capid;
 
@@ -298,7 +306,7 @@ async function LoadSelectedCAP(capid) {
   );
 
   var incrementer = new Incremental(0, 2, () => {
-    vm.app.processes.finishTask(appProcessesStates.view);
+    finishTask(viewTask);
   });
 
   // Fetch related data
@@ -843,22 +851,22 @@ function m_fnRefresh(result, value) {
   if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
     return;
   }
-  vm.app.processes.addTask(appProcessesStates.refresh);
+  addTask(tasks.refresh);
   LoadMainData(function () {
     LoadSelectedCAP(vm.selectedTitle());
-    vm.app.processes.finishTask(appProcessesStates.refresh);
+    finishTask(tasks.refresh);
   });
 }
 
 function OnCapCreateCallback(result, value) {
   if (result === SP.UI.DialogResult.OK) {
-    vm.app.processes.addTask(appProcessesStates.refreshPlans);
+    addTask(tasks.refreshPlans);
     app.listRefs.Plans.getListItems("", function (items) {
       var id = items[items.length - 1];
       vm.allRecordsArray(items);
       vm.selectedTitle(id.Title);
       vm.tab(TABS.PLANDETAIL);
-      vm.app.processes.finishTask(appProcessesStates.refreshPlans);
+      finishTask(tasks.refreshPlans);
       // m_fnForward();
     });
   }
@@ -876,23 +884,23 @@ function OnCapEditRefresh(result, value) {
 
 function OnActionEditCallback(result, value) {
   if (result === SP.UI.DialogResult.OK) {
-    vm.app.processes.addTask(appProcessesStates.newAction);
+    addTask(tasks.newAction);
     app.listRefs.Actions.getListItems("", function (actions) {
       vm.allActionsArray(actions);
       vm.controls.record.updateImplementationDate();
-      vm.app.processes.finishTask(appProcessesStates.newAction);
+      finishTask(tasks.newAction);
     });
   }
 }
 
 function OnActionCreateCallback(result, value) {
   if (result === SP.UI.DialogResult.OK) {
-    vm.app.processes.addTask(appProcessesStates.newAction);
+    addTask(tasks.newAction);
     // The user has modified the Action, the Associated CAP must be updated.
     app.listRefs.Actions.getListItems("", function (actions) {
       vm.allActionsArray(actions);
       vm.controls.record.updateImplementationDate();
-      vm.app.processes.finishTask(appProcessesStates.newAction);
+      finishTask(tasks.newAction);
     });
   }
 }
@@ -907,7 +915,7 @@ function OnCallbackFormRefresh(result, value) {
 }
 
 function closePlan(id, { title, newStage, prevStage, cancelReason }) {
-  vm.app.processes.addTask(appProcessesStates.closing);
+  addTask(tasks.closing);
   valuePair = [
     ["ProcessStage", newStage],
     ["Active", "0"],
@@ -922,7 +930,7 @@ function closePlan(id, { title, newStage, prevStage, cancelReason }) {
     //     m_fnRefresh();
     //   });
     m_fnRefresh();
-    vm.app.processes.finishTask(appProcessesStates.closing);
+    finishTask(tasks.closing);
   });
 }
 // var incrementer;
@@ -933,7 +941,7 @@ function closePlan(id, { title, newStage, prevStage, cancelReason }) {
  * @param {bool} lock pass true to lock request
  */
 function toggleLockPlan(title, lock, callback) {
-  vm.app.processes.addTask(appProcessesStates.lock);
+  addTask(tasks.lock);
   callback = callback === undefined ? m_fnRefresh : callback;
   // Pass true to lock request
 
@@ -946,7 +954,7 @@ function toggleLockPlan(title, lock, callback) {
   ];
 
   var incrementer = new Incremental(0, listRefs.length, () => {
-    vm.app.processes.finishTask(appProcessesStates.lock);
+    finishTask(tasks.lock);
     callback();
   });
 
@@ -1093,7 +1101,8 @@ function initComplete() {
   // makeDataTable("#tblAwaitingAction");
   // makeDataTable("#tblLookupRecords");
 
-  vm.app.processes.finishTask(appProcessesStates.init);
+  finishTask(tasks.init);
+
   // var idTab =
   // $('#injectAdditionalTabs').
   loadFinish = new Date();
@@ -1109,7 +1118,7 @@ async function initApp() {
   InitSal();
   Common.Init();
   vm = await App.Create();
-  vm.app.processes.addTask(appProcessesStates.init);
+  const initTask = addTask(tasks.init);
   initStaticListRefs();
 
   LoadMainData(initComplete); // This will call initComplete() when all data is loaded
@@ -1499,22 +1508,6 @@ var rejectionViewFields = convertModelToViewfield(RejectionModel);
 
 var businessOfficeViewFields = convertModelToViewfield(BusinessOfficeModel);
 
-var appProcessesStates = {
-  init: "Initializing the Application",
-  save: "Saving Plan...",
-  cancelAction: "Cancelling Action...",
-  view: "Viewing Plan...",
-  refresh: "Refreshing Plan...",
-  lock: "Locking Plan...",
-  closing: "Closing Plan...",
-  opening: "Re-Opening Plan...",
-  pipeline: "Progressing to Next Stage...",
-  refreshPlans: "Refreshing Data...",
-  newComment: "Refreshing Comments...",
-  newAction: "Refreshing Actions...",
-  approve: "Approving Plan...",
-};
-
 // Filter for CAPViewModel actions
 function checkComplete(action) {
   return action.ImplementationStatus != "Completed";
@@ -1541,49 +1534,6 @@ export function CAPViewModel(capIdstring) {
   var APPPROCESSTIMEOUT = 10 * 1000; // 10 seconds
   var APPPROCESSDISMISSTIMEOUT = 1000;
   self.app = {
-    processes: {
-      addTask: function (task) {
-        var newTask = {
-          id: Math.floor(Math.random() * 100000 + 1),
-          task: task,
-          active: ko.observable(true),
-        };
-
-        newTask.timeout = window.setTimeout(function () {
-          console.error("this task is aging:", newTask);
-          alert(
-            "Something seems to have gone wrong performing the following action: " +
-              newTask.task
-          );
-        }, APPPROCESSTIMEOUT);
-        vm.app.processes.tasks.push(newTask);
-        return newTask.id;
-      },
-      finishTask: function (task) {
-        let activeTask = vm.app.processes.tasks().find(function (taskItem) {
-          return taskItem.task == task && taskItem.active();
-        });
-        if (activeTask) {
-          window.clearTimeout(activeTask.timeout);
-          activeTask.active(false);
-          window.setTimeout(function () {
-            vm.app.processes.removeTask(activeTask);
-          }, APPPROCESSDISMISSTIMEOUT);
-        }
-      },
-      removeTask: function (taskToRemove) {
-        self.app.processes.tasks(
-          self.app.processes.tasks().filter(function (task) {
-            return task.id != taskToRemove.id;
-          })
-        );
-      },
-      tasks: ko.observableArray(),
-      dimmerActivity: ko.pureComputed(function () {
-        console.log("dimmer state changed");
-        return self.app.processes.tasks().length;
-      }),
-    },
     currentDialogs: ModalDialog.currentDialogs,
   };
 
@@ -1674,6 +1624,9 @@ export function CAPViewModel(capIdstring) {
   self.AdminType.subscribe((val) => {
     setUrlParam("role", val);
   });
+
+  self.runningTasks = runningTasks;
+  self.blockingTasks = blockingTasks;
 
   self.tabOpts = {
     qtm: new Tab({
@@ -3340,7 +3293,7 @@ export function CAPViewModel(capIdstring) {
         args,
         (result, value) => {
           if (result === SP.UI.DialogResult.OK) {
-            vm.app.processes.addTask(appProcessesStates.refreshPlans);
+            const refreshTask = addTask(tasks.refreshPlans);
             const userId = vm.currentUserObj.id();
             app.listRefs.Plans.getListItems("", function (items) {
               vm.allRecordsArray(items);
@@ -3360,7 +3313,7 @@ export function CAPViewModel(capIdstring) {
               }
               vm.selectedTitle(newPlan.Title);
               vm.tabs.selectById(vm.tabOpts.detail);
-              vm.app.processes.finishTask(appProcessesStates.refreshPlans);
+              finishTask(refreshTask);
               // m_fnForward();
             });
           }
@@ -3503,7 +3456,7 @@ export function CAPViewModel(capIdstring) {
     }),
     open: function () {
       if (confirm("Are you sure you want to Re-Open this record?")) {
-        vm.app.processes.addTask(appProcessesStates.opening);
+        const openTask = addTask(tasks.opening);
         valuePair = [
           ["ProcessStage", vm.selectedRecord.PreviousStage()],
           ["Active", "1"],
@@ -3514,7 +3467,7 @@ export function CAPViewModel(capIdstring) {
           self.selectedRecord.ID(),
           valuePair,
           function () {
-            vm.app.processes.finishTask(appProcessesStates.opening);
+            finishTask(openTask);
             //   toggleLockPlan(self.selectedRecord.Title(), false, function () {
             //     alert("Plan has been unlocked.");
             //     m_fnRefresh();
@@ -4080,7 +4033,7 @@ export function CAPViewModel(capIdstring) {
     if (result !== SP.UI.DialogResult.OK) {
       return;
     }
-    vm.app.processes.addTask(appProcessesStates.refreshPlans);
+    const refreshTask = addTask(tasks.refreshPlans);
     const userId = vm.currentUserObj.id();
     app.listRefs.Plans.getListItems("", function (items) {
       vm.allRecordsArray(items);
@@ -4100,7 +4053,7 @@ export function CAPViewModel(capIdstring) {
       }
       vm.selectedTitle(newPlan.Title);
       vm.tabs.selectTab(vm.tabOpts.detail);
-      vm.app.processes.finishTask(appProcessesStates.refreshPlans);
+      finishTask(refreshTask);
       // m_fnForward();
     });
   };

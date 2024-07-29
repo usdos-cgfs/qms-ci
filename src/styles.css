@@ -219,11 +219,18 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   position: fixed;
   bottom: 0.2rem;
   right: 1.75rem;
+  padding: 1.5rem;
+  margin: 1.5rem 0.5rem;
+  background-color: rgb(211, 211, 211, 0.6);
+  border-radius: 0.5rem;
+  z-index: 10;
 }
 
 .tasks ul {
   list-style: none;
   font-size: 1rem;
+  padding: 0;
+  margin: 0;
 }
 
 .dimmer {

@@ -134,6 +134,25 @@
 />
 
 <div class="app">
+  <!-- ko with: blockingTasks -->
+  <div class="tasks blocking dimmer" data-bind="css: {'active': $data.length}">
+    <span class="loader"></span>
+    <ul class="" data-bind="foreach: $data">
+      <li data-bind="text: msg + '... ' + Status()"></li>
+    </ul>
+  </div>
+  <!-- /ko -->
+
+  <!-- ko with: runningTasks -->
+  <!-- ko if: $data.length -->
+  <div class="tasks running">
+    <ul class="" data-bind="foreach: $data">
+      <li data-bind="text: msg + '... ' + Status()"></li>
+    </ul>
+  </div>
+  <!-- /ko -->
+  <!-- /ko -->
+
   <!-- ko foreach: app.currentDialogs -->
   <div
     data-bind="component: { name: 'modal-dialog-component', params: $data }"
@@ -156,37 +175,27 @@
     <p>This application is currently only supported in Chrome or Edge.</p>
   </div>
 
-  <div
-    class="tasks blocking dimmer"
-    data-bind="css: {'active': vm.app.processes.dimmerActivity}"
-  >
-    <span class="loader"></span>
-    <ul class="" data-bind="foreach: app.processes.tasks()">
-      <li data-bind="text: task + '... '"></li>
-    </ul>
-  </div>
-
-  <div>
-    <div class="mb-2 w-sm">
-      <div class="card-body d-flex justify-content-start align-items-center">
-        <div>
-          <h5 class="m-0 me-2">Current Role:</h5>
-        </div>
-        <div>
-          <select
-            class="form-control"
-            data-bind="value: AdminType, 
+  <div id="tabs" class="tabclass" style="display: none">
+    <div>
+      <div class="mb-2 w-sm">
+        <div class="card-body d-flex justify-content-start align-items-center">
+          <div>
+            <h5 class="m-0 me-2">Current Role:</h5>
+          </div>
+          <div>
+            <select
+              class="form-control"
+              data-bind="value: AdminType, 
               options: MyRoles, 
               optionsText: 'key',
               optionsValue: 'val'"
-          ></select>
+            ></select>
+          </div>
         </div>
       </div>
+      <!-- <div id="peopleImpersonate" data-bind="people: impersonateUserField"></div> -->
     </div>
-    <!-- <div id="peopleImpersonate" data-bind="people: impersonateUserField"></div> -->
-  </div>
 
-  <div id="tabs" class="tabclass" style="display: none">
     <!-- ko using: tabs -->
     <ul class="ui-tabs-nav" data-bind="foreach: visibleTabs">
       <li
