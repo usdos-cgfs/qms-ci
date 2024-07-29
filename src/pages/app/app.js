@@ -2217,7 +2217,10 @@ export function CAPViewModel(capIdstring) {
           self.selectedRecord.ProblemResolverName.removeAllPeople();
           const coord = self.section.Info.coordinator.tempCoordinator.Value();
           const coordString = `${coord.ID};#${coord.LoginName};#`;
-          var valuePair = [["ProblemResolverName", coordString]];
+          var valuePair = [
+            ["ProblemResolverName", coordString],
+            ["CoordinatorName", coord.Title],
+          ];
           self.section.Info.coordinator.isEditing(false);
           app.listRefs.Plans.updateListItem(
             self.selectedRecord.ID(),

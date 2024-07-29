@@ -282,7 +282,7 @@
                 data-bind="text: $root.formatNextTargetDate($data),
                                                 style: {'background-color' : $root.highlightOverdue($data) }"
               ></td>
-              <td data-bind="text: ProblemResolverName?.get_lookupValue()"></td>
+              <td data-bind="text: CoordinatorName"></td>
               <td data-bind="text: ProcessStage"></td>
               <td data-bind="text: RecordType"></td>
             </tr>
@@ -370,7 +370,7 @@
                 data-bind="text: $root.formatNextTargetDate($data),
                                                   style: {'background-color' : $root.highlightOverdue($data) }"
               ></td>
-              <td data-bind="text: ProblemResolverName?.get_lookupValue()"></td>
+              <td data-bind="text: CoordinatorName"></td>
               <td data-bind="text: ProcessStage"></td>
               <td data-bind="text: RecordType"></td>
             </tr>
@@ -447,7 +447,7 @@
                 data-bind="text: $root.formatNextTargetDate($data),
                     style: {'background-color' : $root.highlightOverdue($data)}"
               ></td>
-              <td data-bind="text: ProblemResolverName?.get_lookupValue()"></td>
+              <td data-bind="text: CoordinatorName"></td>
               <td data-bind="text: ProcessStage"></td>
               <td data-bind="text: RecordType"></td>
             </tr>
@@ -524,7 +524,7 @@
                 data-bind="text: $root.formatNextTargetDate($data),
                                                 style: {'background-color' : $root.highlightOverdue($data) }"
               ></td>
-              <td data-bind="text: ProblemResolverName?.get_lookupValue()"></td>
+              <td data-bind="text: CoordinatorName"></td>
               <td data-bind="text: ProcessStage"></td>
               <td data-bind="text: RecordType"></td>
             </tr>
@@ -1344,6 +1344,7 @@
                       data-bind="component: {
                       name: section.Info.coordinator.tempCoordinator.components.edit,
                       params: section.Info.coordinator.tempCoordinator}"
+                      class="form-field-component"
                     ></div>
                     <button
                       type="button"
@@ -2639,9 +2640,7 @@
                   data-bind="text: $root.formatNextTargetDate($data),
                             style: {'background-color' : $root.highlightOverdue($data)}"
                 ></td>
-                <td
-                  data-bind="text: ProblemResolverName?.get_lookupValue()"
-                ></td>
+                <td data-bind="text: CoordinatorName"></td>
                 <td data-bind="text: ProcessStage"></td>
                 <td data-bind="text: RecordType"></td>
               </tr>
@@ -2814,7 +2813,7 @@
                 data-bind="text: $root.formatNextTargetDate($data),
                                                 style: {'background-color' : $root.highlightOverdue($data)}"
               ></td>
-              <td data-bind="text: ProblemResolverName?.get_lookupValue()"></td>
+              <td data-bind="text: CoordinatorName"></td>
               <td data-bind="text: ProcessStage"></td>
               <td data-bind="text: RecordType"></td>
             </tr>
