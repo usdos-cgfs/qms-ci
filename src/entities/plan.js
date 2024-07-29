@@ -102,9 +102,21 @@ export class Plan extends ConstrainedEntity {
     isRequired: true,
   });
 
+  QSOName = new TextField({
+    displayName: "QSO Name",
+    isVisible: false,
+    isEditable: false,
+  });
+
   QAO = new PeopleField({
     displayName: "Quality Area Owner",
     isRequired: true,
+  });
+
+  QAOName = new TextField({
+    displayName: "QAO Name",
+    isVisible: false,
+    isEditable: false,
   });
 
   Subject = new TextField({
@@ -183,8 +195,20 @@ export class Plan extends ConstrainedEntity {
     displayName: "CAR/CAP Coordinator",
   });
 
+  CoordinatorName = new TextField({
+    displayName: "CAR/CAP Coordinator Name",
+    isVisible: false,
+    isEditable: false,
+  });
+
   Author = new PeopleField({
     displayName: "Submitted By",
+  });
+
+  AuthorName = new TextField({
+    displayName: "Submitted By Name",
+    isVisible: false,
+    isEditable: false,
   });
 
   static Views = {
@@ -197,11 +221,14 @@ export class Plan extends ConstrainedEntity {
       "BusinessOffice",
       "CGFSLocation",
       "QSO",
+      "QSOName",
       "QAO",
+      "QAOName",
       "OFIDescription",
       "DiscoveryDataAnalysis",
       "SubmittedDate",
       "ProblemResolverName",
+      "CoordinatorName",
       "Subject",
       "SelfInitiated",
       "Source",
@@ -211,6 +238,7 @@ export class Plan extends ConstrainedEntity {
       "PreviousStage",
       "NextTargetDate",
       "Author",
+      "AuthorName",
     ],
     New: [
       "RecordType",
