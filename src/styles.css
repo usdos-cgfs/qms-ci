@@ -270,6 +270,15 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   }
 }
 
+.collapse-indicator {
+  transition-duration: 0.5s;
+  transition-property: transform;
+}
+.collapsed .collapse-indicator {
+  transform: rotate(180deg);
+  transition-duration: 0.5s;
+  transition-property: transform;
+}
 /* SAL FORMS */
 
 .app-form {

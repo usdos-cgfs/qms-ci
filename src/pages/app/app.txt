@@ -1061,6 +1061,10 @@
               <!-- ko if: controls.showSectionByStageKey('EffectivenessApprovalQTM') -->
               <div class="form-group" id="">
                 <h3>QTM Approval</h3>
+                <select data-bind="value: effectivenessRejectReason">
+                  <option value="Not Effective">Not Effective</option>
+                  <option value="Lack of Evidence">Lack of Evidence</option>
+                </select>
                 <button
                   type="button"
                   class="mt-auto btn btn-outline-success"
@@ -1071,7 +1075,7 @@
                 <button
                   type="button"
                   class="mt-auto btn btn-outline-danger"
-                  data-bind="click: controls.rejectStage"
+                  data-bind="click: controls.rejectStage, enable: effectivenessRejectReason"
                 >
                   Reject
                 </button>
@@ -1209,20 +1213,30 @@
             role="alert"
             data-bind="css: {'alert-info': !Active, 'alert-danger': Active}"
           >
-            <h4
+            <div
+              class="d-flex justify-content-between align-items-center"
+              title="Click to show/hide rejction reason."
               style="cursor: pointer"
               data-bs-toggle="collapse"
-              data-bind="attr: {'data-bs-target': '#collapse' + $index()}"
+              data-bind="attr: {'data-bs-target': '#collapse' + $index()},
+              css: {'collapsed': !Active}"
             >
-              Rejected:
-              <span data-bind="text: Stage"></span>
-              <span data-bind="text: Active ? '' : '(Resolved)'"></span>
-            </h4>
-            <p>Date: <span data-bind="text: Date.toDateString()"></span></p>
+              <div>
+                <h4 class="m-0">
+                  Rejected:
+                  <span data-bind="text: Stage"></span>
+                  <span data-bind="text: Active ? '' : '(Resolved)'"></span>
+                </h4>
+                <p>Date: <span data-bind="text: Date.toDateString()"></span></p>
+              </div>
+              <i
+                class="m-2 fa-solid fa-chevron-up fa-xl collapse-indicator"
+              ></i>
+            </div>
             <div
               class="collapse"
               data-bind="attr: {id: 'collapse' + $index()}, 
-                    css: {'alert-info': !Active, 'alert-danger': Active}"
+                    css: {'alert-info': !Active, 'alert-danger': Active, 'show': Active}"
             >
               <p data-bind="text: Reason"></p>
               <br />
