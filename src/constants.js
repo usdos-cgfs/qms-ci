@@ -43,6 +43,11 @@ export const ACTIONSTATES = {
   QTMAPPROVAL: "Requires Approval QTM",
 };
 
+export const EFFECTIVENESSREASONS = {
+  NOTEFFECTIVE: "Not Effective",
+  LACKOFEVIDENCE: "Lack of Evidence",
+};
+
 export const stageDescriptions = {
   Editing: {
     stage: "Editing",

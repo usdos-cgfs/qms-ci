@@ -14,6 +14,7 @@ import {
 import {
   Action,
   Plan,
+  Rejection,
   RootCauseWhy,
   SupportingDocument,
 } from "../../entities/index.js";
@@ -51,7 +52,7 @@ import {
   tasks,
 } from "../../services/tasks-service.js";
 import { CancelPlanForm } from "../../forms/plan/cancel/cancel-plan-form.js";
-import { currentRole } from "../../services/authorization.js";
+import { currentRole, currentUser } from "../../services/authorization.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -3670,33 +3671,66 @@ export function CAPViewModel(capIdstring) {
     });
   };
 
-  self.controls.rejectStage = function (next) {
-    // $("#rejectionInformation").modal("show");
-    const myModal = new bootstrap.Modal(
-      document.getElementById("rejectionInformation")
-    );
-    myModal.show();
+  self.controls.rejectStage = function () {
+    // const myModal = new bootstrap.Modal(
+    //   document.getElementById("rejectionInformation")
+    // );
+    // myModal.show();
+
+    const plan = ko.unwrap(self.selectedPlan);
+
+    const rejection = new Rejection();
+
+    rejection.Title.Value(plan.Title.Value());
+    rejection.Active.Value(true);
+    rejection.Rejector.Value(currentUser.Title);
+
+    const currentStage = plan.ProcessStage.Value();
+    rejection.Stage.Value(currentStage);
+
+    const rejectionId =
+      plan.Title.Value() +
+      "-R" +
+      String(self.Rejections().length).padStart(2, "0");
+
+    rejection.RejectionId.Value(rejectionId);
+
+    const form = FormManager.NewForm({
+      entity: rejection,
+      view: Rejection.Views.New,
+    });
+
+    const options = {
+      title: "New Rejection",
+      form,
+      dialogReturnValueCallback: self.controls.rejectStageSubmit,
+    };
+
+    ModalDialog.showModalDialog(options);
   };
 
-  self.controls.rejectStageSubmit = function () {
+  self.controls.rejectStageSubmit = function (result) {
+    if (result !== SP.UI.DialogResult.OK) {
+      return;
+    }
     // When the user submits the modal with the reason, create a
     // new rejection, then execute the stages reject function
     var next = null;
 
-    var rejectVp = [
-      ["Title", self.selectedRecord.Title()],
-      ["Reason", self.rejectReason()],
-      ["Stage", self.selectedRecord.ProcessStage()],
-      ["Date", new Date().toISOString()],
-      ["Active", 1],
-      ["Rejector", self.currentUser().get_title()],
-      [
-        "RejectionId",
-        self.selectedRecord.Title() +
-          "-R" +
-          String(self.Rejections().length).padStart(2, "0"),
-      ],
-    ];
+    // var rejectVp = [
+    //   ["Title", self.selectedRecord.Title()],
+    //   ["Reason", self.rejectReason()],
+    //   ["Stage", self.selectedRecord.ProcessStage()],
+    //   ["Date", new Date().toISOString()],
+    //   ["Active", 1],
+    //   ["Rejector", self.currentUser().get_title()],
+    //   [
+    //     "RejectionId",
+    //     self.selectedRecord.Title() +
+    //       "-R" +
+    //       String(self.Rejections().length).padStart(2, "0"),
+    //   ],
+    // ];
 
     switch (self.selectedRecord.ProcessStageKey()) {
       case "ProblemApprovalQSO":
@@ -3734,9 +3768,11 @@ export function CAPViewModel(capIdstring) {
         break;
     }
 
-    app.listRefs.Rejections.createListItem(rejectVp, next);
+    next();
 
-    $("#rejectionInformation").modal("hide");
+    // app.listRefs.Rejections.createListItem(rejectVp, next);
+
+    // $("#rejectionInformation").modal("hide");
   };
   self.rejectReason = ko.observable();
   self.effectivenessRejectReason = ko.observable();

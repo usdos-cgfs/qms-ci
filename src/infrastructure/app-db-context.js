@@ -3,6 +3,7 @@ import {
   BusinessOffice,
   Plan,
   RecordSource,
+  Rejection,
   RootCauseWhy,
   SupportingDocument,
 } from "../entities/index.js";
@@ -20,6 +21,8 @@ class ApplicationDbContext extends DbContext {
   Plans = new EntitySet(Plan);
 
   RecordSources = new EntitySet(RecordSource);
+
+  Rejections = new EntitySet(Rejection);
 
   RootCauseWhys = new EntitySet(RootCauseWhy);
 
