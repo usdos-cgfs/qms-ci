@@ -1038,33 +1038,34 @@
               <!-- ko if: controls.showSectionByStageKey('EffectivenessApprovalQSO') -->
               <div class="form-group" id="">
                 <h3>QSO Approval</h3>
-                <select data-bind="value: effectivenessRejectReason">
-                  <option value="Not Effective">Not Effective</option>
-                  <option value="Lack of Evidence">Lack of Evidence</option>
-                </select>
                 <button
                   type="button"
-                  class="mt-auto btn btn-outline-success"
+                  class="mt-auto btn btn-outline-success mb-2"
                   data-bind="click: controls.stage4.effectivenessApproveQSO"
                 >
                   Approve
                 </button>
-                <button
-                  type="button"
-                  class="mt-auto btn btn-outline-danger"
-                  data-bind="click: controls.rejectStage, enable: effectivenessRejectReason"
-                >
-                  Reject
-                </button>
+                <div class="input-group mt-2">
+                  <select
+                    class="form-select"
+                    data-bind="value: effectivenessRejectReason"
+                  >
+                    <option value="Not Effective">Not Effective</option>
+                    <option value="Lack of Evidence">Lack of Evidence</option>
+                  </select>
+                  <button
+                    type="button"
+                    class="mt-auto btn btn-outline-danger"
+                    data-bind="click: controls.rejectStage"
+                  >
+                    Reject
+                  </button>
+                </div>
               </div>
               <!-- /ko -->
               <!-- ko if: controls.showSectionByStageKey('EffectivenessApprovalQTM') -->
               <div class="form-group" id="">
                 <h3>QTM Approval</h3>
-                <select data-bind="value: effectivenessRejectReason">
-                  <option value="Not Effective">Not Effective</option>
-                  <option value="Lack of Evidence">Lack of Evidence</option>
-                </select>
                 <button
                   type="button"
                   class="mt-auto btn btn-outline-success"
@@ -1072,22 +1073,27 @@
                 >
                   Approve
                 </button>
-                <button
-                  type="button"
-                  class="mt-auto btn btn-outline-danger"
-                  data-bind="click: controls.rejectStage, enable: effectivenessRejectReason"
-                >
-                  Reject
-                </button>
+                <div class="input-group mt-2">
+                  <select
+                    class="form-select"
+                    data-bind="value: effectivenessRejectReason"
+                  >
+                    <option value="Not Effective">Not Effective</option>
+                    <option value="Lack of Evidence">Lack of Evidence</option>
+                  </select>
+                  <button
+                    type="button"
+                    class="mt-auto btn btn-outline-danger"
+                    data-bind="click: controls.rejectStage"
+                  >
+                    Reject
+                  </button>
+                </div>
               </div>
               <!-- /ko -->
               <!-- ko if: controls.showSectionByStageKey('EffectivenessApprovalQTMB') -->
               <div class="form-group" id="">
                 <h3>QTMB Approval</h3>
-                <select data-bind="value: effectivenessRejectReason">
-                  <option value="Not Effective">Not Effective</option>
-                  <option value="Lack of Evidence">Lack of Evidence</option>
-                </select>
                 <button
                   type="button"
                   class="mt-auto btn btn-outline-success"
@@ -1095,13 +1101,22 @@
                 >
                   Approve
                 </button>
-                <button
-                  type="button"
-                  class="mt-auto btn btn-outline-danger"
-                  data-bind="click: controls.rejectStage, enable: effectivenessRejectReason"
-                >
-                  Reject
-                </button>
+                <div class="input-group mt-2">
+                  <select
+                    class="form-select"
+                    data-bind="value: effectivenessRejectReason"
+                  >
+                    <option value="Not Effective">Not Effective</option>
+                    <option value="Lack of Evidence">Lack of Evidence</option>
+                  </select>
+                  <button
+                    type="button"
+                    class="mt-auto btn btn-outline-danger"
+                    data-bind="click: controls.rejectStage"
+                  >
+                    Reject
+                  </button>
+                </div>
               </div>
               <!-- /ko -->
               <!--a <title='Submit for Effectiveness Approval' href='javascript:void(0)'><span class='ui-icon ui-icon-ok'></span>Submit for Effectiveness Approval</a>-->
