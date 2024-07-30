@@ -48,6 +48,18 @@ export const EFFECTIVENESSREASONS = {
   LACKOFEVIDENCE: "Lack of Evidence",
 };
 
+export const SITEROLEGROUPS = {
+  USER: {
+    GROUPNAME: "Continuous Improvement Visitors",
+    DISPLAYNAME: "USER",
+    ROLE: "",
+  },
+  QOS: { GROUPNAME: "QOs", DISPLAYNAME: "QSO/QAO", ROLE: "qo" },
+  QOSTEMP: { GROUPNAME: "QOsTemp", DISPLAYNAME: "QSOs/QAOs", ROLE: "qo" },
+  QTM: { GROUPNAME: "QTM", DISPLAYNAME: "QTM", ROLE: "qtm" },
+  QTMB: { GROUPNAME: "QTM B", DISPLAYNAME: "QTM B", ROLE: "qtm-b" },
+};
+
 export const stageDescriptions = {
   Editing: {
     stage: "Editing",

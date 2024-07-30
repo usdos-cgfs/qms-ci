@@ -186,9 +186,9 @@
             <select
               class="form-control"
               data-bind="value: AdminType, 
-              options: MyRoles, 
-              optionsText: 'key',
-              optionsValue: 'val'"
+              options: userRoleOpts, 
+              optionsText: 'DISPLAYNAME',
+              optionsValue: 'ROLE'"
             ></select>
           </div>
         </div>

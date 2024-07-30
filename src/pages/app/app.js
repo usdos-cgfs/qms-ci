@@ -52,7 +52,11 @@ import {
   tasks,
 } from "../../services/tasks-service.js";
 import { CancelPlanForm } from "../../forms/plan/cancel/cancel-plan-form.js";
-import { currentRole, currentUser } from "../../services/authorization.js";
+import {
+  currentRole,
+  currentUser,
+  userRoleOpts,
+} from "../../services/authorization.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -1616,15 +1620,9 @@ export function CAPViewModel(capIdstring) {
 
   self.AdminType = currentRole;
 
+  self.userRoleOpts = userRoleOpts;
+
   self.AdminType(adminType || "");
-  self.MyRoles = ko.pureComputed(() => {
-    return Object.entries(ROLES.ADMINTYPE).map(([key, val]) => {
-      return {
-        key,
-        val,
-      };
-    });
-  });
 
   self.AdminType.subscribe((val) => {
     setUrlParam("role", val);

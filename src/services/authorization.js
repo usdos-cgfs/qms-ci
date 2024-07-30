@@ -1,8 +1,32 @@
+import { ROLES, SITEROLEGROUPS } from "../constants.js";
 import { People } from "../sal/entities/index.js";
 
 import { getUserPropsAsync } from "../sal/infrastructure/index.js";
 
 export const currentRole = ko.observable();
+
+export const userRoleOpts = ko.pureComputed(() => {
+  const roles = [SITEROLEGROUPS.USER];
+  if (currentUser.isInGroupTitle(SITEROLEGROUPS.QTM.GROUPNAME)) {
+    roles.push(SITEROLEGROUPS.QOS);
+    roles.push(SITEROLEGROUPS.QTMB);
+    roles.push(SITEROLEGROUPS.QTM);
+    return roles;
+  }
+
+  if (
+    currentUser.isInGroupTitle(SITEROLEGROUPS.QOS.GROUPNAME) ||
+    currentUser.isInGroupTitle(SITEROLEGROUPS.QOSTEMP.GROUPNAME)
+  ) {
+    roles.push(SITEROLEGROUPS.QOS);
+  }
+
+  if (currentUser.isInGroupTitle(SITEROLEGROUPS.QTMB.GROUPNAME)) {
+    roles.push(SITEROLEGROUPS.QTMB);
+  }
+
+  return roles;
+});
 
 class User extends People {
   constructor({
@@ -29,6 +53,10 @@ class User extends People {
   isInGroup(group) {
     if (!group?.ID) return false;
     return this.getGroupIds().includes(group.ID);
+  }
+
+  isInGroupTitle(groupTitle) {
+    return this.Groups.find((group) => group.Title == groupTitle);
   }
 
   getGroupIds() {
