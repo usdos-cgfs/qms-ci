@@ -551,6 +551,7 @@
     <span>ID: </span>
     <select
       id="ddlCAPID"
+      class="form-control"
       title="Select a CAP ID"
       data-bind="value: selectedTitle, options: CAPIDOptions, optionsCaption: '-Select-'"
     ></select>
@@ -1537,7 +1538,7 @@
               </tbody>
             </table>
             <br />
-            <div class="container row">
+            <div class="container row d-flex flex-col gap-2">
               <button
                 type="button"
                 class="btn btn-outline-primary"
@@ -1551,8 +1552,8 @@
                 class="btn btn-outline-primary"
                 data-bind="click: controls.record.edit"
               >
-                Edit</button
-              ><br />
+                Edit
+              </button>
               <!-- /ko -->
               <!-- ko if: controls.record.isCloseable() -->
               <button
