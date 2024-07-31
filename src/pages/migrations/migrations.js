@@ -5,7 +5,7 @@ import {
   sourcesStore,
 } from "../../infrastructure/store.js";
 
-function flattenPlan(plan) {
+async function flattenPlan(plan) {
   console.log("Flattening Plan: ", plan.Title.Value());
 
   const coordinatorName = ko.unwrap(plan.ProblemResolverName.Value)?.Title;
@@ -20,12 +20,14 @@ function flattenPlan(plan) {
   const authorName = ko.unwrap(plan.Author.Value)?.Title;
   plan.AuthorName.Value(authorName);
 
-  return appContext.Plans.UpdateEntity(plan, [
+  const result = await appContext.Plans.UpdateEntity(plan, [
     "CoordinatorName",
     "QSOName",
     "QAOName",
     "AuthorName",
   ]);
+
+  console.log("Flattened Plan: ", plan.Title.Value(), result);
 }
 
 class App {
@@ -33,9 +35,14 @@ class App {
 
   async clickMigrate() {
     console.log("fetching plans");
-    const allPlans = await appContext.Plans.ToList();
+    const allPlans = await appContext.Plans.FindByColumnValue(
+      [{ column: "AuthorName", value: null }],
+      {},
+      {}
+    );
 
-    await Promise.all(allPlans.map(flattenPlan));
+    console.log(`Migrating ${allPlans.results.length} Records`);
+    await Promise.all(allPlans.results.map(flattenPlan));
   }
 
   async init() {
