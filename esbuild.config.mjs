@@ -1,3 +1,5 @@
+// Run with: node .\esbuild.config.mjs
+
 import * as esbuild from "esbuild";
 import * as fs from "fs";
 import * as path from "path";
