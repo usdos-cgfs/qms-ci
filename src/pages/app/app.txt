@@ -67,6 +67,15 @@
 
 <link
   rel="stylesheet"
+  href="/sites/CGFS/Style Library/apps/car-cap/lib/fontawesome-6.5.1/css/fontawesome.min.css"
+/>
+<link
+  rel="stylesheet"
+  href="/sites/CGFS/Style Library/apps/car-cap/lib/fontawesome-6.5.1/css/solid.min.css"
+/>
+
+<link
+  rel="stylesheet"
   type="text/css"
   href="/sites/CGFS/Style Library/apps/car-cap/lib/datatables/datatables.min.css"
 />
@@ -75,6 +84,13 @@
   src="/sites/CGFS/Style Library/apps/car-cap/lib/datatables/dataTables.min.js"
   type="text/javascript"
 ></script>
+
+<!-- Main Quill library -->
+<link
+  href="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.snow.css"
+  rel="stylesheet"
+/>
+<script src="https://cdn.jsdelivr.net/npm/quill@2/dist/quill.js"></script>
 
 <script
   type="module"
@@ -118,6 +134,30 @@
 />
 
 <div class="app">
+  <!-- ko with: blockingTasks -->
+  <div class="tasks blocking dimmer" data-bind="css: {'active': $data.length}">
+    <span class="loader"></span>
+    <ul class="" data-bind="foreach: $data">
+      <li data-bind="text: msg + '... ' + Status()"></li>
+    </ul>
+  </div>
+  <!-- /ko -->
+
+  <!-- ko with: runningTasks -->
+  <!-- ko if: $data.length -->
+  <div class="tasks running">
+    <ul class="" data-bind="foreach: $data">
+      <li data-bind="text: msg + '... ' + Status()"></li>
+    </ul>
+  </div>
+  <!-- /ko -->
+  <!-- /ko -->
+
+  <!-- ko foreach: app.currentDialogs -->
+  <div
+    data-bind="component: { name: 'modal-dialog-component', params: $data }"
+  ></div>
+  <!-- /ko -->
   <div
     id="warnIE"
     class="alert alert-warning"
@@ -135,48 +175,27 @@
     <p>This application is currently only supported in Chrome or Edge.</p>
   </div>
 
-  <div
-    class="ui page dimmer"
-    data-bind="css: {'active': vm.app.processes.dimmerActivity}"
-  >
-    <div class="ui text loader">
-      <table
-        class="ui very compact basic inverted fixed table"
-        id="busy-message"
-      >
-        <tbody>
-          <!-- ko foreach: app.processes.tasks -->
-          <tr>
-            <td class="ui right floated" data-bind="text: task"></td>
-            <td data-bind="text: active() ? '' : 'Done'"></td>
-          </tr>
-          <!-- /ko -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <div>
-    <div class="mb-2 w-sm">
-      <div class="card-body d-flex justify-content-start align-items-center">
-        <div>
-          <h5 class="m-0 me-2">Current Role:</h5>
-        </div>
-        <div>
-          <select
-            class="form-control"
-            data-bind="value: AdminType, 
-              options: MyRoles, 
-              optionsText: 'key',
-              optionsValue: 'val'"
-          ></select>
+  <div id="tabs" class="tabclass" style="display: none">
+    <div>
+      <div class="mb-2 w-sm">
+        <div class="card-body d-flex justify-content-start align-items-center">
+          <div>
+            <h5 class="m-0 me-2">Current Role:</h5>
+          </div>
+          <div>
+            <select
+              class="form-control"
+              data-bind="value: AdminType, 
+              options: userRoleOpts, 
+              optionsText: 'DISPLAYNAME',
+              optionsValue: 'ROLE'"
+            ></select>
+          </div>
         </div>
       </div>
+      <!-- <div id="peopleImpersonate" data-bind="people: impersonateUserField"></div> -->
     </div>
-    <!-- <div id="peopleImpersonate" data-bind="people: impersonateUserField"></div> -->
-  </div>
 
-  <div id="tabs" class="tabclass" style="display: none">
     <!-- ko using: tabs -->
     <ul class="ui-tabs-nav" data-bind="foreach: visibleTabs">
       <li
@@ -272,7 +291,7 @@
                 data-bind="text: $root.formatNextTargetDate($data),
                                                 style: {'background-color' : $root.highlightOverdue($data) }"
               ></td>
-              <td data-bind="text: ProblemResolverName?.get_lookupValue()"></td>
+              <td data-bind="text: CoordinatorName"></td>
               <td data-bind="text: ProcessStage"></td>
               <td data-bind="text: RecordType"></td>
             </tr>
@@ -360,7 +379,7 @@
                 data-bind="text: $root.formatNextTargetDate($data),
                                                   style: {'background-color' : $root.highlightOverdue($data) }"
               ></td>
-              <td data-bind="text: ProblemResolverName?.get_lookupValue()"></td>
+              <td data-bind="text: CoordinatorName"></td>
               <td data-bind="text: ProcessStage"></td>
               <td data-bind="text: RecordType"></td>
             </tr>
@@ -379,10 +398,10 @@
     <div class="card-body">
       <div>
         <button
-          id="linkSubmitNewCAP"
+          id=""
           type="button"
           class="btn btn-outline-success"
-          data-bind="click: controls.record.new"
+          data-bind="click: $root.clickNewPlan"
         >
           New
         </button>
@@ -437,7 +456,7 @@
                 data-bind="text: $root.formatNextTargetDate($data),
                     style: {'background-color' : $root.highlightOverdue($data)}"
               ></td>
-              <td data-bind="text: ProblemResolverName?.get_lookupValue()"></td>
+              <td data-bind="text: CoordinatorName"></td>
               <td data-bind="text: ProcessStage"></td>
               <td data-bind="text: RecordType"></td>
             </tr>
@@ -514,7 +533,7 @@
                 data-bind="text: $root.formatNextTargetDate($data),
                                                 style: {'background-color' : $root.highlightOverdue($data) }"
               ></td>
-              <td data-bind="text: ProblemResolverName?.get_lookupValue()"></td>
+              <td data-bind="text: CoordinatorName"></td>
               <td data-bind="text: ProcessStage"></td>
               <td data-bind="text: RecordType"></td>
             </tr>
@@ -532,6 +551,7 @@
     <span>ID: </span>
     <select
       id="ddlCAPID"
+      class="form-control"
       title="Select a CAP ID"
       data-bind="value: selectedTitle, options: CAPIDOptions, optionsCaption: '-Select-'"
     ></select>
@@ -911,16 +931,13 @@
                 </div>
                 <br />
                 <div id="divSubmitTargetVerification">
-                  <label for="dateTargetVerification"
-                    >Set a target effectiveness verification date:</label
-                  ><br />
-                  <input
-                    type="text"
-                    id="dateTargetVerification"
-                    data-bind="jqueryDateField: selectedRecord.EffectivenessVerificationTargetD"
-                  />
-                  <br />
-
+                  <div
+                    class="form-field-component"
+                    data-bind="component: {
+                      name: controls.stage3.targetVerificationDate.components.new, 
+                      params: controls.stage3.targetVerificationDate
+                    }"
+                  ></div>
                   <button
                     type="button"
                     id="buttonSubmitImplement"
@@ -1024,18 +1041,27 @@
                 <h3>QSO Approval</h3>
                 <button
                   type="button"
-                  class="mt-auto btn btn-outline-success"
+                  class="mt-auto btn btn-outline-success mb-2"
                   data-bind="click: controls.stage4.effectivenessApproveQSO"
                 >
                   Approve
                 </button>
-                <button
-                  type="button"
-                  class="mt-auto btn btn-outline-danger"
-                  data-bind="click: controls.rejectStage"
-                >
-                  Reject
-                </button>
+                <div class="input-group mt-2">
+                  <select
+                    class="form-select"
+                    data-bind="value: effectivenessRejectReason"
+                  >
+                    <option value="Not Effective">Not Effective</option>
+                    <option value="Lack of Evidence">Lack of Evidence</option>
+                  </select>
+                  <button
+                    type="button"
+                    class="mt-auto btn btn-outline-danger"
+                    data-bind="click: controls.rejectStage"
+                  >
+                    Reject
+                  </button>
+                </div>
               </div>
               <!-- /ko -->
               <!-- ko if: controls.showSectionByStageKey('EffectivenessApprovalQTM') -->
@@ -1048,13 +1074,22 @@
                 >
                   Approve
                 </button>
-                <button
-                  type="button"
-                  class="mt-auto btn btn-outline-danger"
-                  data-bind="click: controls.rejectStage"
-                >
-                  Reject
-                </button>
+                <div class="input-group mt-2">
+                  <select
+                    class="form-select"
+                    data-bind="value: effectivenessRejectReason"
+                  >
+                    <option value="Not Effective">Not Effective</option>
+                    <option value="Lack of Evidence">Lack of Evidence</option>
+                  </select>
+                  <button
+                    type="button"
+                    class="mt-auto btn btn-outline-danger"
+                    data-bind="click: controls.rejectStage"
+                  >
+                    Reject
+                  </button>
+                </div>
               </div>
               <!-- /ko -->
               <!-- ko if: controls.showSectionByStageKey('EffectivenessApprovalQTMB') -->
@@ -1067,13 +1102,22 @@
                 >
                   Approve
                 </button>
-                <button
-                  type="button"
-                  class="mt-auto btn btn-outline-danger"
-                  data-bind="click: controls.rejectStage"
-                >
-                  Reject
-                </button>
+                <div class="input-group mt-2">
+                  <select
+                    class="form-select"
+                    data-bind="value: effectivenessRejectReason"
+                  >
+                    <option value="Not Effective">Not Effective</option>
+                    <option value="Lack of Evidence">Lack of Evidence</option>
+                  </select>
+                  <button
+                    type="button"
+                    class="mt-auto btn btn-outline-danger"
+                    data-bind="click: controls.rejectStage"
+                  >
+                    Reject
+                  </button>
+                </div>
               </div>
               <!-- /ko -->
               <!--a <title='Submit for Effectiveness Approval' href='javascript:void(0)'><span class='ui-icon ui-icon-ok'></span>Submit for Effectiveness Approval</a>-->
@@ -1117,66 +1161,43 @@
         </div>
       </div>
     </div>
-    <div class="ui modal" display="none" id="close-modal">
-      <div class="header">Are you sure you want to close this plan?</div>
-      <div class="content">
-        <div class="ui warning message">
-          If closed, QTM will have to re-open this plan.
-        </div>
-        <div class="form">
-          <div class="field">
-            <label for="close-reason">
-              Please provide a reason for cancelling this plan: </label
-            ><br />
+    <div class="modal" id="rejectionInformation">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="title">Reject Reason</h5>
+          </div>
+          <div class="modal-body">
+            <p>Please provide a reject reason:</p>
             <textarea
               class="container-fluid"
-              name="close-reason"
-              id="close-reason"
-              data-bind="value: selectedRecord.CancelReason"
+              data-bind="value: rejectReason"
             ></textarea>
+            <!-- ko if: controls.pipeline.showStage4() -->
+            <select data-bind="value: effectivenessRejectReason">
+              <option value="Not Effective">Not Effective</option>
+              <option value="Lack of Evidence">Lack of Evidence</option>
+            </select>
+            <!-- /ko -->
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-bind="click: controls.rejectStageSubmit"
+              data-bs-dismiss="modal"
+            >
+              Reject
+            </button>
           </div>
         </div>
-      </div>
-      <div class="actions">
-        <div class="ui deny secondary basic button">Nevermind</div>
-        <div class="ui red button" data-bind="click: controls.record.close">
-          Cancel Plan
-        </div>
-      </div>
-    </div>
-    <div class="ui modal" id="rejectionInformation" display="none">
-      <div class="header">
-        <h5 class="title">Reject Reason</h5>
-      </div>
-      <div class="content">
-        <p>Please provide a reject reason:</p>
-        <textarea
-          class="container-fluid"
-          data-bind="value: rejectReason"
-        ></textarea>
-        <!-- ko if: controls.pipeline.showStage4() -->
-        <select data-bind="value: effectivenessRejectReason">
-          <option value="Not Effective">Not Effective</option>
-          <option value="Lack of Evidence">Lack of Evidence</option>
-        </select>
-        <!-- /ko -->
-      </div>
-      <div class="actions">
-        <button
-          type="button"
-          class="ui secondary basic button deny"
-          data-dismiss="modal"
-        >
-          Close
-        </button>
-        <button
-          type="button"
-          class="ui red button"
-          data-bind="click: controls.rejectStageSubmit"
-          data-dismiss="modal"
-        >
-          Reject
-        </button>
       </div>
     </div>
     <div id="injectTab1"></div>
@@ -1208,21 +1229,30 @@
             role="alert"
             data-bind="css: {'alert-info': !Active, 'alert-danger': Active}"
           >
-            <a class="close" data-dismiss="alert">x</a>
-            <h4
+            <div
+              class="d-flex justify-content-between align-items-center"
+              title="Click to show/hide rejction reason."
               style="cursor: pointer"
-              data-toggle="collapse"
-              data-bind="attr: {'data-target': '#collapse' + $index()}"
+              data-bs-toggle="collapse"
+              data-bind="attr: {'data-bs-target': '#collapse' + $index()},
+              css: {'collapsed': !Active}"
             >
-              Rejected:
-              <span data-bind="text: Stage"></span>
-              <span data-bind="text: Active ? '' : '(Resolved)'"></span>
-            </h4>
-            <p>Date: <span data-bind="text: Date.toDateString()"></span></p>
+              <div>
+                <h4 class="m-0">
+                  Rejected:
+                  <span data-bind="text: Stage"></span>
+                  <span data-bind="text: Active ? '' : '(Resolved)'"></span>
+                </h4>
+                <p>Date: <span data-bind="text: Date.toDateString()"></span></p>
+              </div>
+              <i
+                class="m-2 fa-solid fa-chevron-up fa-xl collapse-indicator"
+              ></i>
+            </div>
             <div
               class="collapse"
               data-bind="attr: {id: 'collapse' + $index()}, 
-                    css: {'alert-info': !Active, 'alert-danger': Active}"
+                    css: {'alert-info': !Active, 'alert-danger': Active, 'show': Active}"
             >
               <p data-bind="text: Reason"></p>
               <br />
@@ -1268,259 +1298,262 @@
           <!-- /ko -->
           <div>
             <table id="tblcap4" class="table">
-              <!--<tr>
-                                          <td>Record ID:</td>
-                                          <td><span data-bind="text: CAPID()"></span></td>
-                                      </tr>-->
-              <tr>
-                <td>Subject:</td>
-                <td>
-                  <span data-bind="text: selectedRecord.Subject()"></span>
-                </td>
-              </tr>
-              <tr>
-                <td>BusinessOffice:</td>
-                <td>
-                  <span
-                    data-bind="text: selectedRecord.BusinessOffice() ? 
-                                              selectedRecord.BusinessOffice().get_lookupValue() : ''"
-                  ></span>
-                </td>
-              </tr>
-              <tr>
-                <td>CGFS Location:</td>
-                <td>
-                  <span data-bind="text: selectedRecord.CGFSLocation()"></span>
-                </td>
-              </tr>
-              <tr>
-                <td>QSO:</td>
-                <td>
-                  <span
-                    data-bind="text: selectedRecord.QSO.getValueForHuman()"
-                  ></span>
-                </td>
-              </tr>
-              <tr>
-                <td>QAO:</td>
-                <td>
-                  <span
-                    data-bind="text: selectedRecord.QAO.getValueForHuman()"
-                  ></span>
-                </td>
-              </tr>
-              <tr>
-                <td>Source:</td>
-                <td>
-                  <span data-bind="text: selectedRecord.Source()"></span>
-                </td>
-              </tr>
-              <tr data-bind="visible: IsCAR()">
-                <td>Self-Initiated:</td>
-                <td>
-                  <span data-bind="text: selectedRecord.SelfInitiated()"></span>
-                </td>
-              </tr>
-              <tr id="trProblemResolver">
-                <td>CAR/CAP Coordinator:</td>
-                <td>
-                  <!-- ko if: !section.Info.coordinator.isEditing() -->
-                  <span
-                    data-bind="text: selectedRecord.ProblemResolverName.getValueForHuman()"
-                  >
-                  </span>
-                  <!-- ko if: section.Info.coordinator.isEditable() -->
-                  <button
-                    type="button"
-                    class="button button-outline"
-                    data-bind="click: section.Info.coordinator.edit"
-                  >
-                    Edit
-                  </button>
-                  <!-- /ko -->
-                  <!-- /ko -->
-                  <!-- ko if: section.Info.coordinator.isEditing() -->
-                  <div
-                    id="peopleTempCoordinator"
-                    data-bind="people: section.Info.coordinator.tempCoordinator"
-                  ></div>
-                  <button
-                    type="button"
-                    class="button button-outline"
-                    data-bind="click: section.Info.coordinator.save"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
-                    class="button button-outline"
-                    data-bind="click: section.Info.coordinator.cancel"
-                  >
-                    Cancel
-                  </button>
-                  <!-- /ko -->
-                  <!-- <div
+              <tbody>
+                <!-- ko with: selectedPlan -->
+                <tr>
+                  <td>Subject:</td>
+                  <td>
+                    <span data-bind="text: Subject.toString()"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>BusinessOffice:</td>
+                  <td>
+                    <span data-bind="text: BusinessOffice.toString()"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>CGFS Location:</td>
+                  <td>
+                    <span data-bind="text: CGFSLocation.toString()"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>QSO:</td>
+                  <td data-bind="">
+                    <span data-bind="text: QSOName.toString()"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>QAO:</td>
+                  <td>
+                    <span data-bind="text: QAOName.toString()"></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Source:</td>
+                  <td>
+                    <span data-bind="text: Source.toString()"></span>
+                  </td>
+                </tr>
+                <tr data-bind="visible: isCAR()">
+                  <td>Self-Initiated:</td>
+                  <td>
+                    <span data-bind="text: SelfInitiated.toString()"></span>
+                  </td>
+                </tr>
+                <!-- /ko -->
+                <tr id="trProblemResolver">
+                  <td>CAR/CAP Coordinator:</td>
+                  <td>
+                    <!-- ko if: !section.Info.coordinator.isEditing() -->
+                    <span
+                      data-bind="text: selectedPlan()?.CoordinatorName.toString()"
+                    >
+                    </span>
+                    <!-- ko if: section.Info.coordinator.isEditable() -->
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      data-bind="click: section.Info.coordinator.edit"
+                    >
+                      Edit
+                    </button>
+                    <!-- /ko -->
+                    <!-- /ko -->
+                    <!-- ko if: section.Info.coordinator.isEditing() -->
+                    <div
+                      id="peopleTempCoordinator"
+                      data-bind="component: {
+                      name: section.Info.coordinator.tempCoordinator.components.edit,
+                      params: section.Info.coordinator.tempCoordinator}"
+                      class="form-field-component"
+                    ></div>
+                    <button
+                      type="button"
+                      class="btn btn-success"
+                      data-bind="click: section.Info.coordinator.save"
+                    >
+                      Save
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-danger"
+                      data-bind="click: section.Info.coordinator.cancel"
+                    >
+                      Cancel
+                    </button>
+                    <!-- /ko -->
+                    <!-- <div
                                               id="peopleRecordCoordinator"
                                               class="editable-field"
                                               data-bind="people: selectedRecordObj.ProblemResolverName"
                                               ></div> -->
-                </td>
-              </tr>
-              <!-- ko if: selectedRecord.SubmittedDate.date().getTime() -->
-              <tr data-bind="">
-                <td>Submitted Date:</td>
-                <td>
-                  <span
-                    data-bind="text: selectedRecord.SubmittedDate.date().toDateString()"
-                  ></span>
-                </td>
-              </tr>
-              <!-- /ko -->
-              <tr>
-                <td>Submitted By:</td>
-                <td>
-                  <span
-                    data-bind="text: selectedRecord.Author.getValueForHuman()"
-                  ></span>
-                </td>
-              </tr>
-              <tr>
-                <td>Completed Actions:</td>
-                <td>
-                  <!--<span data-bind="text: NumActions()"></span>:<span data-bind="text: NumOpenActions()"></span>-->
+                  </td>
+                </tr>
+                <!-- ko if: selectedRecord.SubmittedDate.date().getTime() -->
+                <tr data-bind="">
+                  <td>Submitted Date:</td>
+                  <td>
+                    <span
+                      data-bind="text: selectedRecord.SubmittedDate.date().toDateString()"
+                    ></span>
+                  </td>
+                </tr>
+                <!-- /ko -->
+                <tr>
+                  <td>Submitted By:</td>
+                  <td>
+                    <span
+                      data-bind="text: selectedRecord.Author.getValueForHuman()"
+                    ></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Completed Actions:</td>
+                  <td>
+                    <!--<span data-bind="text: NumActions()"></span>:<span data-bind="text: NumOpenActions()"></span>-->
 
-                  <div class="progress" style="height: 20px">
-                    <div
-                      class="progress-bar bg-info"
-                      role="progressbar"
-                      data-bind="style: {width: ActionPercentage(), color: ActionPercentage() == '0%' ? 'black' : 'white'}, 
+                    <div class="progress" style="height: 20px">
+                      <div
+                        class="progress-bar bg-info"
+                        role="progressbar"
+                        data-bind="style: {width: ActionPercentage(), color: ActionPercentage() == '0%' ? 'black' : 'white'}, 
                                                   css: ActionProgressBarClass()"
-                      aria-valuenow="25"
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                    >
-                      <span
-                        data-bind="text: vm.NumClosedActions() + '/' + vm.NumActions()"
-                      ></span>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td>Extension Count:</td>
-                <td>
-                  <span
-                    data-bind="text: selectedRecord.ExtensionCount()"
-                  ></span>
-                  <!-- ko if: controls.record.extension.showExtensionRequestSection() -->
-                  <!-- ko if: !selectedRecord.ExtensionRequested() -->
-                  <button
-                    type="button"
-                    class="btn btn-outline-success"
-                    data-bind="click: controls.record.extension.requestExtension"
-                  >
-                    Request Extension
-                  </button>
-                  <!-- /ko -->
-                  <!-- ko if: selectedRecord.ExtensionRequested() -->
-                  <button
-                    type="button"
-                    class="btn btn-outline-danger"
-                    data-bind="click: controls.record.extension.cancelRequest"
-                  >
-                    Cancel Extension Request
-                  </button>
-                  <!-- /ko  -->
-                  <!-- /ko -->
-                  <!-- ko if: controls.record.extension.showApproval() -->
-                  <div class="card" style="width: 20rem">
-                    <div class="card-body">
-                      <h5 class="card-title">
+                        aria-valuenow="25"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      >
                         <span
-                          data-bind="text: controls.record.extension.extensionApprover"
+                          data-bind="text: vm.NumClosedActions() + '/' + vm.NumActions()"
                         ></span>
-                        Extension Approval
-                      </h5>
-
-                      <div class="content">
-                        <button
-                          type="button"
-                          class="mt-auto btn btn-outline-success"
-                          data-bind="click: controls.record.extension.approveRequest"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          type="button"
-                          class="mt-auto btn bottom attached btn-outline-danger"
-                          data-bind="click: controls.record.extension.cancelRequest"
-                        >
-                          Reject
-                        </button>
                       </div>
                     </div>
-                  </div>
-                  <!-- /ko -->
-                </td>
-              </tr>
-              <tr>
-                <td>Target Implementation Date:</td>
-                <td>
-                  <div class="info-row-spread">
-                    <!-- ko if: selectedRecord.ImplementationTargetDate.date().getTime() -->
-                    <div
-                      data-bind="text: selectedRecord.ImplementationTargetDate.date().toDateString()"
-                    ></div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Extension Count:</td>
+                  <td>
+                    <span
+                      data-bind="text: selectedRecord.ExtensionCount()"
+                    ></span>
+                    <!-- ko if: controls.record.extension.showExtensionRequestSection() -->
+                    <!-- ko if: !selectedRecord.ExtensionRequested() -->
+                    <button
+                      type="button"
+                      class="btn btn-outline-success"
+                      data-bind="click: controls.record.extension.requestExtension"
+                    >
+                      Request Extension
+                    </button>
                     <!-- /ko -->
-                    <!-- ko if: vm.AdminType() == ROLES.ADMINTYPE.QTM -->
-                    <a href="javascript:;">
-                      <span
-                        class="ui-icon ui-icon-refresh"
-                        data-bind="click: $root.controls.record.updateImplementationDate.bind()"
-                      ></span>
-                    </a>
+                    <!-- ko if: selectedRecord.ExtensionRequested() -->
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger"
+                      data-bind="click: controls.record.extension.cancelRequest"
+                    >
+                      Cancel Extension Request
+                    </button>
+                    <!-- /ko  -->
                     <!-- /ko -->
-                  </div>
-                </td>
-              </tr>
-              <tr data-bind="">
-                <td>Target Verification Date:</td>
-                <td>
-                  <!-- ko if: vm.selectedRecord.EffectivenessVerificationTargetD.date().getTime() -->
-                  <span
-                    data-bind="text: selectedRecord.EffectivenessVerificationTargetD.date().toDateString()"
-                  ></span>
-                  <!-- /ko -->
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <a
-                    style="color: #007bff"
-                    data-bind="attr: {href: contactQTM()}"
-                    >Contact QTM regarding this record.</a
-                  >
-                </td>
-                <td>
-                  <a
-                    style="color: #007bff"
-                    data-bind="attr: {href: printUrl()}"
-                    target="_blank"
-                    >View a Print Friendly Version.</a
-                  >
-                </td>
-              </tr>
+                    <!-- ko if: controls.record.extension.showApproval() -->
+                    <div class="card" style="width: 20rem">
+                      <div class="card-body">
+                        <h5 class="card-title">
+                          <span
+                            data-bind="text: controls.record.extension.extensionApprover"
+                          ></span>
+                          Extension Approval
+                        </h5>
+
+                        <div class="content">
+                          <button
+                            type="button"
+                            class="mt-auto btn btn-outline-success"
+                            data-bind="click: controls.record.extension.approveRequest"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            type="button"
+                            class="mt-auto btn bottom attached btn-outline-danger"
+                            data-bind="click: controls.record.extension.cancelRequest"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /ko -->
+                  </td>
+                </tr>
+                <tr>
+                  <td>Target Implementation Date:</td>
+                  <td>
+                    <div class="info-row-spread">
+                      <!-- ko if: selectedRecord.ImplementationTargetDate.date().getTime() -->
+                      <div
+                        data-bind="text: selectedRecord.ImplementationTargetDate.date().toDateString()"
+                      ></div>
+                      <!-- /ko -->
+                      <!-- ko if: vm.AdminType() == ROLES.ADMINTYPE.QTM -->
+                      <a href="javascript:;">
+                        <span
+                          class="ui-icon ui-icon-refresh"
+                          data-bind="click: $root.controls.record.updateImplementationDate.bind()"
+                        ></span>
+                      </a>
+                      <!-- /ko -->
+                    </div>
+                  </td>
+                </tr>
+                <tr data-bind="">
+                  <td>Target Verification Date:</td>
+                  <td>
+                    <!-- ko if: vm.selectedRecord.EffectivenessVerificationTargetD.date().getTime() -->
+                    <span
+                      data-bind="text: selectedRecord.EffectivenessVerificationTargetD.date().toDateString()"
+                    ></span>
+                    <!-- /ko -->
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a
+                      style="color: #007bff"
+                      data-bind="attr: {href: contactQTM()}"
+                      >Contact QTM regarding this record.</a
+                    >
+                  </td>
+                  <td>
+                    <a
+                      style="color: #007bff"
+                      data-bind="attr: {href: printUrl()}"
+                      target="_blank"
+                      >View a Print Friendly Version.</a
+                    >
+                  </td>
+                </tr>
+              </tbody>
             </table>
             <br />
-            <div class="container row">
+            <div class="container row d-flex flex-col gap-2">
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                data-bind="click: controls.record.view"
+              >
+                View
+              </button>
               <!-- ko if: controls.record.isEditable() -->
               <button
                 type="button"
                 class="btn btn-outline-primary"
                 data-bind="click: controls.record.edit"
               >
-                Edit</button
-              ><br />
+                Edit
+              </button>
               <!-- /ko -->
               <!-- ko if: controls.record.isCloseable() -->
               <button
@@ -1551,16 +1584,16 @@
           <div
             class="card-header"
             style="cursor: pointer"
-            data-toggle="collapse"
-            data-target="#collapseStatus"
+            data-bs-toggle="collapse"
+            data-bs-target="#collapseStatus"
+            role="button"
           >
-            <h4>Status Legend (click here for more info)</h4>
+            <h4>Status Legend (Click Here for more Info)</h4>
           </div>
           <div class="card-body">
             <div
               id="divCurrentStatusDesc"
-              data-bind="text: selectedRecord.ProcessStageObj() ? 
-                        selectedRecord.ProcessStageObj().description : ''"
+              data-bind="text: selectedRecord.ProcessStageObj()?.description"
             ></div>
             <br />
             <div class="collapse" id="collapseStatus">
@@ -1573,7 +1606,9 @@
                   </tr>
                 </thead>
                 <tbody data-bind="foreach: stageDescriptionsArray">
-                  <tr>
+                  <tr
+                    data-bind="css: {'table-info': $parent.selectedRecord.ProcessStageObj()?.stage == stage}"
+                  >
                     <td data-bind="text:stageNum"></td>
                     <td data-bind="text:stage"></td>
                     <td data-bind="text:description"></td>
@@ -1780,7 +1815,7 @@
             <!-- ko ifnot: section.OpportunityForImprovement.isEditing() -->
             <p
               id="pProblemDescription"
-              data-bind="text: selectedRecord.OFIDescription()
+              data-bind="html: selectedRecord.OFIDescription()
                         visible: !section.OpportunityForImprovement.isEditing()"
             ></p>
             <button
@@ -1794,11 +1829,11 @@
             </button>
             <!-- /ko -->
             <!-- ko if: section.OpportunityForImprovement.isEditing() -->
-            <textarea
-              id=""
-              class="form-control"
-              data-bind="textInput: section.OpportunityForImprovement.value"
-            ></textarea>
+            <div
+              data-bind="component: { 
+              name: section.OpportunityForImprovement.field.components.edit, 
+              params: section.OpportunityForImprovement.field}"
+            ></div>
             <br />
             <button
               type="button"
@@ -1830,7 +1865,7 @@
             <!-- ko ifnot: section.DiscoveryDataAnalysis.isEditing() -->
             <p
               id="pProblemDescription"
-              data-bind="text: selectedRecord.DiscoveryDataAnalysis()
+              data-bind="html: selectedRecord.DiscoveryDataAnalysis()
                        visible: !section.DiscoveryDataAnalysis.isEditing()"
             ></p>
             <button
@@ -1844,11 +1879,11 @@
             </button>
             <!-- /ko -->
             <!-- ko if: section.DiscoveryDataAnalysis.isEditing() -->
-            <textarea
-              id=""
-              class="form-control"
-              data-bind="textInput: section.DiscoveryDataAnalysis.value"
-            ></textarea>
+            <div
+              data-bind="component: { 
+              name: section.DiscoveryDataAnalysis.field.components.edit, 
+              params: section.DiscoveryDataAnalysis.field}"
+            ></div>
             <br />
             <button
               type="button"
@@ -1881,7 +1916,7 @@
           <!-- ko ifnot: section.ProblemDescription.isEditing() -->
           <p
             id="pProblemDescription"
-            data-bind="text: selectedRecord.ProblemDescription()
+            data-bind="html: selectedRecord.ProblemDescription()
                     visible: !section.ProblemDescription.isEditing()"
           ></p>
           <button
@@ -1895,11 +1930,11 @@
           </button>
           <!-- /ko -->
           <!-- ko if: section.ProblemDescription.isEditing() -->
-          <textarea
-            id="textareaProblemDescription"
-            class="form-control"
-            data-bind="textInput: section.ProblemDescription.value"
-          ></textarea>
+          <div
+            data-bind="component: { 
+              name: section.ProblemDescription.field.components.edit, 
+              params: section.ProblemDescription.field}"
+          ></div>
           <br />
           <button
             type="button"
@@ -1930,7 +1965,7 @@
           <div id="divDispContainmentAction">
             <p
               id="pContainmentAction"
-              data-bind="text: selectedRecord.ContainmentAction()"
+              data-bind="html: selectedRecord.ContainmentAction()"
             ></p>
             <button
               type="button"
@@ -1945,19 +1980,20 @@
           <!-- /ko -->
           <!-- ko if: section.ContainmentAction.isEditing() -->
           <div id="divEditContainmentAction">
-            <textarea
-              id="textareaContainmentAction"
-              class="form-control"
-              data-bind="textInput: section.ContainmentAction.value"
-            ></textarea>
+            <div
+              data-bind="component: { 
+                name: section.ContainmentAction.field.components.edit, 
+                params: section.ContainmentAction.field}"
+            ></div>
             <b id="headerContainmentActionDate" class="edit"
               >Containment Action Date</b
             >
             <br />
-            <input
-              type="text"
-              data-bind="jqueryDateField: section.ContainmentAction.actionDate"
-            />
+            <div
+              data-bind="component: { 
+                name: section.ContainmentAction.actionDate.components.edit, 
+                params: section.ContainmentAction.actionDate}"
+            ></div>
             <br />
             <button
               type="button"
@@ -2193,21 +2229,33 @@
             </thead>
             <tbody data-bind="foreach: SupportDocuments">
               <tr>
-                <td data-bind="text: Title"></td>
+                <td class="align-middle" data-bind="text: Title"></td>
                 <td>
                   <a
+                    class="btn btn-link"
                     title="Click to download"
                     data-bind="attr: {href: $root.formatDocDownloadLink(FileRef)}, text: FileLeafRef"
                   ></a>
                 </td>
                 <td>
-                  <a
+                  <button
+                    type="button"
+                    class="btn btn-link"
                     title="View Document"
-                    href="javascript:void(0)"
                     data-bind="click: $root.section.SupportDocs.view.bind($data)"
                   >
-                    <span class="ui-icon ui-icon-search">View Doc</span>
-                  </a>
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </button>
+                  <!-- ko if: $root.section.SupportDocs.allowUploadSupportDoc -->
+                  <button
+                    type="button"
+                    class="btn btn-link"
+                    title="Edit Document"
+                    data-bind="click: $root.section.SupportDocs.edit.bind($data)"
+                  >
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <!-- /ko -->
                 </td>
               </tr>
             </tbody>
@@ -2294,7 +2342,7 @@
                   <!-- /ko  -->
                 </td>
                 <td data-bind="text: ActionID"></td>
-                <td data-bind="text: ActionDescription"></td>
+                <td data-bind="html: ActionDescription"></td>
                 <td
                   data-bind="text: ActionResponsiblePerson.get_lookupValue()"
                 ></td>
@@ -2515,21 +2563,33 @@
                 </thead>
                 <tbody data-bind="foreach: $root.EffectivenessDocuments">
                   <tr>
-                    <td data-bind="text: Title"></td>
+                    <td class="align-middle" data-bind="text: Title"></td>
                     <td>
                       <a
+                        class="btn btn-link"
                         title="Click to download"
                         data-bind="attr: {href: $root.formatDocDownloadLink(FileRef)}, text: FileLeafRef"
                       ></a>
                     </td>
                     <td>
-                      <a
+                      <button
+                        type="button"
+                        class="btn btn-link"
                         title="View Document"
-                        href="javascript:void(0)"
                         data-bind="click: $parent.proof.documents.view.bind($data)"
                       >
-                        <span class="ui-icon ui-icon-search">View Doc</span>
-                      </a>
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                      </button>
+                      <!-- ko if: $root.section.EffectivenessDocs.isEditable() -->
+                      <button
+                        type="button"
+                        class="btn btn-link"
+                        title="Edit Document"
+                        data-bind="click: $parent.proof.documents.edit"
+                      >
+                        <i class="fa-solid fa-pen-to-square"></i>
+                      </button>
+                      <!-- /ko -->
                     </td>
                   </tr>
                 </tbody>
@@ -2605,9 +2665,7 @@
                   data-bind="text: $root.formatNextTargetDate($data),
                             style: {'background-color' : $root.highlightOverdue($data)}"
                 ></td>
-                <td
-                  data-bind="text: ProblemResolverName?.get_lookupValue()"
-                ></td>
+                <td data-bind="text: CoordinatorName"></td>
                 <td data-bind="text: ProcessStage"></td>
                 <td data-bind="text: RecordType"></td>
               </tr>
@@ -2780,7 +2838,7 @@
                 data-bind="text: $root.formatNextTargetDate($data),
                                                 style: {'background-color' : $root.highlightOverdue($data)}"
               ></td>
-              <td data-bind="text: ProblemResolverName?.get_lookupValue()"></td>
+              <td data-bind="text: CoordinatorName"></td>
               <td data-bind="text: ProcessStage"></td>
               <td data-bind="text: RecordType"></td>
             </tr>

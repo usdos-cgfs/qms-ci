@@ -1,4 +1,5 @@
-﻿#s4-leftpanel {
+﻿/* Fix SharePoint Stuff */
+#s4-leftpanel {
   /* display: none; */
 }
 
@@ -16,6 +17,12 @@
 #s4-ribbonrow {
   /* display: none !important; */
 }
+
+button {
+  min-width: 0;
+}
+
+/* Begin App Styling */
 
 .app {
   --bg-very-light-color: #edf1f2;
@@ -42,7 +49,7 @@
 }
 
 .btn {
-  margin: 0.5rem;
+  /* margin: 0.5rem; */
 }
 
 html {
@@ -202,12 +209,217 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   opacity: 1;
 }
 
+.tasks.blocking {
+  position: fixed;
+  top: 85px;
+  height: 100vh;
+}
+
+.tasks.running {
+  position: fixed;
+  bottom: 0.2rem;
+  right: 1.75rem;
+  padding: 1.5rem;
+  margin: 1.5rem 0.5rem;
+  background-color: rgb(211, 211, 211, 0.6);
+  border-radius: 0.5rem;
+  z-index: 10;
+}
+
+.tasks ul {
+  list-style: none;
+  font-size: 1rem;
+  padding: 0;
+  margin: 0;
+}
+
+.dimmer {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  color: var(--primary-muted-color);
+  background-color: #1d2b36e3;
+}
+
+.dimmer.active {
+  display: flex;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid var(--primary-muted-color);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.collapse-indicator {
+  transition-duration: 0.5s;
+  transition-property: transform;
+}
+.collapsed .collapse-indicator {
+  transform: rotate(180deg);
+  transition-duration: 0.5s;
+  transition-property: transform;
+}
+/* SAL FORMS */
+
+.app-form {
+  padding: 1.5rem;
+  background-color: var(--bg-light-color);
+  /* max-width: 830px; */
+}
+.app-form.bg-dark {
+  color: white;
+  background-color: var(--bg-dark-color);
+}
+
+.app-form .form-header {
+  width: 100%;
+  margin: 0.35rem 0 0.25rem 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.app-form .form-title {
+  font-size: 1.1rem;
+  margin: 0;
+  color: inherit;
+}
+
+.app-form .form-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.app-form .form-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.app-form .form-fields.two-wide {
+  max-width: 550px;
+}
+
+.app-form .form-fields.two-wide .form-field-component {
+  width: 45%;
+}
+
+.app-form .form-actions {
+  display: flex;
+  justify-content: end;
+  gap: 1rem;
+  padding: 2rem 0;
+}
+
+.app-form .form-field-component {
+  max-width: 300px;
+  min-width: 200px;
+  flex: 1 0;
+}
+
+.app-form.bg-dark .btn-link {
+  color: var(--primary-muted-color);
+}
+
+.app-form dl {
+  flex: 1 0;
+  padding: 0 1.5rem 0 0;
+}
+
+.app-form dt {
+  font-weight: 300;
+  font-size: 0.75rem;
+  /* padding-bottom: 0.2rem; */
+  text-transform: uppercase;
+}
+
+.app-form dd {
+  font-weight: 500;
+  margin-inline-start: 0;
+  padding-block-end: 0.75rem;
+}
+
+/* SAL FIELDS */
+
+.form-field-component label {
+  width: 100%;
+}
+
+.form-field-component .form-control {
+  width: 100%;
+}
+
+.form-field-component .form-select {
+  width: 100%;
+}
+
+.form-field-component .sp-peoplepicker-topLevel {
+  width: 100%;
+  display: block;
+  background-color: white;
+  color: var(--text-primary);
+  border: none;
+  border-radius: 4px;
+  padding: 4px;
+  font-size: 1rem;
+}
+
+.richtext-field .ql-toolbar {
+  background-color: var(--bg-very-light-color);
+}
+.richtext-field .ql-toolbar button {
+  min-width: 0;
+}
+
+.richtext-field .ql-container {
+  overflow: auto;
+  resize: vertical;
+}
+
 /* UTILITIES */
 
+.pointer {
+  cursor: pointer;
+}
+
+/* sizing */
 .w-sm {
   width: 300px;
 }
 
 .w-md {
   width: 600px;
+}
+
+.w-large {
+  width: 1028px;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.min-w-full {
+  min-width: 100% !important;
 }

@@ -1,15 +1,18 @@
+// Run with: node .\esbuild.config.mjs
+
 import * as esbuild from "esbuild";
 import * as fs from "fs";
 import * as path from "path";
 
 await esbuild.build({
-  entryPoints: ["./src/app_bundle.js", "./src/app.css"],
+  entryPoints: ["./src/pages/migrations/migrations.js", "./src/styles.css"],
   bundle: true,
-  minify: true,
+  minify: false,
+  sourcemap: true,
   outdir: "dist",
 });
 
-const referenceFiles = ["app_bundle.txt"];
+const referenceFiles = ["pages/migrations/migrations.txt"];
 
 referenceFiles.forEach(copyReferenceFiles);
 function copyReferenceFiles(filePath) {

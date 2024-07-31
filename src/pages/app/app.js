@@ -1,6 +1,63 @@
 import { getUrlParam, setUrlParam } from "../../common/router.js";
 import { Tab, TabsModule } from "../../components/tabs/tabs.js";
 import { makeDataTable } from "../../common/data-table.js";
+
+import { InitSal } from "../../sal/infrastructure/index.js";
+import { appContext } from "../../infrastructure/app-db-context.js";
+
+import * as ModalDialog from "../../sal/components/modal/index.js";
+import * as FormManager from "../../sal/infrastructure/form_manager.js";
+import {
+  businessOfficeStore,
+  sourcesStore,
+} from "../../infrastructure/store.js";
+import {
+  Action,
+  Plan,
+  Rejection,
+  RootCauseWhy,
+  SupportingDocument,
+} from "../../entities/index.js";
+
+import {
+  ROLES,
+  LOCATION,
+  stageDescriptions,
+  SUPPORTINGDOCUMENTTYPES,
+} from "../../constants.js";
+
+import {
+  EditActionForm,
+  EditPlanForm,
+  NewPlanForm,
+} from "../../forms/index.js";
+
+import {
+  editAction,
+  getNextActionId,
+  submitNewAction,
+} from "../../services/actions-service.js";
+import {
+  DateField,
+  PeopleField,
+  TextAreaField,
+} from "../../sal/fields/index.js";
+import { editPlan } from "../../services/plan-service.js";
+
+import {
+  addTask,
+  blockingTasks,
+  finishTask,
+  runningTasks,
+  tasks,
+} from "../../services/tasks-service.js";
+import { CancelPlanForm } from "../../forms/plan/cancel/cancel-plan-form.js";
+import {
+  currentRole,
+  currentUser,
+  userRoleOpts,
+} from "../../services/authorization.js";
+
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
 
@@ -199,10 +256,10 @@ $("#btnRequestAllRecords").click(LoadMainData);
 // Loading CAP data
 // This is where we structure the query for what get's loaded on main tab page and the drop-down on the specific record page.
 function LoadMainData(next) {
-  vm.app.processes.addTask(appProcessesStates.refreshPlans);
+  const refreshTask = addTask(tasks.refreshPlans);
   next = next ? next : function () {};
   var dataLoadIncrementer = new Incremental(0, 3, () => {
-    vm.app.processes.finishTask(appProcessesStates.refreshPlans);
+    finishTask(refreshTask);
     next();
   });
   // Let's load our Actions and our Items
@@ -231,10 +288,14 @@ function loadSelectedRecordByObj(record) {
   LoadSelectedCAP(record.Title);
 }
 // IMPORTANT - use this section to hide and show elements to the user based on permission level.
-function LoadSelectedCAP(capid) {
-  vm.app.processes.addTask(appProcessesStates.view);
+async function LoadSelectedCAP(capid) {
+  const viewTask = addTask(tasks.view);
 
   var capid = capid.Title ? capid.Title : capid;
+
+  // New Application Structure
+  const plan = await appContext.Plans.FindByTitle(capid);
+  if (plan?.results.length) vm.selectedPlan(plan.results.pop());
 
   // Check if we are being passed an object
   //capid = capid.Title;
@@ -252,7 +313,7 @@ function LoadSelectedCAP(capid) {
   );
 
   var incrementer = new Incremental(0, 2, () => {
-    vm.app.processes.finishTask(appProcessesStates.view);
+    finishTask(viewTask);
   });
 
   // Fetch related data
@@ -419,8 +480,8 @@ function m_fnRejectProblemQTMB() {
   var ts = new Date().toISOString();
 
   var valuePair = [
-    ["QTMBProblemAdjudication", "Rejected"],
-    ["QTMBAdjudicationDate", ts],
+    ["QMSBProblemAdjudication", "Rejected"],
+    ["QMSBAdjudicationDate", ts],
     ["ProcessStage", "Editing"],
   ];
 
@@ -797,22 +858,22 @@ function m_fnRefresh(result, value) {
   if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
     return;
   }
-  vm.app.processes.addTask(appProcessesStates.refresh);
+  addTask(tasks.refresh);
   LoadMainData(function () {
     LoadSelectedCAP(vm.selectedTitle());
-    vm.app.processes.finishTask(appProcessesStates.refresh);
+    finishTask(tasks.refresh);
   });
 }
 
 function OnCapCreateCallback(result, value) {
   if (result === SP.UI.DialogResult.OK) {
-    vm.app.processes.addTask(appProcessesStates.refreshPlans);
+    addTask(tasks.refreshPlans);
     app.listRefs.Plans.getListItems("", function (items) {
       var id = items[items.length - 1];
       vm.allRecordsArray(items);
       vm.selectedTitle(id.Title);
       vm.tab(TABS.PLANDETAIL);
-      vm.app.processes.finishTask(appProcessesStates.refreshPlans);
+      finishTask(tasks.refreshPlans);
       // m_fnForward();
     });
   }
@@ -830,23 +891,23 @@ function OnCapEditRefresh(result, value) {
 
 function OnActionEditCallback(result, value) {
   if (result === SP.UI.DialogResult.OK) {
-    vm.app.processes.addTask(appProcessesStates.newAction);
+    addTask(tasks.newAction);
     app.listRefs.Actions.getListItems("", function (actions) {
       vm.allActionsArray(actions);
       vm.controls.record.updateImplementationDate();
-      vm.app.processes.finishTask(appProcessesStates.newAction);
+      finishTask(tasks.newAction);
     });
   }
 }
 
 function OnActionCreateCallback(result, value) {
   if (result === SP.UI.DialogResult.OK) {
-    vm.app.processes.addTask(appProcessesStates.newAction);
+    addTask(tasks.newAction);
     // The user has modified the Action, the Associated CAP must be updated.
     app.listRefs.Actions.getListItems("", function (actions) {
       vm.allActionsArray(actions);
       vm.controls.record.updateImplementationDate();
-      vm.app.processes.finishTask(appProcessesStates.newAction);
+      finishTask(tasks.newAction);
     });
   }
 }
@@ -861,7 +922,7 @@ function OnCallbackFormRefresh(result, value) {
 }
 
 function closePlan(id, { title, newStage, prevStage, cancelReason }) {
-  vm.app.processes.addTask(appProcessesStates.closing);
+  addTask(tasks.closing);
   valuePair = [
     ["ProcessStage", newStage],
     ["Active", "0"],
@@ -876,7 +937,7 @@ function closePlan(id, { title, newStage, prevStage, cancelReason }) {
     //     m_fnRefresh();
     //   });
     m_fnRefresh();
-    vm.app.processes.finishTask(appProcessesStates.closing);
+    finishTask(tasks.closing);
   });
 }
 // var incrementer;
@@ -887,7 +948,7 @@ function closePlan(id, { title, newStage, prevStage, cancelReason }) {
  * @param {bool} lock pass true to lock request
  */
 function toggleLockPlan(title, lock, callback) {
-  vm.app.processes.addTask(appProcessesStates.lock);
+  addTask(tasks.lock);
   callback = callback === undefined ? m_fnRefresh : callback;
   // Pass true to lock request
 
@@ -900,7 +961,7 @@ function toggleLockPlan(title, lock, callback) {
   ];
 
   var incrementer = new Incremental(0, listRefs.length, () => {
-    vm.app.processes.finishTask(appProcessesStates.lock);
+    finishTask(tasks.lock);
     callback();
   });
 
@@ -1047,7 +1108,8 @@ function initComplete() {
   // makeDataTable("#tblAwaitingAction");
   // makeDataTable("#tblLookupRecords");
 
-  vm.app.processes.finishTask(appProcessesStates.init);
+  finishTask(tasks.init);
+
   // var idTab =
   // $('#injectAdditionalTabs').
   loadFinish = new Date();
@@ -1057,12 +1119,13 @@ function initComplete() {
 var loadStart,
   loadFinish = 0;
 
-function initApp() {
+async function initApp() {
   loadStart = new Date();
   initSal();
+  InitSal();
   Common.Init();
-  vm = new CAPViewModel();
-  vm.app.processes.addTask(appProcessesStates.init);
+  vm = await App.Create();
+  const initTask = addTask(tasks.init);
   initStaticListRefs();
 
   LoadMainData(initComplete); // This will call initComplete() when all data is loaded
@@ -1096,32 +1159,9 @@ if (loc.host[0] == "s") {
 // ADMINTYPE is currently set by the page the user is accessing
 // Other roles are on the individual record and are determined
 // dynamically using the vm.selectedRecord.userHasRole function
-window.ROLES = {
-  ADMINTYPE: {
-    USER: "",
-    QO: "qo",
-    QTM: "qtm",
-    QTMB: "qtm-b",
-  },
-  SUBMITTER: "submitter",
-  COORDINATOR: "coordinator",
-  IMPLEMENTOR: "implementor", // This person is able push the record forward
-  ACTIONRESPONSIBLEPERSON: "actionresponsibleperson",
-  QSO: "qso",
-  QAO: "qao",
-};
+window.ROLES = ROLES;
 
 var EXTENSIONDAYS = 45;
-
-var LOCATION = {
-  ALL: "All",
-  CHARLESTON: "Charleston",
-  BANGKOK: "Bangkok",
-  WASHINGTON: "Washington",
-  PARIS: "Paris",
-  SOFIA: "Sofia",
-  MANILA: "Manila",
-};
 
 var DOCTYPES = {
   SUPPORT: "Support",
@@ -1183,6 +1223,7 @@ var CIItemListDef = {
     ID: { type: "Text" },
     Active: { type: "Bool" },
     Author: { type: "Person" },
+    AuthorName: { type: "Text" },
     CloseDate: { type: "Date" },
     CancelReason: { type: "Text" },
     Created: { type: "Date" },
@@ -1191,12 +1232,15 @@ var CIItemListDef = {
     BusinessOffice: { type: "Text" },
     CGFSLocation: { type: "Text" },
     QSO: { type: "Person" },
+    QSOName: { type: "Text" },
     QAO: { type: "Person" },
+    QAOName: { type: "Text" },
     OFIDescription: { type: "Text" },
     DiscoveryDataAnalysis: { type: "Text" },
     SubmittedDate: { type: "Date" },
     SubmittedBy: { type: "Text" },
     ProblemResolverName: { type: "Person" },
+    CoordinatorName: { type: "Text" },
     Subject: { type: "Text" },
     QSOAdjudicationDate: { type: "Date" },
     QSOApprovalStatus: { type: "Text" },
@@ -1252,12 +1296,15 @@ var CAPModel = [
   "BusinessOffice",
   "CGFSLocation",
   "QSO",
+  "QSOName",
   "QAO",
+  "QAOName",
   "OFIDescription",
   "DiscoveryDataAnalysis",
   "SubmittedDate",
   "SubmittedBy",
   "ProblemResolverName",
+  "CoordinatorName",
   "Subject",
   "QSOAdjudicationDate",
   "QSOApprovalStatus",
@@ -1303,6 +1350,8 @@ var CAPModel = [
   "PreviousStage",
   "NextTargetDate",
   "PlanSubmissionTargetDate",
+  "Author",
+  "AuthorName",
 ];
 
 var ActionListDef = {
@@ -1466,263 +1515,6 @@ var rejectionViewFields = convertModelToViewfield(RejectionModel);
 
 var businessOfficeViewFields = convertModelToViewfield(BusinessOfficeModel);
 
-var stageDescriptions = {
-  Editing: {
-    stage: "Editing",
-    description: "CAR has been rejected by Quality Owner, to be closed by QTM.",
-    stageNum: 1,
-    progress: "5%",
-  },
-  ProblemApprovalQTMB: {
-    actionTaker: ROLES.ADMINTYPE.QTMB,
-    stage: "Pending QTM-B Problem Approval",
-    description: "CAR originated in CGFS-B, problem must be approved by QTM-B.",
-    stageNum: 1,
-    progress: "5%",
-    next: function () {
-      return "ProblemApprovalQTM";
-    },
-    onReject: function () {
-      return "Editing";
-    },
-  },
-  ProblemApprovalQTM: {
-    actionTaker: ROLES.ADMINTYPE.QTM,
-    stage: "Pending QTM Problem Approval",
-    description: "CAR problem must be approved by QTM.",
-    stageNum: 1,
-    progress: "10%",
-    next: function () {
-      return "ProblemApprovalQSO";
-    },
-    onReject: function () {
-      return "Editing";
-    },
-  },
-  ProblemApprovalQSO: {
-    actionTaker: ROLES.QSO,
-    stage: "Pending QSO Problem Approval",
-    description: "CAR problem must be approved by QSO",
-    stageNum: 1,
-    progress: "15%",
-    next: function () {
-      return "DevelopingActionPlan";
-    },
-    onReject: function () {
-      return "ProblemApprovalQAO";
-    },
-  },
-  ProblemApprovalQAO: {
-    actionTaker: ROLES.QAO,
-    stage: "Pending QAO Problem Approval",
-    description: "CAR rejected by QSO, problem must be approved by QAO",
-    stageNum: 1,
-    progress: "20%",
-    next: function () {
-      return "DevelopingActionPlan";
-    },
-    onReject: function () {
-      return "Editing";
-    },
-  },
-  DevelopingActionPlan: {
-    actionTaker: ROLES.IMPLEMENTOR,
-    stage: "Developing Action Plan",
-    description:
-      "Initiator or CAR/CAP Coordinator must create an action plan. Add at least one action to continue.",
-    stageNum: 2,
-    progress: "25%",
-    next: function () {
-      return "PlanApprovalQSO";
-    },
-    onReject: function () {
-      return "DevelopingActionPlan";
-    },
-  },
-  PlanApprovalQSO: {
-    actionTaker: ROLES.QSO,
-    stage: "Pending QSO Plan Approval",
-    description: "Quality Owner must approve the action plan.",
-    stageNum: 2,
-    progress: "33%",
-    next: function () {
-      if (vm.selectedRecord.CGFSLocation() == LOCATIONS.BANGKOK) {
-        return "PlanApprovalQTMB";
-      }
-      return "PlanApprovalQTM";
-    },
-    onReject: function () {
-      return "DevelopingActionPlan";
-    },
-  },
-  PlanApprovalQSOAction: {
-    actionTaker: ROLES.QSO,
-    stage: "Pending QSO Plan Approval: Action",
-    description:
-      "An action has been edited, the quality owner must approve it.",
-    stageNum: 2,
-    progress: "33%",
-    next: function () {
-      if (vm.selectedRecord.CGFSLocation() == LOCATIONS.BANGKOK) {
-        return "PlanApprovalQTMB";
-      }
-      return "PlanApprovalQTM";
-    },
-    onReject: function () {
-      return "DevelopingActionPlan";
-    },
-  },
-  PlanApprovalQTMB: {
-    actionTaker: ROLES.ADMINTYPE.QTMB,
-    stage: "Pending QTM-B Plan Approval",
-    description: "QTM-B must approve the action plan.",
-    stageNum: 2,
-    progress: "40%",
-    next: function () {
-      return "PlanApprovalQTM";
-    },
-    onReject: function () {
-      return "DevelopingActionPlan";
-    },
-  },
-  PlanApprovalQTM: {
-    actionTaker: ROLES.ADMINTYPE.QTM,
-    stage: "Pending QTM Plan Approval",
-    description: "QTM must approve the action plan.",
-    stageNum: 2,
-    progress: "40%",
-    next: function () {
-      return "ImplementingActionPlan";
-    },
-    onReject: function () {
-      return "DevelopingActionPlan";
-    },
-  },
-  ImplementingActionPlan: {
-    actionTaker: ROLES.IMPLEMENTOR,
-    stage: "Implementing Action Plan",
-    description:
-      "Responsible party must complete action items.  When all actions are completed, CAR/CAP Coordinator proposes Target Verification Date to move to Stage 4.",
-    stageNum: 3,
-    progress: "50%",
-    next: function () {
-      return "ImplementationApproval";
-    },
-    onReject: function () {
-      return "DevelopingActionPlan";
-    },
-  },
-  ImplementationApproval: {
-    actionTaker: ROLES.QSO,
-    stage: "Pending QSO Implementation Approval",
-    description:
-      "Quality Owner must sign off on completion of action plan and effectiveness verification target date.",
-    stageNum: 3,
-    progress: "63%",
-    next: function () {
-      return "EffectivenessSubmission";
-    },
-    onReject: function () {
-      return "ImplementingActionPlan";
-    },
-  },
-  EffectivenessSubmission: {
-    actionTaker: ROLES.IMPLEMENTOR,
-    stage: "Pending Effectiveness Submission",
-    description:
-      "The user must provide proof of effectiveness and submit this record.",
-    stageNum: 4,
-    progress: "75%",
-    next: function () {
-      return "EffectivenessApprovalQSO";
-    },
-    onReject: function () {
-      return "ImplementingActionPlan";
-    },
-  },
-  EffectivenessSubmissionRejected: {
-    actionTaker: ROLES.IMPLEMENTOR,
-    stage: "Pending Effectiveness Submission: Rejected",
-    description:
-      "The user must provide additional proof of effectiveness and re-submit this record.",
-    stageNum: 4,
-    progress: "75%",
-  },
-  EffectivenessApprovalQSO: {
-    actionTaker: ROLES.QSO,
-    stage: "Pending QSO Effectiveness Approval",
-    description: "The Quality Owner must approve the proof of effectiveness.",
-    stageNum: 4,
-    progress: "80%",
-    next: function () {
-      if (vm.selectedRecord.CGFSLocation() == LOCATIONS.BANGKOK) {
-        return "EffectivenessApprovalQTMB";
-      }
-      return "EffectivenessApprovalQTM";
-    },
-    onReject: function () {
-      var rejectReason = $("#selectEffectivenessRejectReason").val();
-
-      switch (rejectReason) {
-        case "Lack of Evidence":
-          return "EffectivenessSubmissionRejected";
-        case "Not Effective":
-          return "DevelopingActionPlan";
-      }
-    },
-  },
-  EffectivenessApprovalQTMB: {
-    actionTaker: ROLES.ADMINTYPE.QTMB,
-    stage: "Pending QTM-B Effectiveness Approval",
-    description:
-      "This record originated in Bangkok, and effectiveness must be approved at QTM-B.",
-    stageNum: 4,
-    progress: "85%",
-  },
-  EffectivenessApprovalQTM: {
-    actionTaker: ROLES.ADMINTYPE.QTM,
-    stage: "Pending QTM Effectiveness Approval",
-    description: "The QTM must approve the proof of effectiveness.",
-    stageNum: 4,
-    progress: "90%",
-  },
-  ClosedAccepted: {
-    stage: "Closed: Accepted",
-    description:
-      "This action plan has been completed and the verification accepted.",
-    stageNum: 5,
-    progress: "100%",
-  },
-  ClosedRejected: {
-    stage: "Closed: Rejected",
-    description: "This action plan has been rejected by the QTM.",
-    stageNum: 5,
-    progress: "100%",
-  },
-  ClosedRecalled: {
-    stage: "Closed: Closed by Submitter",
-    description: "This action plan has been closed by the submitter.",
-    stageNum: 5,
-    progress: "100%",
-  },
-};
-
-var appProcessesStates = {
-  init: "Initializing the Application",
-  save: "Saving Plan...",
-  cancelAction: "Cancelling Action...",
-  view: "Viewing Plan...",
-  refresh: "Refreshing Plan...",
-  lock: "Locking Plan...",
-  closing: "Closing Plan...",
-  opening: "Re-Opening Plan...",
-  pipeline: "Progressing to Next Stage...",
-  refreshPlans: "Refreshing Data...",
-  newComment: "Refreshing Comments...",
-  newAction: "Refreshing Actions...",
-  approve: "Approving Plan...",
-};
-
 // Filter for CAPViewModel actions
 function checkComplete(action) {
   return action.ImplementationStatus != "Completed";
@@ -1749,49 +1541,7 @@ export function CAPViewModel(capIdstring) {
   var APPPROCESSTIMEOUT = 10 * 1000; // 10 seconds
   var APPPROCESSDISMISSTIMEOUT = 1000;
   self.app = {
-    processes: {
-      addTask: function (task) {
-        var newTask = {
-          id: Math.floor(Math.random() * 100000 + 1),
-          task: task,
-          active: ko.observable(true),
-        };
-
-        newTask.timeout = window.setTimeout(function () {
-          console.error("this task is aging:", newTask);
-          alert(
-            "Something seems to have gone wrong performing the following action: " +
-              newTask.task
-          );
-        }, APPPROCESSTIMEOUT);
-        vm.app.processes.tasks.push(newTask);
-        return newTask.id;
-      },
-      finishTask: function (task) {
-        let activeTask = vm.app.processes.tasks().find(function (taskItem) {
-          return taskItem.task == task && taskItem.active();
-        });
-        if (activeTask) {
-          window.clearTimeout(activeTask.timeout);
-          activeTask.active(false);
-          window.setTimeout(function () {
-            vm.app.processes.removeTask(activeTask);
-          }, APPPROCESSDISMISSTIMEOUT);
-        }
-      },
-      removeTask: function (taskToRemove) {
-        self.app.processes.tasks(
-          self.app.processes.tasks().filter(function (task) {
-            return task.id != taskToRemove.id;
-          })
-        );
-      },
-      tasks: ko.observableArray(),
-      dimmerActivity: ko.pureComputed(function () {
-        console.log("dimmer state changed");
-        return self.app.processes.tasks().length;
-      }),
-    },
+    currentDialogs: ModalDialog.currentDialogs,
   };
 
   self.bindingCompleteHandlers = {
@@ -1806,9 +1556,11 @@ export function CAPViewModel(capIdstring) {
     });
   });
 
-  self.impersonateUserField = new PeopleField();
+  self.impersonateUserField = new PeopleField({
+    displayName: "Impersonate User",
+  });
 
-  self.impersonateUserField.ensuredPeople.subscribe(function (people) {
+  self.impersonateUserField.Value.subscribe(function (people) {
     if (people.length) {
       self.currentUser(people[0]);
       self.currentUserObj.id(people[0].get_id());
@@ -1866,19 +1618,18 @@ export function CAPViewModel(capIdstring) {
   // Default adminType to that provided on page.
   const adminType = getUrlParam("role");
 
-  self.AdminType = ko.observable(adminType || "");
-  self.MyRoles = ko.pureComputed(() => {
-    return Object.entries(ROLES.ADMINTYPE).map(([key, val]) => {
-      return {
-        key,
-        val,
-      };
-    });
-  });
+  self.AdminType = currentRole;
+
+  self.userRoleOpts = userRoleOpts;
+
+  self.AdminType(adminType || "");
 
   self.AdminType.subscribe((val) => {
     setUrlParam("role", val);
   });
+
+  self.runningTasks = runningTasks;
+  self.blockingTasks = blockingTasks;
 
   self.tabOpts = {
     qtm: new Tab({
@@ -1962,7 +1713,7 @@ export function CAPViewModel(capIdstring) {
   //   Common.Utilities.updateUrlParam("tab", newTab.toString());
   // });
 
-  self.navigateToRecord = function (record) {
+  self.navigateToRecord = async function (record) {
     vm.CAPID(record.Title);
     //Common.Utilities.updateUrlParam("capid", record.Title);
     //LoadSelectedCAP(record.Title);
@@ -2407,10 +2158,12 @@ export function CAPViewModel(capIdstring) {
           }
           return false;
         }),
-        tempCoordinator: new PeopleField(),
+        tempCoordinator: new PeopleField({
+          displayName: "CAR/CAP Coordinator",
+        }),
         edit: function () {
           if (self.selectedRecord.ProblemResolverName.ensuredPeople().length) {
-            self.section.Info.coordinator.tempCoordinator.addPeople(
+            self.section.Info.coordinator.tempCoordinator.set(
               self.selectedRecord.ProblemResolverName.ensuredPeople()[0]
             );
           }
@@ -2418,11 +2171,11 @@ export function CAPViewModel(capIdstring) {
         },
         save: function () {
           self.selectedRecord.ProblemResolverName.removeAllPeople();
+          const coord = self.section.Info.coordinator.tempCoordinator.Value();
+          const coordString = `${coord.ID};#${coord.LoginName};#`;
           var valuePair = [
-            [
-              "ProblemResolverName",
-              self.section.Info.coordinator.tempCoordinator.getValueForWrite(),
-            ],
+            ["ProblemResolverName", coordString],
+            ["CoordinatorName", coord.Title],
           ];
           self.section.Info.coordinator.isEditing(false);
           app.listRefs.Plans.updateListItem(
@@ -2456,16 +2209,22 @@ export function CAPViewModel(capIdstring) {
 
         return false;
       }),
-      value: ko.observable(),
+      field: new TextAreaField({
+        displayName: "Opportunity for Improvement",
+        isRichText: true,
+      }),
       edit: function () {
-        self.section.OpportunityForImprovement.value(
+        self.section.OpportunityForImprovement.field.Value(
           self.selectedRecord.OFIDescription()
         );
         self.section.OpportunityForImprovement.isEditing(true);
       },
       save: function () {
         var valuepair = [
-          ["OFIDescription", self.section.OpportunityForImprovement.value()],
+          [
+            "OFIDescription",
+            self.section.OpportunityForImprovement.field.Value(),
+          ],
         ];
         self.section.OpportunityForImprovement.isEditing(false);
         app.listRefs.Plans.updateListItem(
@@ -2498,16 +2257,22 @@ export function CAPViewModel(capIdstring) {
 
         return false;
       }),
-      value: ko.observable(),
+      field: new TextAreaField({
+        displayName: "Data Discovery and Analysis",
+        isRichText: true,
+      }),
       edit: function () {
-        self.section.DiscoveryDataAnalysis.value(
+        self.section.DiscoveryDataAnalysis.field.Value(
           self.selectedRecord.DiscoveryDataAnalysis()
         );
         self.section.DiscoveryDataAnalysis.isEditing(true);
       },
       save: function () {
         var valuepair = [
-          ["DiscoveryDataAnalysis", self.section.DiscoveryDataAnalysis.value()],
+          [
+            "DiscoveryDataAnalysis",
+            self.section.DiscoveryDataAnalysis.field.Value(),
+          ],
         ];
         self.section.DiscoveryDataAnalysis.isEditing(false);
         app.listRefs.Plans.updateListItem(
@@ -2546,16 +2311,19 @@ export function CAPViewModel(capIdstring) {
 
         return false;
       }),
-      value: ko.observable(),
+      field: new TextAreaField({
+        displayName: "Problem Description",
+        isRichText: true,
+      }),
       edit: function () {
-        self.section.ProblemDescription.value(
+        self.section.ProblemDescription.field.Value(
           self.selectedRecord.ProblemDescription()
         );
         self.section.ProblemDescription.isEditing(true);
       },
       save: function () {
         var valuepair = [
-          ["ProblemDescription", self.section.ProblemDescription.value()],
+          ["ProblemDescription", self.section.ProblemDescription.field.Value()],
         ];
         self.section.ProblemDescription.isEditing(false);
         app.listRefs.Plans.updateListItem(
@@ -2592,10 +2360,13 @@ export function CAPViewModel(capIdstring) {
         }
         return false;
       }),
-      value: ko.observable(),
-      actionDate: new DateField({ type: "date" }),
+      field: new TextAreaField({
+        displayName: "Containment Action",
+        isRichText: true,
+      }),
+      actionDate: new DateField({ displayName: "Containment Action Date" }),
       edit: function () {
-        self.section.ContainmentAction.value(
+        self.section.ContainmentAction.field.Value(
           self.selectedRecord.ContainmentAction()
         );
         // If our datetime is set
@@ -2603,7 +2374,7 @@ export function CAPViewModel(capIdstring) {
           self.selectedRecord.ContainmentActionDate.isDate() &&
           self.selectedRecord.ContainmentActionDate.date().getTime()
         ) {
-          self.section.ContainmentAction.actionDate.date(
+          self.section.ContainmentAction.actionDate.set(
             self.selectedRecord.ContainmentActionDate.date()
           );
         }
@@ -2611,12 +2382,11 @@ export function CAPViewModel(capIdstring) {
       },
       save: function () {
         var valuepair = [
-          ["ContainmentAction", self.section.ContainmentAction.value()],
+          ["ContainmentAction", self.section.ContainmentAction.field.Value()],
           [
             "ContainmentActionDate",
-            self.section.ContainmentAction.actionDate.isDate()
-              ? self.section.ContainmentAction.actionDate.date().toISOString()
-              : new Date(0).toISOString(),
+            self.section.ContainmentAction.actionDate.get() ??
+              new Date(0).toISOString(),
           ],
         ];
         self.section.ContainmentAction.isEditing(false);
@@ -2632,18 +2402,44 @@ export function CAPViewModel(capIdstring) {
     },
     RootCause: {
       new: function () {
-        var args = {
-          capID: self.selectedRecord.Title(),
-          num: self.RootCauseWhy().length ? self.RootCauseWhy().length + 1 : 1,
+        const rootCauseWhy = new RootCauseWhy();
+
+        const planNum = self.selectedRecord.Title();
+        const actionNumber = self.RootCauseWhy().length
+          ? self.RootCauseWhy().length + 1
+          : 1;
+
+        const title = `${planNum}-${actionNumber}`;
+
+        rootCauseWhy.Title.Value(title);
+        rootCauseWhy.Number.Value(actionNumber);
+
+        const form = FormManager.NewForm({
+          entity: rootCauseWhy,
+        });
+
+        const options = {
+          title: "New Why",
+          form,
+          dialogReturnValueCallback: OnCallbackFormRefresh,
         };
-        app.listRefs.Whys.showModal(
-          "NewForm.aspx",
-          "New Why",
-          args,
-          OnCallbackFormRefresh
-        );
+
+        ModalDialog.showModalDialog(options);
       },
-      editWhy: function (why) {
+      editWhy: async function (why) {
+        const rootCauseWhy = await appContext.RootCauseWhys.FindById(why.ID);
+
+        const form = FormManager.EditForm({ entity: rootCauseWhy });
+
+        const options = {
+          title: "Edit Why",
+          form,
+          dialogReturnValueCallback: OnCallbackFormRefresh,
+        };
+
+        ModalDialog.showModalDialog(options);
+      },
+      editWhyDeprecated: function (why) {
         var args = {
           id: why.ID,
         };
@@ -2754,31 +2550,57 @@ export function CAPViewModel(capIdstring) {
         ].includes(self.selectedRecord.ProcessStage());
       }),
       new: function () {
-        var args = {
-          capID: self.selectedRecord.Title(),
-          docType: DOCTYPES.SUPPORT,
+        const planNum = self.selectedRecord.Title();
+
+        const supportingDocument = new SupportingDocument();
+        supportingDocument.Record.Value(planNum);
+        supportingDocument.DocType.Value(SUPPORTINGDOCUMENTTYPES.SUPPORT);
+
+        const folderPath = planNum;
+
+        const form = FormManager.UploadForm({
+          entity: supportingDocument,
+          folderPath,
+          view: SupportingDocument.Views.Edit,
+        });
+
+        const options = {
+          title: "Upload New Supporting Document",
+          form,
+          dialogReturnValueCallback: m_fnRefresh,
         };
-        app.listRefs.SupportDocs.createFolderRec(
-          vm.selectedRecord.Title(),
-          function () {
-            app.listRefs.SupportDocs.uploadNewDocument(
-              vm.selectedRecord.Title(),
-              "New Support Document",
-              args,
-              m_fnRefresh
-            );
-          }
-        );
+
+        ModalDialog.showModalDialog(options);
       },
-      view: function (doc) {
-        app.listRefs.SupportDocs.showModal(
-          "DispForm.aspx",
-          doc.FileLeafRef,
-          {
-            id: doc.ID,
-          },
-          function () {}
-        );
+      view: async function (doc) {
+        const supportingDocument =
+          await appContext.SupportingDocuments.FindById(doc.ID);
+
+        const form = FormManager.DispForm({ entity: supportingDocument });
+
+        const options = {
+          title: "View Document",
+          form,
+        };
+
+        ModalDialog.showModalDialog(options);
+      },
+      edit: async function (doc) {
+        const supportingDocument =
+          await appContext.SupportingDocuments.FindById(doc.ID);
+
+        const form = FormManager.EditForm({
+          entity: supportingDocument,
+          view: SupportingDocument.Views.Edit,
+        });
+
+        const options = {
+          title: "Edit Document",
+          form,
+          dialogReturnValueCallback: m_fnRefresh,
+        };
+
+        ModalDialog.showModalDialog(options);
       },
     },
     Actions: {
@@ -2827,25 +2649,28 @@ export function CAPViewModel(capIdstring) {
         ];
         app.listRefs.Actions.updateListItem(action.ID, vp, m_fnRefresh);
       },
-      new: function () {
-        // Get the next action item number
-        var actionNoMax = 1;
-        self.ActionListItems().forEach((action) => {
-          let actionNo = parseInt(action.ActionID.split("-")[2].split("A")[1]);
-          if (actionNo >= actionNoMax) {
-            actionNoMax = actionNo + 1;
-          }
+      new: async function () {
+        const planNum = self.selectedRecord.Title();
+        const nextActionId = getNextActionId(planNum, self.ActionListItems());
+
+        const action = new Action();
+
+        action.Title.Value(planNum);
+        action.ActionID.Value(nextActionId);
+
+        const form = FormManager.NewForm({
+          entity: action,
+          view: Action.Views.New,
+          onSubmit: () => submitNewAction(null, action),
         });
-        var args = {
-          capID: self.selectedRecord.Title(),
-          count: actionNoMax,
+
+        const options = {
+          title: "New Action",
+          form,
+          dialogReturnValueCallback: OnActionCreateCallback,
         };
-        app.listRefs.Actions.showModal(
-          "NewForm.aspx",
-          "New Action",
-          args,
-          OnActionCreateCallback
-        );
+
+        ModalDialog.showModalDialog(options);
       },
       isEditable: function (action) {
         if (!self.selectedRecord.curUserHasRole(ROLES.IMPLEMENTOR)) {
@@ -2862,16 +2687,20 @@ export function CAPViewModel(capIdstring) {
           "ImplementingActionPlan",
         ].includes(self.selectedRecord.ProcessStageKey());
       },
-      editClick: function (action) {
-        app.listRefs.Actions.showModal(
-          "EditForm.aspx",
-          action.Title,
-          {
-            id: action.ID,
-            stage: self.selectedRecord.ProcessStage(),
-          },
-          OnActionEditCallback
-        );
+      editClick: async function (action) {
+        const entity = await appContext.Actions.FindById(action.ID);
+        const planId = self.selectedRecord.ID();
+        const plan = await appContext.Plans.FindById(planId);
+
+        const form = new EditActionForm({ entity, plan });
+
+        const options = {
+          title: "Editing Action " + entity.ActionID.Value(),
+          form,
+          dialogReturnValueCallback: OnActionEditCallback,
+        };
+
+        ModalDialog.showModalDialog(options);
       },
       requiresApproval: function (action) {
         if (vm.AdminType()) {
@@ -3092,36 +2921,66 @@ export function CAPViewModel(capIdstring) {
             );
           }),
           new: function () {
-            var args = {
-              capID: self.selectedRecord.Title(),
-              docType: DOCTYPES.EFFECTIVENESS,
+            const planNum = self.selectedRecord.Title();
+
+            const supportingDocument = new SupportingDocument();
+            supportingDocument.Record.Value(planNum);
+            supportingDocument.DocType.Value(
+              SUPPORTINGDOCUMENTTYPES.EFFECTIVENESS
+            );
+
+            const folderPath = planNum;
+
+            const form = FormManager.UploadForm({
+              entity: supportingDocument,
+              folderPath,
+              view: SupportingDocument.Views.Edit,
+            });
+
+            const options = {
+              title: "Upload New Proof of Effectiveness Document",
+              form,
+              dialogReturnValueCallback: m_fnRefresh,
             };
-            app.listRefs.SupportDocs.createFolderRec(
-              vm.selectedRecord.Title(),
-              function () {
-                app.listRefs.SupportDocs.uploadNewDocument(
-                  vm.selectedRecord.Title(),
-                  "New Effectiveness Document",
-                  args,
-                  OnCallbackFormRefresh
-                );
-              }
-            );
+
+            ModalDialog.showModalDialog(options);
           },
-          view: function (doc) {
-            app.listRefs.SupportDocs.showModal(
-              "DispForm.aspx",
-              doc.FileLeafRef,
-              {
-                id: doc.ID,
-              },
-              function () {}
-            );
+          view: async function (doc) {
+            const supportingDocument =
+              await appContext.SupportingDocuments.FindById(doc.ID);
+
+            const form = FormManager.DispForm({ entity: supportingDocument });
+
+            const options = {
+              title: "View Document",
+              form,
+            };
+
+            ModalDialog.showModalDialog(options);
+          },
+          edit: async function (doc) {
+            const supportingDocument =
+              await appContext.SupportingDocuments.FindById(doc.ID);
+
+            const form = FormManager.EditForm({
+              entity: supportingDocument,
+              view: SupportingDocument.Views.Edit,
+            });
+
+            const options = {
+              title: "Edit Document",
+              form,
+              dialogReturnValueCallback: m_fnRefresh,
+            };
+
+            ModalDialog.showModalDialog(options);
           },
         },
       },
     },
   };
+
+  self.selectedPlan = ko.observable();
 
   // This is just initializing an object with corresponding observables
   // based off the list def
@@ -3437,7 +3296,7 @@ export function CAPViewModel(capIdstring) {
         args,
         (result, value) => {
           if (result === SP.UI.DialogResult.OK) {
-            vm.app.processes.addTask(appProcessesStates.refreshPlans);
+            const refreshTask = addTask(tasks.refreshPlans);
             const userId = vm.currentUserObj.id();
             app.listRefs.Plans.getListItems("", function (items) {
               vm.allRecordsArray(items);
@@ -3457,7 +3316,7 @@ export function CAPViewModel(capIdstring) {
               }
               vm.selectedTitle(newPlan.Title);
               vm.tabs.selectById(vm.tabOpts.detail);
-              vm.app.processes.finishTask(appProcessesStates.refreshPlans);
+              finishTask(refreshTask);
               // m_fnForward();
             });
           }
@@ -3495,27 +3354,48 @@ export function CAPViewModel(capIdstring) {
       // }
       return false;
     }),
-    edit: function () {
-      var args = {
-        id: self.selectedRecord.ID(),
-      };
-      var form;
+    edit: async function () {
+      const id = self.selectedRecord.ID();
+      const entity = await appContext.Plans.FindById(id);
+
+      // Two separate views, since we don't want the "Flattened Name" fields on the forms.
+      let formView, submitView;
       if (self.selectedRecord.curUserHasRole(ROLES.ADMINTYPE.QTM)) {
-        form = "EditFormQTM.aspx";
-        args.role = ROLES.ADMINTYPE.QTM;
-      } else if (self.selectedRecord.curUserHasRole(ROLES.IMPLEMENTOR)) {
-        args.role = ROLES.ADMINTYPE.IMPLEMENTOR;
-        form = "EditFormUser.aspx";
+        formView = Plan.Views.QTMEditForm;
+        submitView = Plan.Views.QTMEditSubmit;
       } else {
-        form = "EditFormUser.aspx";
-        args.role = ROLES.ADMINTYPE.SUBMITTER;
+        formView = Plan.Views.SubmitterEditForm;
+        submitView = Plan.Views.SubmitterEditSubmit;
       }
-      app.listRefs.Plans.showModal(
+
+      const form = FormManager.EditForm({
+        entity: entity,
+        view: formView,
+        onSubmit: () => editPlan(entity, submitView),
+      });
+
+      const options = {
+        title: `Editing ${entity.Title}`,
         form,
-        self.selectedTitle(),
-        args,
-        OnCallbackFormRefresh
-      );
+        dialogReturnValueCallback: OnCallbackFormRefresh,
+      };
+
+      ModalDialog.showModalDialog(options);
+    },
+    view: async function () {
+      const id = self.selectedRecord.ID();
+      const plan = await appContext.Plans.FindById(id);
+
+      const planViewForm = FormManager.DispForm({
+        entity: plan,
+        view: Plan.Views.View,
+      });
+      const options = {
+        title: "View Plan " + plan.Title,
+        form: planViewForm,
+      };
+
+      ModalDialog.showModalDialog(options);
     },
     isCloseable: ko.pureComputed(function () {
       if (!vm.selectedRecord.Active()) {
@@ -3546,27 +3426,19 @@ export function CAPViewModel(capIdstring) {
       }
       return false;
     }),
-    close: function () {
-      $("#close-modal").modal("hide");
-      var valuePair = [];
-      if (vm.AdminType() == ROLES.ADMINTYPE.USER) {
-        closePlan(self.selectedRecord.ID(), {
-          title: self.selectedRecord.Title(),
-          newStage: "Closed: Closed by Submitter",
-          prevStage: vm.selectedRecord.ProcessStage(),
-          cancelReason: vm.selectedRecord.CancelReason(),
-        });
-      } else {
-        closePlan(self.selectedRecord.ID(), {
-          title: self.selectedRecord.Title(),
-          newStage: "Closed: Rejected",
-          prevStage: vm.selectedRecord.ProcessStage(),
-          cancelReason: vm.selectedRecord.CancelReason(),
-        });
-      }
-    },
-    displayCloseDialog: function () {
-      $("#close-modal").modal("show");
+    displayCloseDialog: async function () {
+      // $("#close-modal").modal("show");
+      const planId = self.selectedPlan()?.ID;
+      const plan = await appContext.Plans.FindById(planId);
+      const form = new CancelPlanForm({ entity: plan });
+
+      const options = {
+        title: "Are you sure you want to close this plan?",
+        form,
+        dialogReturnValueCallback: OnCallbackFormRefresh,
+      };
+
+      ModalDialog.showModalDialog(options);
     },
     isOpenable: ko.pureComputed(function () {
       if (vm.selectedRecord.Active()) {
@@ -3579,8 +3451,8 @@ export function CAPViewModel(capIdstring) {
     }),
     open: function () {
       if (confirm("Are you sure you want to Re-Open this record?")) {
-        vm.app.processes.addTask(appProcessesStates.opening);
-        valuePair = [
+        const openTask = addTask(tasks.opening);
+        const valuePair = [
           ["ProcessStage", vm.selectedRecord.PreviousStage()],
           ["Active", "1"],
           ["CloseDate", null],
@@ -3590,7 +3462,7 @@ export function CAPViewModel(capIdstring) {
           self.selectedRecord.ID(),
           valuePair,
           function () {
-            vm.app.processes.finishTask(appProcessesStates.opening);
+            finishTask(openTask);
             //   toggleLockPlan(self.selectedRecord.Title(), false, function () {
             //     alert("Plan has been unlocked.");
             //     m_fnRefresh();
@@ -3797,29 +3669,66 @@ export function CAPViewModel(capIdstring) {
     });
   };
 
-  self.controls.rejectStage = function (next) {
-    $("#rejectionInformation").modal("show");
+  self.controls.rejectStage = function () {
+    // const myModal = new bootstrap.Modal(
+    //   document.getElementById("rejectionInformation")
+    // );
+    // myModal.show();
+
+    const plan = ko.unwrap(self.selectedPlan);
+
+    const rejection = new Rejection();
+
+    rejection.Title.Value(plan.Title.Value());
+    rejection.Active.Value(true);
+    rejection.Rejector.Value(currentUser.Title);
+
+    const currentStage = plan.ProcessStage.Value();
+    rejection.Stage.Value(currentStage);
+
+    const rejectionId =
+      plan.Title.Value() +
+      "-R" +
+      String(self.Rejections().length).padStart(2, "0");
+
+    rejection.RejectionId.Value(rejectionId);
+
+    const form = FormManager.NewForm({
+      entity: rejection,
+      view: Rejection.Views.New,
+    });
+
+    const options = {
+      title: "New Rejection",
+      form,
+      dialogReturnValueCallback: self.controls.rejectStageSubmit,
+    };
+
+    ModalDialog.showModalDialog(options);
   };
 
-  self.controls.rejectStageSubmit = function () {
+  self.controls.rejectStageSubmit = function (result) {
+    if (result !== SP.UI.DialogResult.OK) {
+      return;
+    }
     // When the user submits the modal with the reason, create a
     // new rejection, then execute the stages reject function
     var next = null;
 
-    var rejectVp = [
-      ["Title", self.selectedRecord.Title()],
-      ["Reason", self.rejectReason()],
-      ["Stage", self.selectedRecord.ProcessStage()],
-      ["Date", new Date().toISOString()],
-      ["Active", 1],
-      ["Rejector", self.currentUser().get_title()],
-      [
-        "RejectionId",
-        self.selectedRecord.Title() +
-          "-R" +
-          String(self.Rejections().length).padStart(2, "0"),
-      ],
-    ];
+    // var rejectVp = [
+    //   ["Title", self.selectedRecord.Title()],
+    //   ["Reason", self.rejectReason()],
+    //   ["Stage", self.selectedRecord.ProcessStage()],
+    //   ["Date", new Date().toISOString()],
+    //   ["Active", 1],
+    //   ["Rejector", self.currentUser().get_title()],
+    //   [
+    //     "RejectionId",
+    //     self.selectedRecord.Title() +
+    //       "-R" +
+    //       String(self.Rejections().length).padStart(2, "0"),
+    //   ],
+    // ];
 
     switch (self.selectedRecord.ProcessStageKey()) {
       case "ProblemApprovalQSO":
@@ -3857,9 +3766,11 @@ export function CAPViewModel(capIdstring) {
         break;
     }
 
-    app.listRefs.Rejections.createListItem(rejectVp, next);
+    next();
 
-    $("#rejectionInformation").modal("hide");
+    // app.listRefs.Rejections.createListItem(rejectVp, next);
+
+    // $("#rejectionInformation").modal("hide");
   };
   self.rejectReason = ko.observable();
   self.effectivenessRejectReason = ko.observable();
@@ -3929,6 +3840,9 @@ export function CAPViewModel(capIdstring) {
   };
 
   self.controls.stage3 = {
+    targetVerificationDate: new DateField({
+      displayName: "Effectiveness Verification Target Date",
+    }),
     enableImplementingActionPlan: ko.pureComputed(function () {
       // if (!self.controls.stage3.showImplementingActionPlan()) {
       //   return false;
@@ -3946,7 +3860,7 @@ export function CAPViewModel(capIdstring) {
         ["ProcessStage", stageDescriptions.ImplementationApproval.stage],
         [
           "EffectivenessVerificationTargetD",
-          self.selectedRecord.EffectivenessVerificationTargetD.date().toISOString(),
+          self.controls.stage3.targetVerificationDate.get(),
         ],
         ["SubmittedImplementDate", new Date().toISOString()],
       ];
@@ -4072,10 +3986,7 @@ export function CAPViewModel(capIdstring) {
         return self.NumOpenActions() > 0;
       }),
       VerificationTargetDate: ko.pureComputed(function () {
-        return (
-          self.selectedRecord.EffectivenessVerificationTargetD.date().getTime() ==
-          0
-        );
+        return !self.controls.stage3.targetVerificationDate.Value();
       }),
       AddSupportDoc: ko.pureComputed(function () {
         return !self.SupportDocuments().length;
@@ -4151,6 +4062,82 @@ export function CAPViewModel(capIdstring) {
   };
 
   /******************************** Lock Editing Logic ***************************/
+
+  self.onNewPlanCreated = function (result, args) {
+    if (result !== SP.UI.DialogResult.OK) {
+      return;
+    }
+    const refreshTask = addTask(tasks.refreshPlans);
+    const userId = vm.currentUserObj.id();
+    app.listRefs.Plans.getListItems("", function (items) {
+      vm.allRecordsArray(items);
+
+      // Update Title
+      const newPlan = items.findLast(
+        (item) => item.Author.get_lookupId() == userId
+      );
+      const newTitle = getNextTitleByType(newPlan.RecordType);
+      if (newTitle != newPlan.Title) {
+        newPlan.Title = newTitle;
+        app.listRefs.Plans.updateListItem(
+          newPlan.ID,
+          [["Title", newTitle]],
+          () => {}
+        );
+      }
+      vm.selectedTitle(newPlan.Title);
+      vm.tabs.selectTab(vm.tabOpts.detail);
+      finishTask(refreshTask);
+      // m_fnForward();
+    });
+  };
+}
+
+class App {
+  constructor() {
+    const app = new CAPViewModel();
+    Object.assign(this, app);
+  }
+
+  clickNewPlan() {
+    const plan = new Plan();
+
+    // const planEditForm = FormManager.NewForm(plan, Plan.Views.New);
+
+    const newPlanForm = new NewPlanForm({});
+
+    const options = {
+      title: "Create a new CAR or CAP",
+      form: newPlanForm,
+      dialogReturnValueCallback: this.onNewPlanCreated,
+    };
+
+    ModalDialog.showModalDialog(options);
+  }
+
+  async clickEditPlan() {
+    const plan = await appContext.Plans.FindById();
+  }
+
+  /******************************** Application Logic ***************************/
+  async init() {
+    stores: {
+      const businessOfficesPromise =
+        await appContext.BusinessOffices.ToList().then(businessOfficeStore);
+
+      const recordSourcesPromise = await appContext.RecordSources.ToList().then(
+        sourcesStore
+      );
+
+      await Promise.all([businessOfficeStore, recordSourcesPromise]);
+    }
+  }
+
+  static async Create() {
+    const app = new App();
+    await app.init();
+    return app;
+  }
 }
 
 window.vm = {};
