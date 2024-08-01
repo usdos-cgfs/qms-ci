@@ -2,7 +2,7 @@ import { html } from "../constants.js";
 import { getAnchorRoleLinkToPlan } from "../services/plan-service.js";
 
 export function developingActionPlanTemplate(plan) {
-  const location = plan.Location.Value();
+  const location = plan.CGFSLocation.Value();
   const title = getAnchorRoleLinkToPlan(plan);
   const recordType = plan.RecordType.Value();
   const responsiblePerson = plan.CoordinatorName.Value();

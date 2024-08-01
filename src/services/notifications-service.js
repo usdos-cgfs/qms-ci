@@ -106,7 +106,7 @@ function pendingQaoProblemApproval(plan) {
 }
 
 function developingActionPlan(plan) {
-  const coordinator = plan.ProblemResolver.Value();
+  const coordinator = plan.ProblemResolverName.Value();
   const to = [coordinator.Email];
 
   const subject = subjectTemplate(plan);
@@ -186,7 +186,7 @@ function pendingQtmPlanApproval(plan) {
 }
 
 async function implementingActionPlan(plan) {
-  const coordinator = plan.ProblemResolver.Value();
+  const coordinator = plan.ProblemResolverName.Value();
   const actionsResult = await appContext.Actions.FindByTitle(
     plan.Title.Value()
   );
@@ -230,7 +230,7 @@ function pendingQsoImplementationApproval(plan) {
 }
 
 function pendingEffectivenessSubmission(plan) {
-  const coordinator = plan.ProblemResolver.Value();
+  const coordinator = plan.ProblemResolverName.Value();
 
   const to = [coordinator.Email];
 
@@ -247,7 +247,7 @@ function pendingEffectivenessSubmission(plan) {
 }
 
 function pendingEffectivenessSubmissionRejected(plan) {
-  const coordinator = plan.ProblemResolver.Value();
+  const coordinator = plan.ProblemResolverName.Value();
 
   const to = [coordinator.Email];
 

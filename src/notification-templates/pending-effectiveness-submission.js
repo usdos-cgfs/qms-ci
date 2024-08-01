@@ -2,7 +2,7 @@ import { html } from "../constants.js";
 import { getAnchorRoleLinkToPlan } from "../services/plan-service.js";
 
 export function pendingEffectivenessSubmissionTemplate(plan) {
-  const location = plan.Location.Value();
+  const location = plan.CGFSLocation.Value();
   const title = getAnchorRoleLinkToPlan(plan);
   const recordType = plan.RecordType.Value();
   const responsiblePerson = plan.CoordinatorName.Value();
@@ -22,7 +22,7 @@ export function pendingEffectivenessSubmissionTemplate(plan) {
 }
 
 export function pendingEffectivenessSubmissionRejectedTemplate(plan) {
-  const location = plan.Location.Value();
+  const location = plan.CGFSLocation.Value();
   const title = getAnchorRoleLinkToPlan(plan);
   const recordType = plan.RecordType.Value();
   const responsiblePerson = plan.CoordinatorName.Value();

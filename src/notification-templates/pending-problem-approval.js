@@ -11,7 +11,7 @@ export function pendingProblemApprovalTemplate(plan) {
     </p>
     <p>${problemDescription}</p>
     <p>
-      Please visit the following link to Approve or Reject this ${recordType}:
+      Please visit the following link to Approve or Reject this ${recordType}.
     </p>
   `;
   return template;
