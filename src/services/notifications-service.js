@@ -1,7 +1,10 @@
 import { ROLES } from "../constants.js";
 import { Notification } from "../entities/index.js";
 import { appContext } from "../infrastructure/app-db-context.js";
-import { pendingProblemApprovalTemplate } from "../notification-templates/index.js";
+import {
+  developingActionPlanTemplate,
+  pendingProblemApprovalTemplate,
+} from "../notification-templates/index.js";
 import { getAnchorRoleLinkToPlan } from "./plan-service.js";
 import { addTask, finishTask, tasks } from "./tasks-service.js";
 
@@ -15,6 +18,7 @@ const approvedStageNotificationMap = {
   "Pending QTM Problem Approval": pendingQtmProblemApproval,
   "Pending QSO Problem Approval": pendingQsoProblemApproval,
   "Pending QAO Problem Approval": pendingQaoProblemApproval,
+  "Developing Action Plan": developingActionPlan,
 };
 
 function subjectTemplate(plan, content = null) {
@@ -22,61 +26,79 @@ function subjectTemplate(plan, content = null) {
   return `QMS-CAR/CAP - ${content} - ${plan.Title.Value()}`;
 }
 
-async function pendingQtmbProblemApproval(plan) {
-  const to = [defaultContact.QTMB];
+{
+  async function pendingQtmbProblemApproval(plan) {
+    const to = [defaultContact.QTMB];
 
-  const subject = subjectTemplate(plan, "Pending QTM-B Problem Approval");
-  let body = pendingProblemApprovalTemplate(plan);
-  body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QTMB);
+    const subject = subjectTemplate(plan, "Pending QTM-B Problem Approval");
+    let body = pendingProblemApprovalTemplate(plan);
+    body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QTMB);
 
-  return Notification.FromTemplate({
-    title: plan.Title.Value(),
-    to,
-    subject,
-    body,
-  });
+    return Notification.FromTemplate({
+      title: plan.Title.Value(),
+      to,
+      subject,
+      body,
+    });
+  }
+
+  async function pendingQtmProblemApproval(plan) {
+    const to = [defaultContact.QTM];
+
+    const subject = subjectTemplate(plan);
+    const body = pendingProblemApprovalTemplate(plan);
+    body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QTM);
+
+    return Notification.FromTemplate({
+      title: plan.Title.Value(),
+      to,
+      subject,
+      body,
+    });
+  }
+
+  function pendingQsoProblemApproval(plan) {
+    const qso = plan.QSO.Value();
+    if (!qso) return;
+    const to = [qso.Email];
+
+    const subject = subjectTemplate(plan);
+    const body = pendingProblemApprovalTemplate(plan);
+    body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
+
+    return Notification.FromTemplate({
+      title: plan.Title.Value(),
+      to,
+      subject,
+      body,
+    });
+  }
+
+  function pendingQaoProblemApproval(plan) {
+    const qo = plan.QAO.Value();
+    if (!qo) return;
+    const to = [qo.Email];
+
+    const subject = subjectTemplate(plan);
+    const body = pendingProblemApprovalTemplate(plan);
+    body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
+
+    return Notification.FromTemplate({
+      title: plan.Title.Value(),
+      to,
+      subject,
+      body,
+    });
+  }
 }
 
-async function pendingQtmProblemApproval(plan) {
-  const to = [defaultContact.QTM];
+function developingActionPlan(plan) {
+  const coordinator = plan.ProblemResolver.Value();
+  const to = [coordinator.Email];
 
   const subject = subjectTemplate(plan);
-  const body = pendingProblemApprovalTemplate(plan);
-  body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QTM);
-
-  return Notification.FromTemplate({
-    title: plan.Title.Value(),
-    to,
-    subject,
-    body,
-  });
-}
-
-function pendingQsoProblemApproval(plan) {
-  const qso = plan.QSO.Value();
-  if (!qso) return;
-  const to = [qso.Email];
-
-  const subject = subjectTemplate(plan);
-  const body = pendingProblemApprovalTemplate(plan);
-  body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
-
-  return Notification.FromTemplate({
-    title: plan.Title.Value(),
-    to,
-    subject,
-    body,
-  });
-}
-
-function pendingQaoProblemApproval(plan) {
-  const qo = plan.QAO.Value();
-  if (!qo) return;
-  const to = [qo.Email];
-
-  const subject = subjectTemplate(plan);
-  const body = pendingProblemApprovalTemplate(plan);
-  body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
+  let body = developingActionPlanTemplate(plan);
+  body += getAnchorRoleLinkToPlan(plan);
 
   return Notification.FromTemplate({
     title: plan.Title.Value(),
