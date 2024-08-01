@@ -380,7 +380,7 @@ function m_fnApproveProblemQSO() {
     ["QSOProblemAdjudicationDate", ts],
     ["ProcessStage", "Developing Action Plan"],
   ];
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnApproveProblemQAO() {
@@ -398,7 +398,7 @@ function m_fnApproveProblemQAO() {
     ["ProcessStage", "Developing Action Plan"],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnApproveProblemQTMB() {
@@ -415,7 +415,7 @@ function m_fnApproveProblemQTMB() {
     ["ProcessStage", "Pending QTM Problem Approval"],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 function m_fnApproveProblemQTM() {
   var planId = vm.selectedRecord.ID();
@@ -439,7 +439,7 @@ function m_fnApproveProblemQTM() {
     ["NextTargetDate", target_deadline],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnRejectProblemQSO() {
@@ -530,7 +530,7 @@ function m_fnApprovePlanQSO(planId) {
       valuePair.push(["ProcessStage", stageDescriptions.PlanApprovalQTM.stage]);
   }
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnApprovePlanQTMB(planId) {
@@ -547,7 +547,7 @@ function m_fnApprovePlanQTMB(planId) {
     ["ProcessStage", "Pending QTM Plan Approval"],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnApprovePlanQTM(planId) {
@@ -568,7 +568,11 @@ function m_fnApprovePlanQTM(planId) {
     ],
   ];
   activateActions(function () {
-    app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+    app.listRefs.Plans.updateListItem(
+      planId,
+      valuePair,
+      onStageApprovedCallback
+    );
   });
 }
 
@@ -678,7 +682,7 @@ function m_fnApproveImplement() {
     ],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 // Set the CAPProcessStage to Pending QSO Approval
@@ -716,7 +720,7 @@ function m_fnApproveEffectivenessQSO() {
       valuePair.push(["ProcessStage", "Pending QTM Effectiveness Approval"]);
   }
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnApproveEffectivenessQTMB() {
@@ -733,7 +737,7 @@ function m_fnApproveEffectivenessQTMB() {
     ["ProcessStage", "Pending QTM Effectiveness Approval"],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnApproveEffectivenessQTM() {
@@ -752,7 +756,7 @@ function m_fnApproveEffectivenessQTM() {
     ["Active", "0"],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnRejectEffectivenessQSO(planId) {
@@ -864,6 +868,20 @@ function m_fnRefresh(result, value) {
   LoadMainData(function () {
     LoadSelectedCAP(vm.selectedTitle());
     finishTask(tasks.refresh);
+  });
+}
+
+async function onStageApprovedCallback(result) {
+  if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
+    return;
+  }
+  const refreshTask = addTask(tasks.refresh);
+
+  LoadMainData(async function () {
+    await LoadSelectedCAP(vm.selectedTitle());
+    const plan = ko.unwrap(vm.selectedPlan);
+    await stageApprovedNotification(plan);
+    finishTask(refreshTask);
   });
 }
 
@@ -4127,9 +4145,7 @@ class App {
 
   async clickSendStageNotification() {
     const plan = ko.unwrap(vm.selectedPlan);
-    // const notificationTask = addTask(tasks.notification());
     await stageApprovedNotification(plan);
-    // finishTask(notificationTask);
   }
 
   async clickEditPlan() {
