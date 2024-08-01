@@ -1,7 +1,7 @@
 import { html } from "../constants.js";
 import { getAnchorRoleLinkToPlan } from "../services/plan-service.js";
 
-export function pendingPlanApproval(plan) {
+export function pendingPlanApprovalTemplate(plan) {
   const location = plan.Location.Value();
   const title = getAnchorRoleLinkToPlan(plan);
   const recordType = plan.RecordType.Value();
