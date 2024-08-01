@@ -52,9 +52,9 @@ export class Notification extends ConstrainedEntity {
   static FromTemplate({ title, to, cc = null, bcc = null, subject, body }) {
     const notification = new Notification();
     notification.Title.Value(title);
-    notification.To.Value(to.join(";"));
-    notification.CC.Value(cc?.join(";"));
-    notification.BCC.Value(bcc?.join(";"));
+    notification.To.Value(sanitizeEmails(to));
+    notification.CC.Value(sanitizeEmails(cc));
+    notification.BCC.Value(sanitizeEmails(bcc));
     notification.Subject.Value(subject);
     notification.Body.Value(body);
     return notification;
@@ -68,4 +68,9 @@ export class Notification extends ConstrainedEntity {
     name: "Notifications",
     title: "Notifications",
   };
+}
+
+function sanitizeEmails(emails) {
+  if (!emails) return;
+  return [...new Set(emails.filter((n) => n))].join(";");
 }

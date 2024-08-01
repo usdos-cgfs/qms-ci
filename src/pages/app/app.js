@@ -804,7 +804,7 @@ function m_fnRejectEffectivenessQTMB(planId) {
 
   var valuePair = [
     ["QMSBEffectivenessAdjudication", "Rejected"],
-    ["QMSBEffectivenessAdjudicationDate", ts],
+    ["QMSBEffectivenessAdjudicationDat", ts],
   ];
 
   switch (rejectReason) {

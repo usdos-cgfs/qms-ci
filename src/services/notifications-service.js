@@ -47,6 +47,18 @@ async function getEmailFromField(field) {
   return result?.Email;
 }
 
+function getQsoEmail(plan) {
+  return getEmailFromField(plan.QSO);
+}
+
+function getQaoEmail(plan) {
+  return getEmailFromField(plan.QAO);
+}
+
+function getCoordinatorEmail(plan) {
+  return getEmailFromField(plan.ProblemResolverName);
+}
+
 async function pendingQtmbProblemApproval(plan) {
   const to = [defaultContact.QTMB];
 
@@ -113,7 +125,7 @@ function pendingQaoProblemApproval(plan) {
 
 async function developingActionPlan(plan) {
   // const coordinator = plan.ProblemResolverName.Value();
-  const coordinatorEmail = await getEmailFromField(plan.ProblemResolverName);
+  const coordinatorEmail = await getCoordinatorEmail(plan);
   const to = [coordinatorEmail];
 
   const subject = subjectTemplate(plan);
@@ -128,10 +140,9 @@ async function developingActionPlan(plan) {
   });
 }
 
-function pendingQsoPlanApproval(plan) {
-  const qo = plan.QSO.Value();
-  if (!qo) return;
-  const to = [qo.Email];
+async function pendingQsoPlanApproval(plan) {
+  const qoEmail = await getQsoEmail(plan);
+  const to = [qoEmail];
 
   const subject = subjectTemplate(plan);
   let body = pendingPlanApprovalTemplate(plan, ROLES.ADMINTYPE.QO);
@@ -145,10 +156,9 @@ function pendingQsoPlanApproval(plan) {
   });
 }
 
-function pendingQaoPlanApproval(plan) {
-  const qo = plan.QAO.Value();
-  if (!qo) return;
-  const to = [qo.Email];
+async function pendingQaoPlanApproval(plan) {
+  const qoEmail = await getQaoEmail(plan);
+  const to = [qoEmail];
 
   const subject = subjectTemplate(plan);
   let body = pendingPlanApprovalTemplate(plan, ROLES.ADMINTYPE.QO);
@@ -193,20 +203,22 @@ function pendingQtmPlanApproval(plan) {
 }
 
 async function implementingActionPlan(plan) {
-  const coordinator = plan.ProblemResolverName.Value();
+  const coordinatorEmail = await getCoordinatorEmail(plan);
   const actionsResult = await appContext.Actions.FindByTitle(
     plan.Title.Value()
   );
   if (!actionsResult?.results) return;
 
   const actionTakerEmails = new Set(
-    actionsResult.results.map(
-      (action) => action.ActionResponsiblePerson.Value()?.Email
+    await Promise.all(
+      actionsResult.results.map((action) =>
+        getEmailFromField(action.ActionResponsiblePerson)
+      )
     )
   );
   actionTakerEmails.delete(null);
 
-  const to = [...actionTakerEmails, coordinator.Email];
+  const to = [...actionTakerEmails, coordinatorEmail];
   const subject = subjectTemplate(plan);
   let body = implementingActionPlanTemplate(plan);
   body += getAnchorRoleLinkToPlan(plan);
@@ -219,10 +231,9 @@ async function implementingActionPlan(plan) {
   });
 }
 
-function pendingQsoImplementationApproval(plan) {
-  const qo = plan.QSO.Value();
-  if (!qo) return;
-  const to = [qo.Email];
+async function pendingQsoImplementationApproval(plan) {
+  const qoEmail = await getQsoEmail(plan);
+  const to = [qoEmail];
 
   const subject = subjectTemplate(plan);
   let body = pendingImplementationApproval(plan, ROLES.ADMINTYPE.QO);
@@ -236,10 +247,10 @@ function pendingQsoImplementationApproval(plan) {
   });
 }
 
-function pendingEffectivenessSubmission(plan) {
-  const coordinator = plan.ProblemResolverName.Value();
+async function pendingEffectivenessSubmission(plan) {
+  const coordinatorEmail = await getCoordinatorEmail(plan);
 
-  const to = [coordinator.Email];
+  const to = [coordinatorEmail];
 
   const subject = subjectTemplate(plan);
   let body = pendingEffectivenessSubmissionTemplate(plan);
@@ -253,10 +264,10 @@ function pendingEffectivenessSubmission(plan) {
   });
 }
 
-function pendingEffectivenessSubmissionRejected(plan) {
-  const coordinator = plan.ProblemResolverName.Value();
+async function pendingEffectivenessSubmissionRejected(plan) {
+  const coordinatorEmail = await getCoordinatorEmail(plan);
 
-  const to = [coordinator.Email];
+  const to = [coordinatorEmail];
 
   const subject = subjectTemplate(plan);
   let body = pendingEffectivenessSubmissionRejectedTemplate(plan);
@@ -270,10 +281,9 @@ function pendingEffectivenessSubmissionRejected(plan) {
   });
 }
 
-function pendingQsoEffectivenessApproval(plan) {
-  const qo = plan.QSO.Value();
-  if (!qo) return;
-  const to = [qo.Email];
+async function pendingQsoEffectivenessApproval(plan) {
+  const qoEmail = await getQsoEmail(plan);
+  const to = [qoEmail];
 
   const subject = subjectTemplate(plan);
   let body = pendingEffectivenessApprovalTemplate(plan, ROLES.ADMINTYPE.QO);
