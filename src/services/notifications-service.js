@@ -41,6 +41,12 @@ function subjectTemplate(plan, content = null) {
   return `QMS-CAR/CAP - ${content} - ${plan.Title.Value()}`;
 }
 
+async function getEmailFromField(field) {
+  const person = ko.unwrap(field.Value);
+  const result = await appContext.utilities.ensurePerson(person);
+  return result?.Email;
+}
+
 async function pendingQtmbProblemApproval(plan) {
   const to = [defaultContact.QTMB];
 
@@ -105,9 +111,10 @@ function pendingQaoProblemApproval(plan) {
   });
 }
 
-function developingActionPlan(plan) {
-  const coordinator = plan.ProblemResolverName.Value();
-  const to = [coordinator.Email];
+async function developingActionPlan(plan) {
+  // const coordinator = plan.ProblemResolverName.Value();
+  const coordinatorEmail = await getEmailFromField(plan.ProblemResolverName);
+  const to = [coordinatorEmail];
 
   const subject = subjectTemplate(plan);
   let body = developingActionPlanTemplate(plan);

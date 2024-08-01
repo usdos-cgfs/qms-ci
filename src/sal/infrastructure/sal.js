@@ -50,7 +50,7 @@ export function executeQuery(currCtx) {
 }
 
 function principalToPeople(oPrincipal, isGroup = null) {
-  return {
+  const people = {
     ID: oPrincipal.get_id(),
     Title: oPrincipal.get_title(),
     LoginName: oPrincipal.get_loginName(),
@@ -61,6 +61,9 @@ function principalToPeople(oPrincipal, isGroup = null) {
         : oPrincipal.constructor.getName() == "SP.Group",
     oPrincipal,
   };
+  if (oPrincipal.get_email) people.Email = oPrincipal.get_email();
+
+  return people;
 }
 
 // Used in authorization
@@ -532,6 +535,17 @@ async function getCurrentUserPropertiesAsync() {
 }
 
 // Used in Knockout people custom binding
+export async function ensurePerson(person) {
+  const uri = `/web/getuserbyid(${person.ID})`;
+  // const alternateUri = `/web/siteusers(@v)?@v='i%3A0%23.f%7Cmembership%7C${person.LoginName}`;
+
+  const user = await fetchSharePointData(uri);
+  if (!user) return;
+
+  Object.assign(person, user.d);
+  return person;
+}
+
 export async function ensureUserByKeyAsync(userName) {
   return new Promise((resolve, reject) => {
     var group = sal.globalConfig.siteGroups.find(function (group) {
