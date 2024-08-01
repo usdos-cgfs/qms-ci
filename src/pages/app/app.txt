@@ -1542,6 +1542,13 @@
               <button
                 type="button"
                 class="btn btn-outline-primary"
+                data-bind="click: $root.clickSendStageNotification"
+              >
+                Resend Stage notification
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-primary"
                 data-bind="click: controls.record.view"
               >
                 View

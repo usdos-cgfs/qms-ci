@@ -58,6 +58,8 @@ import {
   userRoleOpts,
 } from "../../services/authorization.js";
 
+import { stageApprovedNotification } from "../../services/notifications-service.js";
+
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
 
@@ -4082,11 +4084,19 @@ export function CAPViewModel(capIdstring) {
         app.listRefs.Plans.updateListItem(
           newPlan.ID,
           [["Title", newTitle]],
-          () => {}
+          async () => {
+            // Send Notification
+            const notificationTask = addTask(tasks.notification());
+            const plan = await appContext.Plans.FindById(newPlan.ID);
+            vm.selectedPlan(plan);
+            await stageApprovedNotification(plan);
+            finishTask(notificationTask);
+          }
         );
       }
       vm.selectedTitle(newPlan.Title);
       vm.tabs.selectTab(vm.tabOpts.detail);
+
       finishTask(refreshTask);
       // m_fnForward();
     });
@@ -4113,6 +4123,13 @@ class App {
     };
 
     ModalDialog.showModalDialog(options);
+  }
+
+  async clickSendStageNotification() {
+    const plan = ko.unwrap(vm.selectedPlan);
+    const notificationTask = addTask(tasks.notification());
+    await stageApprovedNotification(plan);
+    finishTask(notificationTask);
   }
 
   async clickEditPlan() {

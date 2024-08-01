@@ -44,6 +44,16 @@ export class Notification extends ConstrainedEntity {
     type: dateFieldTypes.datetime,
   });
 
+  static FromTemplate({ to, cc = null, bcc = null, subject, body }) {
+    const notification = new Notification();
+    notification.To.Value(to.join(";"));
+    notification.CC.Value(cc?.join(";"));
+    notification.BCC.Value(bcc?.join(";"));
+    notification.Title.Value(subject);
+    notification.Body.Value(body);
+    return notification;
+  }
+
   static Views = {
     All: ["To", "CC", "BCC", "Title", "Body", "Sent"],
   };
