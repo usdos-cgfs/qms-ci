@@ -13,6 +13,11 @@ export class Notification extends ConstrainedEntity {
     super(params);
   }
 
+  Title = new TextField({
+    displayName: "Subject",
+    isRequired: true,
+  });
+
   To = new TextField({
     displayName: "To",
     isRequired: true,
@@ -28,7 +33,7 @@ export class Notification extends ConstrainedEntity {
     isRequired: true,
   });
 
-  Title = new TextField({
+  Subject = new TextField({
     displayName: "Subject",
     isRequired: true,
   });
@@ -44,18 +49,19 @@ export class Notification extends ConstrainedEntity {
     type: dateFieldTypes.datetime,
   });
 
-  static FromTemplate({ to, cc = null, bcc = null, subject, body }) {
+  static FromTemplate({ title, to, cc = null, bcc = null, subject, body }) {
     const notification = new Notification();
+    notification.Title.Value(title);
     notification.To.Value(to.join(";"));
     notification.CC.Value(cc?.join(";"));
     notification.BCC.Value(bcc?.join(";"));
-    notification.Title.Value(subject);
+    notification.Subject.Value(subject);
     notification.Body.Value(body);
     return notification;
   }
 
   static Views = {
-    All: ["To", "CC", "BCC", "Title", "Body", "Sent"],
+    All: ["To", "CC", "BCC", "Title", "Subject", "Body", "Sent"],
   };
 
   static ListDef = {

@@ -4127,9 +4127,9 @@ class App {
 
   async clickSendStageNotification() {
     const plan = ko.unwrap(vm.selectedPlan);
-    const notificationTask = addTask(tasks.notification());
+    // const notificationTask = addTask(tasks.notification());
     await stageApprovedNotification(plan);
-    finishTask(notificationTask);
+    // finishTask(notificationTask);
   }
 
   async clickEditPlan() {

@@ -1,6 +1,9 @@
+import { ROLES } from "../constants.js";
 import { Notification } from "../entities/index.js";
 import { appContext } from "../infrastructure/app-db-context.js";
 import { pendingProblemApprovalTemplate } from "../notification-templates/index.js";
+import { getAnchorRoleLinkToPlan } from "./plan-service.js";
+import { addTask, finishTask, tasks } from "./tasks-service.js";
 
 const defaultContact = {
   QTM: "CGFSQMSCARCAP@state.gov",
@@ -11,7 +14,8 @@ const approvedStageNotificationMap = {
   "Pending QTM-B Problem Approval": pendingQtmbProblemApproval,
 };
 
-function subjectTemplate(plan, content) {
+function subjectTemplate(plan, content = null) {
+  content = content ?? plan.ProcessStage.toString();
   return `QMS-CAR/CAP - ${content} - ${plan.Title.Value()}`;
 }
 
@@ -19,16 +23,47 @@ async function pendingQtmbProblemApproval(plan) {
   const to = [defaultContact.QTMB];
 
   const subject = subjectTemplate(plan, "Pending QTM-B Problem Approval");
+  let body = pendingProblemApprovalTemplate(plan);
+  body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QTMB);
+
+  return Notification.FromTemplate({
+    title: plan.Title.Value(),
+    to,
+    subject,
+    body,
+  });
+}
+
+async function pendingQtmProblemApproval(plan) {
+  const to = [defaultContact.QTMB];
+
+  const subject = subjectTemplate(plan);
   const body = pendingProblemApprovalTemplate(plan);
+  body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QTM);
 
-  const notification = Notification.FromTemplate({ to, subject, body });
-
-  const result = await appContext.Notifications.AddEntity(notification);
+  return Notification.FromTemplate({
+    title: plan.Title.Value(),
+    to,
+    subject,
+    body,
+  });
 }
 
 export async function stageApprovedNotification(plan, newStage = null) {
   newStage = newStage ?? plan.ProcessStage.Value();
-  await approvedStageNotificationMap[newStage](plan);
+  const notificationFunction = approvedStageNotificationMap[newStage];
+  if (!notificationFunction) return;
+  const notificationTask = addTask(tasks.notification());
+  const folderPath = plan.Title.Value();
+
+  await appContext.Notifications.UpsertFolderPath(folderPath);
+
+  const notification = await notificationFunction(plan);
+  const result = await appContext.Notifications.AddEntity(
+    notification,
+    folderPath
+  );
+  finishTask(notificationTask);
 }
 
 export function stageRejected(newStage, plan, rejection) {}

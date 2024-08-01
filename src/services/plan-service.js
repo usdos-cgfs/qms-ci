@@ -1,9 +1,20 @@
-import { LOCATION, PLANTYPE, stageDescriptions } from "../constants.js";
+import { html, LOCATION, PLANTYPE, stageDescriptions } from "../constants.js";
 import { Plan } from "../entities/plan.js";
 import { appContext } from "../infrastructure/app-db-context.js";
 import { ValidationError } from "../sal/primitives/index.js";
 import { Result } from "../sal/shared/index.js";
 import { currentRole, currentUser } from "./authorization.js";
+
+export function getRoleLinkToPlan(plan, role = null) {
+  return `${
+    _spPageContextInfo.webAbsoluteUrl
+  }/?capid=${plan.Title.Value()}&tab=detail&role=${role}`;
+}
+
+export function getAnchorRoleLinkToPlan(plan, role = null) {
+  const link = getRoleLinkToPlan(plan, role);
+  return html`<a href="${link}" target="blank">${plan.Title.Value()}</a>`;
+}
 
 export async function addNewPlan(plan) {
   console.log("inserting plan", plan);

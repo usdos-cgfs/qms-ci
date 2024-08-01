@@ -887,7 +887,14 @@ export function SPList(listDef) {
     return item;
   }
 
-  function createListItemAsync(entity, folderPath = null) {
+  async function createListItemAsync(entity, folderPath = null) {
+    let serverRelFolderPath;
+
+    if (folderPath) {
+      serverRelFolderPath = getServerRelativeFolderPath(folderPath);
+      // await ensureFolder(serverRelFolderPath);
+    }
+
     return new Promise((resolve, reject) => {
       //self.updateConfig();
       const currCtx = new SP.ClientContext.get_current();
@@ -897,13 +904,7 @@ export function SPList(listDef) {
       const itemCreateInfo = new SP.ListItemCreationInformation();
 
       if (folderPath) {
-        var folderUrl =
-          sal.globalConfig.siteUrl +
-          "/Lists/" +
-          self.config.def.name +
-          "/" +
-          folderPath;
-        itemCreateInfo.set_folderUrl(folderUrl);
+        itemCreateInfo.set_folderUrl(serverRelFolderPath);
       }
 
       const oListItem = oList.addItem(itemCreateInfo);
