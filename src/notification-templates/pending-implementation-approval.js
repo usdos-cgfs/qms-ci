@@ -1,9 +1,9 @@
 import { html } from "../constants.js";
 import { getAnchorRoleLinkToPlan } from "../services/plan-service.js";
 
-export function pendingImplementationApproval(plan) {
+export function pendingImplementationApproval(plan, role) {
   const location = plan.Location.Value();
-  const title = getAnchorRoleLinkToPlan(plan);
+  const title = getAnchorRoleLinkToPlan(plan, role);
   const recordType = plan.RecordType.Value();
   const responsiblePerson = plan.CoordinatorName.Value();
 

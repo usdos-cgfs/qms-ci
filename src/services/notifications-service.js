@@ -60,7 +60,7 @@ async function pendingQtmProblemApproval(plan) {
   const to = [defaultContact.QTM];
 
   const subject = subjectTemplate(plan);
-  const body = pendingProblemApprovalTemplate(plan);
+  let body = pendingProblemApprovalTemplate(plan);
   body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QTM);
 
   return Notification.FromTemplate({
@@ -77,7 +77,7 @@ function pendingQsoProblemApproval(plan) {
   const to = [qso.Email];
 
   const subject = subjectTemplate(plan);
-  const body = pendingProblemApprovalTemplate(plan);
+  let body = pendingProblemApprovalTemplate(plan);
   body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
 
   return Notification.FromTemplate({
@@ -94,7 +94,7 @@ function pendingQaoProblemApproval(plan) {
   const to = [qo.Email];
 
   const subject = subjectTemplate(plan);
-  const body = pendingProblemApprovalTemplate(plan);
+  let body = pendingProblemApprovalTemplate(plan);
   body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
 
   return Notification.FromTemplate({
@@ -127,7 +127,7 @@ function pendingQsoPlanApproval(plan) {
   const to = [qo.Email];
 
   const subject = subjectTemplate(plan);
-  const body = pendingPlanApprovalTemplate(plan);
+  let body = pendingPlanApprovalTemplate(plan, ROLES.ADMINTYPE.QO);
   body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
 
   return Notification.FromTemplate({
@@ -144,7 +144,7 @@ function pendingQaoPlanApproval(plan) {
   const to = [qo.Email];
 
   const subject = subjectTemplate(plan);
-  const body = pendingPlanApprovalTemplate(plan);
+  let body = pendingPlanApprovalTemplate(plan, ROLES.ADMINTYPE.QO);
   body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
 
   return Notification.FromTemplate({
@@ -159,7 +159,7 @@ function pendingQtmbPlanApproval(plan) {
   const to = [defaultContact.QTMB];
 
   const subject = subjectTemplate(plan);
-  const body = pendingPlanApprovalTemplate(plan);
+  let body = pendingPlanApprovalTemplate(plan, ROLES.ADMINTYPE.QTMB);
   body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QTMB);
 
   return Notification.FromTemplate({
@@ -174,7 +174,7 @@ function pendingQtmPlanApproval(plan) {
   const to = [defaultContact.QTM];
 
   const subject = subjectTemplate(plan);
-  const body = pendingPlanApprovalTemplate(plan);
+  let body = pendingPlanApprovalTemplate(plan, ROLES.ADMINTYPE.QTM);
   body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QTM);
 
   return Notification.FromTemplate({
@@ -201,7 +201,7 @@ async function implementingActionPlan(plan) {
 
   const to = [...actionTakerEmails, coordinator.Email];
   const subject = subjectTemplate(plan);
-  const body = implementingActionPlanTemplate(plan);
+  let body = implementingActionPlanTemplate(plan);
   body += getAnchorRoleLinkToPlan(plan);
 
   return Notification.FromTemplate({
@@ -218,7 +218,7 @@ function pendingQsoImplementationApproval(plan) {
   const to = [qo.Email];
 
   const subject = subjectTemplate(plan);
-  const body = pendingImplementationApproval(plan);
+  let body = pendingImplementationApproval(plan, ROLES.ADMINTYPE.QO);
   body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
 
   return Notification.FromTemplate({
@@ -235,7 +235,7 @@ function pendingEffectivenessSubmission(plan) {
   const to = [coordinator.Email];
 
   const subject = subjectTemplate(plan);
-  const body = pendingEffectivenessSubmissionTemplate(plan);
+  let body = pendingEffectivenessSubmissionTemplate(plan);
   body += getAnchorRoleLinkToPlan(plan);
 
   return Notification.FromTemplate({
@@ -252,7 +252,7 @@ function pendingEffectivenessSubmissionRejected(plan) {
   const to = [coordinator.Email];
 
   const subject = subjectTemplate(plan);
-  const body = pendingEffectivenessSubmissionRejectedTemplate(plan);
+  let body = pendingEffectivenessSubmissionRejectedTemplate(plan);
   body += getAnchorRoleLinkToPlan(plan);
 
   return Notification.FromTemplate({
@@ -269,7 +269,7 @@ function pendingQsoEffectivenessApproval(plan) {
   const to = [qo.Email];
 
   const subject = subjectTemplate(plan);
-  const body = pendingEffectivenessApprovalTemplate(plan);
+  let body = pendingEffectivenessApprovalTemplate(plan, ROLES.ADMINTYPE.QO);
   body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
 
   return Notification.FromTemplate({
@@ -284,7 +284,7 @@ function pendingQtmbEffectivenessApproval(plan) {
   const to = [defaultContact.QTMB];
 
   const subject = subjectTemplate(plan);
-  const body = pendingEffectivenessApprovalTemplate(plan);
+  let body = pendingEffectivenessApprovalTemplate(plan, ROLES.ADMINTYPE.QTMB);
   body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QTMB);
 
   return Notification.FromTemplate({
@@ -299,7 +299,7 @@ function pendingQtmEffectivenessApproval(plan) {
   const to = [defaultContact.QTM];
 
   const subject = subjectTemplate(plan);
-  const body = pendingEffectivenessApprovalTemplate(plan);
+  let body = pendingEffectivenessApprovalTemplate(plan, ROLES.ADMINTYPE.QTM);
   body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QTM);
 
   return Notification.FromTemplate({
