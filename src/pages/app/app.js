@@ -3836,7 +3836,7 @@ export function CAPViewModel(capIdstring) {
       app.listRefs.Plans.updateListItem(
         vm.selectedRecord.ID(),
         valuePair,
-        m_fnRefresh
+        onStageApprovedCallback
       );
     },
     planApproveQSO: function () {
@@ -3888,7 +3888,7 @@ export function CAPViewModel(capIdstring) {
       app.listRefs.Plans.updateListItem(
         vm.selectedRecord.ID(),
         valuePair,
-        m_fnRefresh
+        onStageApprovedCallback
       );
     },
     implementationApproveQSO: m_fnApproveImplement,
@@ -3940,7 +3940,7 @@ export function CAPViewModel(capIdstring) {
       app.listRefs.Plans.updateListItem(
         vm.selectedRecord.ID(),
         valuePair,
-        m_fnRefresh
+        onStageApprovedCallback
       );
     },
     effectivenessApproveQSO: m_fnApproveEffectivenessQSO,
