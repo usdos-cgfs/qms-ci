@@ -12,6 +12,9 @@ const defaultContact = {
 
 const approvedStageNotificationMap = {
   "Pending QTM-B Problem Approval": pendingQtmbProblemApproval,
+  "Pending QTM Problem Approval": pendingQtmProblemApproval,
+  "Pending QSO Problem Approval": pendingQsoProblemApproval,
+  "Pending QAO Problem Approval": pendingQaoProblemApproval,
 };
 
 function subjectTemplate(plan, content = null) {
@@ -35,11 +38,45 @@ async function pendingQtmbProblemApproval(plan) {
 }
 
 async function pendingQtmProblemApproval(plan) {
-  const to = [defaultContact.QTMB];
+  const to = [defaultContact.QTM];
 
   const subject = subjectTemplate(plan);
   const body = pendingProblemApprovalTemplate(plan);
   body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QTM);
+
+  return Notification.FromTemplate({
+    title: plan.Title.Value(),
+    to,
+    subject,
+    body,
+  });
+}
+
+function pendingQsoProblemApproval(plan) {
+  const qso = plan.QSO.Value();
+  if (!qso) return;
+  const to = [qso.Email];
+
+  const subject = subjectTemplate(plan);
+  const body = pendingProblemApprovalTemplate(plan);
+  body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
+
+  return Notification.FromTemplate({
+    title: plan.Title.Value(),
+    to,
+    subject,
+    body,
+  });
+}
+
+function pendingQaoProblemApproval(plan) {
+  const qo = plan.QAO.Value();
+  if (!qo) return;
+  const to = [qo.Email];
+
+  const subject = subjectTemplate(plan);
+  const body = pendingProblemApprovalTemplate(plan);
+  body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
 
   return Notification.FromTemplate({
     title: plan.Title.Value(),
@@ -59,10 +96,12 @@ export async function stageApprovedNotification(plan, newStage = null) {
   await appContext.Notifications.UpsertFolderPath(folderPath);
 
   const notification = await notificationFunction(plan);
-  const result = await appContext.Notifications.AddEntity(
-    notification,
-    folderPath
-  );
+  if (notification) {
+    const result = await appContext.Notifications.AddEntity(
+      notification,
+      folderPath
+    );
+  }
   finishTask(notificationTask);
 }
 
