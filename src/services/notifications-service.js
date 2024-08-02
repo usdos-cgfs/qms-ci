@@ -156,8 +156,8 @@ async function developingActionPlanRejected(plan, rejection) {
   const coordinatorEmail = await getCoordinatorEmail(plan);
   const to = [coordinatorEmail];
 
-  const subject = subjectTemplate(plan, "Plan Rejected");
-  let body = developingActionPlanRejectedTemplate(plan);
+  const subject = subjectTemplate(plan, "Action Plan Rejected");
+  let body = developingActionPlanRejectedTemplate(plan, rejection);
   body += getAnchorRoleLinkToPlan(plan);
 
   return Notification.FromTemplate({
@@ -262,7 +262,7 @@ async function implementingActionPlan(plan) {
 async function implementingActionPlanRejected(plan, rejection) {
   const coordinatorEmail = await getCoordinatorEmail(plan);
   const to = [coordinatorEmail];
-  const subject = subjectTemplate(plan, "Implementation Rejected");
+  const subject = subjectTemplate(plan, "Plan Implementation Rejected");
   let body = implementingActionPlanTemplate(plan, rejection);
   body += getAnchorRoleLinkToPlan(plan);
 

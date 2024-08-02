@@ -2,7 +2,7 @@ import { getUrlParam, setUrlParam } from "../../common/router.js";
 import { Tab, TabsModule } from "../../components/tabs/tabs.js";
 import { makeDataTable } from "../../common/data-table.js";
 
-import { InitSal } from "../../sal/infrastructure/index.js";
+import { InitSal, sortByTitle } from "../../sal/infrastructure/index.js";
 import { appContext } from "../../infrastructure/app-db-context.js";
 
 import * as ModalDialog from "../../sal/components/modal/index.js";
@@ -58,7 +58,10 @@ import {
   userRoleOpts,
 } from "../../services/authorization.js";
 
-import { stageApprovedNotification } from "../../services/notifications-service.js";
+import {
+  stageApprovedNotification,
+  stageRejectedNotification,
+} from "../../services/notifications-service.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -442,7 +445,7 @@ function m_fnApproveProblemQTM() {
   app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
-function m_fnRejectProblemQSO() {
+function m_fnRejectProblemQSO(rejection) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QSO)) {
     alert('You don\'t have the correct role "QSO" to perform this action');
@@ -455,9 +458,11 @@ function m_fnRejectProblemQSO() {
     ["QSOProblemAdjudicationDate", ts],
     ["ProcessStage", "Pending QAO Problem Approval"],
   ];
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
+    onStageRejectedCallback(result, rejection)
+  );
 }
-function m_fnRejectProblemQAO() {
+function m_fnRejectProblemQAO(rejection) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QAO)) {
     alert('You don\'t have the correct role "QAO" to perform this action');
@@ -470,10 +475,12 @@ function m_fnRejectProblemQAO() {
     ["QAOProblemAdjudicationDate", ts],
     ["ProcessStage", "Editing"],
   ];
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
+    onStageRejectedCallback(result, rejection)
+  );
 }
 
-function m_fnRejectProblemQTMB() {
+function m_fnRejectProblemQTMB(rejection) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTMB)) {
     alert('You don\'t have the correct role "QTM-B" to perform this action');
@@ -487,10 +494,12 @@ function m_fnRejectProblemQTMB() {
     ["ProcessStage", "Editing"],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
+    onStageRejectedCallback(result, rejection)
+  );
 }
 
-function m_fnRejectProblemQTM(planId) {
+function m_fnRejectProblemQTM(rejection) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTM)) {
     alert('You don\'t have the correct role "QTM" to perform this action');
@@ -503,7 +512,9 @@ function m_fnRejectProblemQTM(planId) {
     ["QTMProblemAdjudicationDate", ts],
     ["ProcessStage", "Editing"],
   ];
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
+    onStageRejectedCallback(result, rejection)
+  );
 }
 
 /* Plan Approval */
@@ -601,7 +612,7 @@ function activateActions(callback) {
 }
 
 // Plan Rejections
-function m_fnRejectPlanQSO() {
+function m_fnRejectPlanQSO(rejection) {
   var planId = vm.selectedRecord.ID();
 
   if (!vm.selectedRecord.curUserHasRole(ROLES.QSO)) {
@@ -619,10 +630,12 @@ function m_fnRejectPlanQSO() {
     ],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
+    onStageRejectedCallback(result, rejection)
+  );
 }
 
-function m_fnRejectPlanQTMB() {
+function m_fnRejectPlanQTMB(rejection) {
   var planId = vm.selectedRecord.ID();
 
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTMB)) {
@@ -640,10 +653,12 @@ function m_fnRejectPlanQTMB() {
     ],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
+    onStageRejectedCallback(result, rejection)
+  );
 }
 
-function m_fnRejectPlanQTM() {
+function m_fnRejectPlanQTM(rejection) {
   var planId = vm.selectedRecord.ID();
 
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTM)) {
@@ -661,7 +676,9 @@ function m_fnRejectPlanQTM() {
     ],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
+    onStageRejectedCallback(result, rejection)
+  );
 }
 
 /* Implementation Approval */
@@ -686,7 +703,7 @@ function m_fnApproveImplement() {
 }
 
 // Set the CAPProcessStage to Pending QSO Approval
-function m_fnRejectImplement() {
+function m_fnRejectImplement(rejection) {
   var planId = vm.selectedRecord.ID();
   var ts = new Date().toISOString();
   var valuePair = [
@@ -695,7 +712,9 @@ function m_fnRejectImplement() {
     ["QSOImplementAdjudicationDate", ts],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
+    onStageRejectedCallback(result, rejection)
+  );
 }
 
 /* Effectiveness Approval and Verification Stage */
@@ -759,7 +778,7 @@ function m_fnApproveEffectivenessQTM() {
   app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
-function m_fnRejectEffectivenessQSO(planId) {
+function m_fnRejectEffectivenessQSO(rejection) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QSO)) {
     alert('You don\'t have the correct role "QSO" to perform this action');
@@ -789,10 +808,12 @@ function m_fnRejectEffectivenessQSO(planId) {
       break;
   }
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
+    onStageRejectedCallback(result, rejection)
+  );
 }
 
-function m_fnRejectEffectivenessQTMB(planId) {
+function m_fnRejectEffectivenessQTMB(rejection) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTMB)) {
     alert('You don\'t have the correct role "QTMB" to perform this action');
@@ -822,10 +843,12 @@ function m_fnRejectEffectivenessQTMB(planId) {
       break;
   }
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
+    onStageRejectedCallback(result, rejection)
+  );
 }
 
-function m_fnRejectEffectivenessQTM() {
+function m_fnRejectEffectivenessQTM(rejection) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTM)) {
     alert('You don\'t have the correct role "QTM" to perform this action');
@@ -855,7 +878,9 @@ function m_fnRejectEffectivenessQTM() {
       break;
   }
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
+    onStageRejectedCallback(result, rejection)
+  );
 }
 
 /* CALLBACKS AND PAGE MANIPULATIONS */
@@ -881,6 +906,20 @@ async function onStageApprovedCallback(result) {
     await LoadSelectedCAP(vm.selectedTitle());
     const plan = ko.unwrap(vm.selectedPlan);
     await stageApprovedNotification(plan);
+    finishTask(refreshTask);
+  });
+}
+
+async function onStageRejectedCallback(result, rejection) {
+  if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
+    return;
+  }
+  const refreshTask = addTask(tasks.refresh);
+
+  LoadMainData(async function () {
+    await LoadSelectedCAP(vm.selectedTitle());
+    const plan = ko.unwrap(vm.selectedPlan);
+    await stageRejectedNotification(plan, rejection);
     finishTask(refreshTask);
   });
 }
@@ -3721,13 +3760,14 @@ export function CAPViewModel(capIdstring) {
     const options = {
       title: "New Rejection",
       form,
-      dialogReturnValueCallback: self.controls.rejectStageSubmit,
+      dialogReturnValueCallback: (result) =>
+        self.controls.rejectStageSubmit(result, rejection),
     };
 
     ModalDialog.showModalDialog(options);
   };
 
-  self.controls.rejectStageSubmit = function (result) {
+  self.controls.rejectStageSubmit = function (result, rejection) {
     if (result !== SP.UI.DialogResult.OK) {
       return;
     }
@@ -3786,7 +3826,7 @@ export function CAPViewModel(capIdstring) {
         break;
     }
 
-    next();
+    next(rejection);
 
     // app.listRefs.Rejections.createListItem(rejectVp, next);
 
@@ -4155,14 +4195,15 @@ class App {
   /******************************** Application Logic ***************************/
   async init() {
     stores: {
-      const businessOfficesPromise =
-        await appContext.BusinessOffices.ToList().then(businessOfficeStore);
-
-      const recordSourcesPromise = await appContext.RecordSources.ToList().then(
-        sourcesStore
+      const businessOfficesPromise = appContext.BusinessOffices.ToList().then(
+        (offices) => businessOfficeStore(offices.sort(sortByTitle))
       );
 
-      await Promise.all([businessOfficeStore, recordSourcesPromise]);
+      const recordSourcesPromise = appContext.RecordSources.ToList().then(
+        (records) => sourcesStore(records.sort(sortByTitle))
+      );
+
+      await Promise.all([businessOfficesPromise, recordSourcesPromise]);
     }
   }
 

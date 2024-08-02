@@ -43,6 +43,7 @@ export function developingActionPlanRejectedTemplate(plan, rejection) {
   const title = getAnchorRoleLinkToPlan(plan);
   const recordType = plan.RecordType.Value();
   const responsiblePerson = plan.CoordinatorName.Value();
+  const rejectionReason = rejection.Reason.Value();
 
   return html`
     <p>The following plan has been <span style="color: red">rejected</span>:</p>
@@ -53,7 +54,7 @@ export function developingActionPlanRejectedTemplate(plan, rejection) {
     </ul>
     <p>
       Rejection Reason:<br />
-      ${rejection.Reason.Value()}
+      ${rejectionReason}
     </p>
     <p>
       You are receiving this email because you are designated as the responsible
