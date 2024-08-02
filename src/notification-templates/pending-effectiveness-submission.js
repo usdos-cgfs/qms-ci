@@ -21,7 +21,10 @@ export function pendingEffectivenessSubmissionTemplate(plan) {
   `;
 }
 
-export function pendingEffectivenessSubmissionRejectedTemplate(plan) {
+export function pendingEffectivenessSubmissionRejectedTemplate(
+  plan,
+  rejection
+) {
   const location = plan.CGFSLocation.Value();
   const title = getAnchorRoleLinkToPlan(plan);
   const recordType = plan.RecordType.Value();
@@ -37,6 +40,10 @@ export function pendingEffectivenessSubmissionRejectedTemplate(plan) {
       <li>Location: ${location}</li>
       <li>CAR/CAP Coordinator: ${responsiblePerson}</li>
     </ul>
+    <p>
+      Rejection Reason:<br />
+      ${rejection.Reason.Value()}
+    </p>
     <p>
       When ready, please update proof of effectiveness by navigating to the link
       below.

@@ -1,7 +1,8 @@
-import { ROLES } from "../constants.js";
+import { ROLES, stageDescriptions } from "../constants.js";
 import { Notification } from "../entities/index.js";
 import { appContext } from "../infrastructure/app-db-context.js";
 import {
+  developingActionPlanRejectedTemplate,
   developingActionPlanTemplate,
   implementingActionPlanTemplate,
   pendingEffectivenessApprovalTemplate,
@@ -35,6 +36,17 @@ const approvedStageNotificationMap = {
   "Pending QTM-B Effectiveness Approval": pendingQtmbEffectivenessApproval,
   "Pending QTM Effectiveness Approval": pendingQtmEffectivenessApproval,
 };
+
+function getRejectedNotificationByStage(stage, plan, rejection) {
+  switch (stage) {
+    case stageDescriptions.DevelopingActionPlan.stage:
+      return developingActionPlanRejected(plan, rejection);
+    case stageDescriptions.ImplementingActionPlan.stage:
+      return implementingActionPlanRejected(plan, rejection);
+    case stageDescriptions.EffectivenessSubmissionRejected.stage:
+      return pendingEffectivenessSubmissionRejected(plan, rejection);
+  }
+}
 
 function subjectTemplate(plan, content = null) {
   content = content ?? plan.ProcessStage.toString();
@@ -140,6 +152,22 @@ async function developingActionPlan(plan) {
   });
 }
 
+async function developingActionPlanRejected(plan, rejection) {
+  const coordinatorEmail = await getCoordinatorEmail(plan);
+  const to = [coordinatorEmail];
+
+  const subject = subjectTemplate(plan, "Plan Rejected");
+  let body = developingActionPlanRejectedTemplate(plan);
+  body += getAnchorRoleLinkToPlan(plan);
+
+  return Notification.FromTemplate({
+    title: plan.Title.Value(),
+    to,
+    subject,
+    body,
+  });
+}
+
 async function pendingQsoPlanApproval(plan) {
   const qoEmail = await getQsoEmail(plan);
   const to = [qoEmail];
@@ -231,6 +259,21 @@ async function implementingActionPlan(plan) {
   });
 }
 
+async function implementingActionPlanRejected(plan, rejection) {
+  const coordinatorEmail = await getCoordinatorEmail(plan);
+  const to = [coordinatorEmail];
+  const subject = subjectTemplate(plan, "Implementation Rejected");
+  let body = implementingActionPlanTemplate(plan, rejection);
+  body += getAnchorRoleLinkToPlan(plan);
+
+  return Notification.FromTemplate({
+    title: plan.Title.Value(),
+    to,
+    subject,
+    body,
+  });
+}
+
 async function pendingQsoImplementationApproval(plan) {
   const qoEmail = await getQsoEmail(plan);
   const to = [qoEmail];
@@ -264,13 +307,13 @@ async function pendingEffectivenessSubmission(plan) {
   });
 }
 
-async function pendingEffectivenessSubmissionRejected(plan) {
+async function pendingEffectivenessSubmissionRejected(plan, rejection) {
   const coordinatorEmail = await getCoordinatorEmail(plan);
 
   const to = [coordinatorEmail];
 
-  const subject = subjectTemplate(plan);
-  let body = pendingEffectivenessSubmissionRejectedTemplate(plan);
+  const subject = subjectTemplate(plan, "Effectiveness Rejected");
+  let body = pendingEffectivenessSubmissionRejectedTemplate(plan, rejection);
   body += getAnchorRoleLinkToPlan(plan);
 
   return Notification.FromTemplate({
@@ -332,18 +375,39 @@ export async function stageApprovedNotification(plan, newStage = null) {
   const notificationFunction = approvedStageNotificationMap[newStage];
   if (!notificationFunction) return;
   const notificationTask = addTask(tasks.notification());
-  const folderPath = plan.Title.Value();
-
-  await appContext.Notifications.UpsertFolderPath(folderPath);
 
   const notification = await notificationFunction(plan);
-  if (notification) {
-    const result = await appContext.Notifications.AddEntity(
-      notification,
-      folderPath
-    );
-  }
+  await sendPlanNotification(plan, notification);
+
   finishTask(notificationTask);
 }
 
-export function stageRejected(newStage, plan, rejection) {}
+export async function stageRejectedNotification(plan, rejection) {
+  const newStage = plan.ProcessStage.Value();
+
+  const notificationPromise = getRejectedNotificationByStage(
+    newStage,
+    plan,
+    rejection
+  );
+
+  if (!notificationPromise) {
+    return;
+  }
+  const notificationTask = addTask(tasks.notification());
+  const notification = await notificationPromise;
+
+  await sendPlanNotification(plan, notification);
+  finishTask(notificationTask);
+}
+
+async function sendPlanNotification(plan, notification) {
+  if (!notification) return;
+  const folderPath = plan.Title.Value();
+  await appContext.Notifications.UpsertFolderPath(folderPath);
+  const result = await appContext.Notifications.AddEntity(
+    notification,
+    folderPath
+  );
+  return;
+}
