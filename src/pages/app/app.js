@@ -445,7 +445,7 @@ function m_fnApproveProblemQTM() {
   app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
-function m_fnRejectProblemQSO(rejection) {
+function m_fnRejectProblemQSO(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QSO)) {
     alert('You don\'t have the correct role "QSO" to perform this action');
@@ -458,11 +458,9 @@ function m_fnRejectProblemQSO(rejection) {
     ["QSOProblemAdjudicationDate", ts],
     ["ProcessStage", "Pending QAO Problem Approval"],
   ];
-  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
-    onStageRejectedCallback(result, rejection)
-  );
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
-function m_fnRejectProblemQAO(rejection) {
+function m_fnRejectProblemQAO(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QAO)) {
     alert('You don\'t have the correct role "QAO" to perform this action');
@@ -475,12 +473,10 @@ function m_fnRejectProblemQAO(rejection) {
     ["QAOProblemAdjudicationDate", ts],
     ["ProcessStage", "Editing"],
   ];
-  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
-    onStageRejectedCallback(result, rejection)
-  );
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
-function m_fnRejectProblemQTMB(rejection) {
+function m_fnRejectProblemQTMB(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTMB)) {
     alert('You don\'t have the correct role "QTM-B" to perform this action');
@@ -494,12 +490,10 @@ function m_fnRejectProblemQTMB(rejection) {
     ["ProcessStage", "Editing"],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
-    onStageRejectedCallback(result, rejection)
-  );
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
-function m_fnRejectProblemQTM(rejection) {
+function m_fnRejectProblemQTM(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTM)) {
     alert('You don\'t have the correct role "QTM" to perform this action');
@@ -512,9 +506,7 @@ function m_fnRejectProblemQTM(rejection) {
     ["QTMProblemAdjudicationDate", ts],
     ["ProcessStage", "Editing"],
   ];
-  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
-    onStageRejectedCallback(result, rejection)
-  );
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
 /* Plan Approval */
@@ -612,7 +604,7 @@ function activateActions(callback) {
 }
 
 // Plan Rejections
-function m_fnRejectPlanQSO(rejection) {
+function m_fnRejectPlanQSO(callback) {
   var planId = vm.selectedRecord.ID();
 
   if (!vm.selectedRecord.curUserHasRole(ROLES.QSO)) {
@@ -630,12 +622,10 @@ function m_fnRejectPlanQSO(rejection) {
     ],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
-    onStageRejectedCallback(result, rejection)
-  );
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
-function m_fnRejectPlanQTMB(rejection) {
+function m_fnRejectPlanQTMB(callback) {
   var planId = vm.selectedRecord.ID();
 
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTMB)) {
@@ -653,12 +643,10 @@ function m_fnRejectPlanQTMB(rejection) {
     ],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
-    onStageRejectedCallback(result, rejection)
-  );
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
-function m_fnRejectPlanQTM(rejection) {
+function m_fnRejectPlanQTM(callback) {
   var planId = vm.selectedRecord.ID();
 
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTM)) {
@@ -676,9 +664,7 @@ function m_fnRejectPlanQTM(rejection) {
     ],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
-    onStageRejectedCallback(result, rejection)
-  );
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
 /* Implementation Approval */
@@ -703,7 +689,7 @@ function m_fnApproveImplement() {
 }
 
 // Set the CAPProcessStage to Pending QSO Approval
-function m_fnRejectImplement(rejection) {
+function m_fnRejectImplement(callback) {
   var planId = vm.selectedRecord.ID();
   var ts = new Date().toISOString();
   var valuePair = [
@@ -712,9 +698,7 @@ function m_fnRejectImplement(rejection) {
     ["QSOImplementAdjudicationDate", ts],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
-    onStageRejectedCallback(result, rejection)
-  );
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
 /* Effectiveness Approval and Verification Stage */
@@ -778,7 +762,7 @@ function m_fnApproveEffectivenessQTM() {
   app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
-function m_fnRejectEffectivenessQSO(rejection) {
+function m_fnRejectEffectivenessQSO(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QSO)) {
     alert('You don\'t have the correct role "QSO" to perform this action');
@@ -808,12 +792,10 @@ function m_fnRejectEffectivenessQSO(rejection) {
       break;
   }
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
-    onStageRejectedCallback(result, rejection)
-  );
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
-function m_fnRejectEffectivenessQTMB(rejection) {
+function m_fnRejectEffectivenessQTMB(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTMB)) {
     alert('You don\'t have the correct role "QTMB" to perform this action');
@@ -843,12 +825,10 @@ function m_fnRejectEffectivenessQTMB(rejection) {
       break;
   }
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
-    onStageRejectedCallback(result, rejection)
-  );
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
-function m_fnRejectEffectivenessQTM(rejection) {
+function m_fnRejectEffectivenessQTM(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTM)) {
     alert('You don\'t have the correct role "QTM" to perform this action');
@@ -878,9 +858,7 @@ function m_fnRejectEffectivenessQTM(rejection) {
       break;
   }
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, (result) =>
-    onStageRejectedCallback(result, rejection)
-  );
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
 /* CALLBACKS AND PAGE MANIPULATIONS */
@@ -910,17 +888,20 @@ async function onStageApprovedCallback(result) {
   });
 }
 
-async function onStageRejectedCallback(result, rejection) {
-  if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
-    return;
-  }
-  const refreshTask = addTask(tasks.refresh);
+async function onStageRejectedCallback(plan, rejection) {
+  // if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
+  //   return;
+  // }
+  return new Promise((resolve) => {
+    const refreshTask = addTask(tasks.refresh);
 
-  LoadMainData(async function () {
-    await LoadSelectedCAP(vm.selectedTitle());
-    const plan = ko.unwrap(vm.selectedPlan);
-    await stageRejectedNotification(plan, rejection);
-    finishTask(refreshTask);
+    LoadMainData(async function () {
+      await LoadSelectedCAP(vm.selectedTitle());
+      const plan = ko.unwrap(vm.selectedPlan);
+      await stageRejectedNotification(plan, rejection);
+      finishTask(refreshTask);
+      resolve();
+    });
   });
 }
 
@@ -3761,34 +3742,19 @@ export function CAPViewModel(capIdstring) {
       title: "New Rejection",
       form,
       dialogReturnValueCallback: (result) =>
-        self.controls.rejectStageSubmit(result, rejection),
+        self.controls.rejectStageSubmit(result, plan, rejection),
     };
 
     ModalDialog.showModalDialog(options);
   };
 
-  self.controls.rejectStageSubmit = function (result, rejection) {
+  self.controls.rejectStageSubmit = async function (result, plan, rejection) {
     if (result !== SP.UI.DialogResult.OK) {
       return;
     }
     // When the user submits the modal with the reason, create a
     // new rejection, then execute the stages reject function
-    var next = null;
-
-    // var rejectVp = [
-    //   ["Title", self.selectedRecord.Title()],
-    //   ["Reason", self.rejectReason()],
-    //   ["Stage", self.selectedRecord.ProcessStage()],
-    //   ["Date", new Date().toISOString()],
-    //   ["Active", 1],
-    //   ["Rejector", self.currentUser().get_title()],
-    //   [
-    //     "RejectionId",
-    //     self.selectedRecord.Title() +
-    //       "-R" +
-    //       String(self.Rejections().length).padStart(2, "0"),
-    //   ],
-    // ];
+    let next = null;
 
     switch (self.selectedRecord.ProcessStageKey()) {
       case "ProblemApprovalQSO":
@@ -3825,8 +3791,14 @@ export function CAPViewModel(capIdstring) {
         next = m_fnRejectEffectivenessQTMB;
         break;
     }
+    if (!next) return;
 
-    next(rejection);
+    const rejectionTask = addTask(tasks.reject(plan.Title.Value()));
+    await new Promise(next);
+
+    await onStageRejectedCallback(plan, rejection);
+
+    finishTask(rejectionTask);
 
     // app.listRefs.Rejections.createListItem(rejectVp, next);
 
