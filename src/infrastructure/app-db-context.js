@@ -1,6 +1,7 @@
 import {
   Action,
   BusinessOffice,
+  Notification,
   Plan,
   RecordSource,
   Rejection,
@@ -17,6 +18,8 @@ class ApplicationDbContext extends DbContext {
   Actions = new EntitySet(Action);
 
   BusinessOffices = new EntitySet(BusinessOffice);
+
+  Notifications = new EntitySet(Notification);
 
   Plans = new EntitySet(Plan);
 

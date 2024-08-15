@@ -1,3 +1,5 @@
+export const html = String.raw;
+
 export const ROLES = {
   ADMINTYPE: {
     USER: "",

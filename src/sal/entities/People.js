@@ -3,6 +3,7 @@ export class People {
     ID,
     Title,
     LoginName = null,
+    Email = null,
     IsGroup = null,
     IsEnsured = false,
   }) {
@@ -10,6 +11,7 @@ export class People {
     this.Title = Title;
     this.LookupValue = Title;
     this.LoginName = LoginName != "" ? LoginName : null;
+    this.Email = Email;
     this.IsGroup = IsGroup;
     // Has the user data been fetched? Used for binding handlers.
     this.IsEnsured = IsEnsured;
@@ -19,6 +21,7 @@ export class People {
   Title = null;
   LoginName = null;
   LookupValue = null;
+  Email = null;
 
   getKey = () => this.LoginName ?? this.Title;
 
