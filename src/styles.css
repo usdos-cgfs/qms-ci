@@ -5,13 +5,13 @@
 
 #MSO_ContentTable,
 #contentBox {
-  /* margin: 25px 5%; */
+  margin: 25px 5%;
 }
 
 #SRSB,
 #DeltaSiteLogo,
 #sideNavBox {
-  /* display: none; */
+  display: none;
 }
 
 #s4-ribbonrow {

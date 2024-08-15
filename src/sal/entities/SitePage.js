@@ -1,6 +1,6 @@
 import { Entity } from "../primitives/index.js";
 
-export class Page extends Entity {
+export class SitePage extends Entity {
   constructor(params) {
     super(params);
   }
@@ -10,7 +10,7 @@ export class Page extends Entity {
   };
 
   static ListDef = {
-    name: "Pages",
-    title: "Pages",
+    name: "SitePages",
+    title: "Site Pages",
   };
 }

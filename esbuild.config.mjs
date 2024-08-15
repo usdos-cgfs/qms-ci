@@ -17,7 +17,12 @@ await esbuild.build({
   outdir: "dist",
 });
 
-const referenceFiles = ["pages/migrations/migrations.txt", "pages/app/app.txt"];
+const referenceFiles = [
+  "sal-v2.js",
+  "common.js",
+  "pages/migrations/migrations.txt",
+  "pages/app/app.txt",
+];
 
 referenceFiles.forEach(copyReferenceFiles);
 function copyReferenceFiles(filePath) {
