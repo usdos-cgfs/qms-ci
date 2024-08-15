@@ -18,70 +18,70 @@
 
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/jquery/jquery-3.3.1.min.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery/jquery-3.3.1.min.js"
   type="text/javascript"
 ></script>
 
 <!-- <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.13.3.custom/jquery-ui.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery-ui-1.13.3.custom/jquery-ui.min.css"
 />
 <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.13.3.custom/jquery-ui.theme.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery-ui-1.13.3.custom/jquery-ui.theme.min.css"
 />
 <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.13.3.custom/jquery-ui.structure.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery-ui-1.13.3.custom/jquery-ui.structure.min.css"
 />
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.13.3.custom/jquery-ui.min.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery-ui-1.13.3.custom/jquery-ui.min.js"
   type="text/javascript"
 ></script> -->
 
 <!-- <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.12.1/redmond/jquery-ui.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery-ui-1.12.1/redmond/jquery-ui.min.css"
 />
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.12.1/jquery-ui.min.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery-ui-1.12.1/jquery-ui.min.js"
   type="text/javascript"
 ></script> -->
 
 <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/bootstrap-5.3.0/css/bootstrap.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/bootstrap-5.3.0/css/bootstrap.min.css"
 />
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/bootstrap-5.3.0/js/bootstrap.bundle.min.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/bootstrap-5.3.0/js/bootstrap.bundle.min.js"
   type="text/javascript"
 ></script>
 
 <link
   rel="stylesheet"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/fontawesome-6.5.1/css/fontawesome.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/fontawesome-6.5.1/css/fontawesome.min.css"
 />
 <link
   rel="stylesheet"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/fontawesome-6.5.1/css/solid.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/fontawesome-6.5.1/css/solid.min.css"
 />
 
 <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/datatables/datatables.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/datatables/datatables.min.css"
 />
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/datatables/dataTables.min.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/datatables/dataTables.min.js"
   type="text/javascript"
 ></script>
 
@@ -94,43 +94,43 @@
 
 <script
   type="module"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/webcomponents/searchselect/searchselect.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/webcomponents/searchselect/searchselect.js"
 ></script>
 
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/knockout/knockout-3.5.1.js"
-  type="text/javascript"
-></script>
-
-<script
-  language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/src/common.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/knockout/knockout-3.5.1.js"
   type="text/javascript"
 ></script>
 
 <!-- <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/src/vm.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/src/common.js"
+  type="text/javascript"
+></script> -->
+
+<!-- <script
+  language="javascript"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/src/vm.js"
   type="module"
 ></script> -->
 
-<script
+<!-- <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/src/sal-v2.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/src/sal-v2.js"
   type="text/javascript"
-></script>
+></script> -->
 
 <!-- <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/tablesorter/style.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/tablesorter/style.css"
 /> -->
 
 <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/src/styles.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/dist/styles.css"
 />
 
 <div class="app">
@@ -2868,5 +2868,5 @@
 
 <script
   type="module"
-  src="/sites/CGFS/Style Library/apps/car-cap/src/pages/app/app.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/dist/pages/app/app.js"
 ></script>

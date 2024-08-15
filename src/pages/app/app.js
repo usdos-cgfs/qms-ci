@@ -1,3 +1,5 @@
+import "../../common.js";
+import "../../sal-v2.js";
 import { getUrlParam, setUrlParam } from "../../common/router.js";
 import { Tab, TabsModule } from "../../components/tabs/tabs.js";
 import { makeDataTable } from "../../common/data-table.js";
@@ -26,11 +28,7 @@ import {
   SUPPORTINGDOCUMENTTYPES,
 } from "../../constants.js";
 
-import {
-  EditActionForm,
-  EditPlanForm,
-  NewPlanForm,
-} from "../../forms/index.js";
+import { EditActionForm, NewPlanForm } from "../../forms/index.js";
 
 import {
   editAction,
@@ -1118,7 +1116,7 @@ function initComplete() {
   // $("#tabs").tabs();
 
   if (!tabId) {
-    const defaultTab = vm.tabOpts.myPlans;
+    let defaultTab = vm.tabOpts.myPlans;
     switch (vm.AdminType()) {
       case ROLES.ADMINTYPE.QO:
         defaultTab = vm.tabOpts.qo;

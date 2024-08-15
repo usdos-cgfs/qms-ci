@@ -30,7 +30,7 @@ export async function editAction(plan, action) {
     return appContext.Actions.UpdateEntity(action, Action.Views.Edit);
   }
 
-  const revisions = action.RevisionCount.Value() ?? 0;
+  let revisions = action.RevisionCount.Value() ?? 0;
   action.RevisionCount.Value(revisions++);
   // Plan requires QSO approval
 

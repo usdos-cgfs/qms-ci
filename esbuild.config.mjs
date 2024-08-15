@@ -5,14 +5,19 @@ import * as fs from "fs";
 import * as path from "path";
 
 await esbuild.build({
-  entryPoints: ["./src/pages/migrations/migrations.js", "./src/styles.css"],
+  entryPoints: [
+    "./src/pages/app/app.js",
+    "./src/pages/migrations/migrations.js",
+    "./src/styles.css",
+  ],
   bundle: true,
   minify: false,
   sourcemap: true,
+  format: "esm",
   outdir: "dist",
 });
 
-const referenceFiles = ["pages/migrations/migrations.txt"];
+const referenceFiles = ["pages/migrations/migrations.txt", "pages/app/app.txt"];
 
 referenceFiles.forEach(copyReferenceFiles);
 function copyReferenceFiles(filePath) {
