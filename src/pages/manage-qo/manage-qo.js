@@ -11,6 +11,19 @@ var usersToRemove = [];
 
 function initApp() {}
 
+document.getElementById("btnSyncArrays").addEventListener("click", syncArrays);
+document
+  .getElementById("btnManageQoGroup")
+  .addEventListener("click", manageQoGroup);
+
+function manageQoGroup() {
+  window.open(
+    _spPageContextInfo.webAbsoluteUrl +
+      "/_layouts/15/people.aspx?MembershipGroupId=85",
+    "_blank"
+  );
+}
+
 function FetchGroupMembers(groupName) {
   return new Promise((resolve, reject) => {
     var currentContext = new SP.ClientContext.get_current();
