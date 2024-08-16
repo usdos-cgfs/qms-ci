@@ -258,6 +258,7 @@ $("#btnRequestAllRecords").click(LoadMainData);
 // This is where we structure the query for what get's loaded on main tab page and the drop-down on the specific record page.
 function LoadMainData(next) {
   const refreshTask = addTask(tasks.refreshPlans);
+  document.getElementById("spanLoadStatus").innerText = "Loading Data";
   next = next ? next : function () {};
   var dataLoadIncrementer = new Incremental(0, 3, () => {
     finishTask(refreshTask);
@@ -266,21 +267,25 @@ function LoadMainData(next) {
   // Let's load our Actions and our Items
   app.listRefs.Plans.getListItems("", function (plans) {
     vm.allRecordsArray(plans);
+    document.getElementById("spanLoadStatus").innerText = "Plans Loaded";
     dataLoadIncrementer.inc();
   });
 
   app.listRefs.Actions.getListItems("", function (actions) {
     vm.allActionsArray(actions);
+    document.getElementById("spanLoadStatus").innerText = "Actions Loaded";
     dataLoadIncrementer.inc();
   });
 
   app.listRefs.BusinessOffices.getListItems("", function (offices) {
     vm.allBusinessOffices(offices);
+    document.getElementById("spanLoadStatus").innerText = "Offices Loaded";
     dataLoadIncrementer.inc();
   });
 
   app.listRefs.TempQOs.getListItems("", function (offices) {
     vm.allTempQOs(offices);
+    document.getElementById("spanLoadStatus").innerText = "QOs Loaded";
     dataLoadIncrementer.inc();
   });
 }
@@ -1103,6 +1108,7 @@ function toggleLockPlan(title, lock, callback) {
 
 function initComplete() {
   ko.applyBindings(vm);
+  document.getElementById("spanLoadStatus").innerText = "Building Interface";
 
   vm.currentUser(sal.globalConfig.currentUser);
   var tabId = getUrlParam("tab");
@@ -1162,6 +1168,8 @@ async function initApp() {
   initSal();
   InitSal();
   Common.Init();
+  document.getElementById("spanLoadStatus").innerText =
+    "Initiating Application";
   vm = await App.Create();
   const initTask = addTask(tasks.init);
   initStaticListRefs();

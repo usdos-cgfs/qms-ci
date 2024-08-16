@@ -174,7 +174,7 @@
 
   <div id="showme">
     <div class="d-flex align-items-center">
-      <strong>Please wait. Loading...</strong>
+      <strong>Please wait. <span id="spanLoadStatus">Loading</span>...</strong>
       <div class="spinner-border ms-4" aria-hidden="true"></div>
     </div>
     <p>This application is currently only supported in Chrome or Edge.</p>
