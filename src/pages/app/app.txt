@@ -1541,6 +1541,7 @@
             </table>
             <br />
             <div class="container row d-flex flex-col gap-2">
+              <!-- ko if: controls.record.isEditable() -->
               <button
                 type="button"
                 class="btn btn-outline-primary"
@@ -1555,7 +1556,6 @@
               >
                 View
               </button>
-              <!-- ko if: controls.record.isEditable() -->
               <button
                 type="button"
                 class="btn btn-outline-primary"
