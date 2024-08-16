@@ -1,5 +1,3 @@
-import "../../common.js";
-import "../../sal-v2.js";
 import { getUrlParam, setUrlParam } from "../../common/router.js";
 import { Tab, TabsModule } from "../../components/tabs/tabs.js";
 import { makeDataTable } from "../../common/data-table.js";
@@ -1151,6 +1149,8 @@ function initComplete() {
   // var idTab =
   // $('#injectAdditionalTabs').
   loadFinish = new Date();
+  var loadTimeSeconds = (loadFinish - loadStart) / 1000;
+  vm.appLoadTime(loadTimeSeconds + "s");
   console.log("Application Load Time: ", (loadFinish - loadStart) / 1000);
 }
 
@@ -4136,6 +4136,8 @@ class App {
     const app = new CAPViewModel();
     Object.assign(this, app);
   }
+
+  appLoadTime = ko.observable();
 
   clickNewPlan() {
     const plan = new Plan();

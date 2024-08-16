@@ -173,7 +173,10 @@
   <div id="divLoading" style="color: green; padding-bottom: 10px"></div>
 
   <div id="showme">
-    <p>Please wait... loading.</p>
+    <div class="d-flex align-items-center">
+      <strong>Please wait. Loading...</strong>
+      <div class="spinner-border ms-4" aria-hidden="true"></div>
+    </div>
     <p>This application is currently only supported in Chrome or Edge.</p>
   </div>
 
@@ -219,11 +222,14 @@
     <div class="tab-content">
       <div id="injectAdditionalTabs"></div>
     </div>
-  </div>
-  <div>
-    <!-- ko if: currentUserObj.id -->
-    <p>User ID: <span data-bind="text: currentUserObj.id"></span></p>
-    <!-- /ko -->
+    <div>
+      <!-- ko if: currentUserObj.id -->
+      <p>
+        User ID: <span data-bind="text: currentUserObj.id"></span><br />
+        Load Time: <span data-bind="text: appLoadTime"></span>
+      </p>
+      <!-- /ko -->
+    </div>
   </div>
 </div>
 
