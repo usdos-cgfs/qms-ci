@@ -3308,7 +3308,7 @@ export function CAPViewModel(capIdstring) {
     //   }
     // });
 
-    return records.length;
+    return records.length + 1;
   };
 
   function GetNewID(type, count) {
