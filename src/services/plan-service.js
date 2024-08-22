@@ -8,7 +8,7 @@ import { currentRole, currentUser } from "./authorization.js";
 export function getRoleLinkToPlan(plan, role = null) {
   return `${
     _spPageContextInfo.webAbsoluteUrl
-  }/?capid=${plan.Title.Value()}&tab=detail&role=${role}`;
+  }/?capid=${plan.Title.Value()}&tab=detail${role ? `&role=${role}` : ""}`;
 }
 
 export function getAnchorRoleLinkToPlan(plan, role = null) {

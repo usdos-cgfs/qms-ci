@@ -154,6 +154,9 @@ export class Plan extends ConstrainedEntity {
     type: dateFieldTypes.date,
   });
 
+  RootCauseDetermination = new TextAreaField({
+    displayName: "Root Cause Determination",
+  });
   // CAP
 
   OFIDescription = new TextAreaField({
@@ -294,6 +297,7 @@ export class Plan extends ConstrainedEntity {
       "Source",
       "SimilarNoncomformityBool",
       "SimilarNoncomformityDesc",
+      "RootCauseDetermination",
       "ProcessStage",
       "PreviousStage",
       "NextTargetDate",
