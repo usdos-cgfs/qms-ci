@@ -54,6 +54,11 @@ export class Action extends ConstrainedEntity {
     isEditable: false,
   });
 
+  ImplementationDate = new DateField({
+    displayName: "Implementation Date",
+    isEditable: false,
+  });
+
   static Views = {
     All: [
       "ID",
@@ -64,6 +69,7 @@ export class Action extends ConstrainedEntity {
       "ActionResponsiblePerson",
       "RevisionCount",
       "ImplementationStatus",
+      "ImplementationDate",
     ],
     New: [
       "ActionID",

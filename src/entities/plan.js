@@ -219,6 +219,15 @@ export class Plan extends ConstrainedEntity {
     displayName: "Extension Count",
   });
 
+  OfficeImpactBool = new CheckboxField({
+    displayName:
+      "Has Impact on Office Risks, Mitigations, or Internal Controls",
+  });
+
+  OfficeImpactDesc = new TextAreaField({
+    displayName: "Office Impact Description",
+  });
+
   ImplementationTargetDate = new DateField({
     displayName: "Implementation Target Date",
   });
@@ -229,6 +238,10 @@ export class Plan extends ConstrainedEntity {
 
   EffectivenessVerificationTargetD = new DateField({
     displayName: "Effectiveness Verification Target Date",
+  });
+
+  EffectivenessDescription = new TextAreaField({
+    displayName: "Effectiveness Description",
   });
 
   Author = new PeopleField({
@@ -286,8 +299,11 @@ export class Plan extends ConstrainedEntity {
       "NextTargetDate",
       "ExtensionCount",
       "ImplementationTargetDate",
+      "OfficeImpactBool",
+      "OfficeImpactDesc",
       "QSOImplementAdjudicationDate",
       "EffectivenessVerificationTargetD",
+      "EffectivenessDescription",
       "CancelReason",
       "CloseDate",
       "Author",
