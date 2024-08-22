@@ -58,6 +58,7 @@ import {
   stageApprovedNotification,
   stageRejectedNotification,
 } from "../../services/notifications-service.js";
+import { printPlan } from "../../components/print/print.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -3193,6 +3194,10 @@ export function CAPViewModel(capIdstring) {
       self.selectedTitle()
     );
   });
+
+  self.clickPrintPlan = () => {
+    printPlan(self.selectedRecord.ID());
+  };
 
   // Return the percentage complete for the record for our progress bar.
   self.ProcessPercentage = ko.computed(function () {

@@ -1535,12 +1535,12 @@
                     >
                   </td>
                   <td>
-                    <a
-                      style="color: #007bff"
-                      data-bind="attr: {href: printUrl()}"
-                      target="_blank"
-                      >View a Print Friendly Version.</a
+                    <button
+                      class="btn btn-link"
+                      data-bind="click: $root.clickPrintPlan"
                     >
+                      View a Print Friendly Version.
+                    </button>
                   </td>
                 </tr>
               </tbody>
@@ -2874,5 +2874,5 @@
 
 <script
   type="module"
-  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/dist/pages/app/app.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/src/pages/app/app.js"
 ></script>

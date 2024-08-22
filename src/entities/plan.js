@@ -215,6 +215,22 @@ export class Plan extends ConstrainedEntity {
     isRequired: true,
   });
 
+  ExtensionCount = new TextField({
+    displayName: "Extension Count",
+  });
+
+  ImplementationTargetDate = new DateField({
+    displayName: "Implementation Target Date",
+  });
+
+  QSOImplementAdjudicationDate = new DateField({
+    displayName: "QSO Implementation Adjudication Date",
+  });
+
+  EffectivenessVerificationTargetD = new DateField({
+    displayName: "Effectiveness Verification Target Date",
+  });
+
   Author = new PeopleField({
     displayName: "Submitted By",
   });
@@ -268,6 +284,10 @@ export class Plan extends ConstrainedEntity {
       "ProcessStage",
       "PreviousStage",
       "NextTargetDate",
+      "ExtensionCount",
+      "ImplementationTargetDate",
+      "QSOImplementAdjudicationDate",
+      "EffectivenessVerificationTargetD",
       "CancelReason",
       "CloseDate",
       "Author",
