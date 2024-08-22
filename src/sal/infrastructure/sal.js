@@ -1146,13 +1146,14 @@ export function SPList(listDef) {
       : "";
     // TODO: fieldfilter should use 'lookupcolumnId' e.g. ServiceTypeId eq 1
     const colFilterArr = columnFilters.map((colFilter) => {
-      const value = colFilter.value ? `'${colFilter.value}'` : colFilter.value;
+      if (typeof colFilter == "string") return colFilter;
 
-      return `${colFilter.column} ${colFilter.op ?? "eq"} ` + value; // '${colFilter.value}'
+      const value = colFilter.value ? `'${colFilter.value}'` : colFilter.value;
+      return `(${colFilter.column} ${colFilter.op ?? "eq"} ${value})`; // '${colFilter.value}'
     });
     if (!includeFolders) colFilterArr.push(`FSObjType eq '0'`);
 
-    const filter = "$filter=(" + colFilterArr.join(`) and (`) + ")";
+    const filter = "$filter=" + colFilterArr.join(` and `);
 
     //const fsObjTypeFilter = `FSObjType eq '0'`;
     // const fieldFilter = `${column} eq '${value}'`;
