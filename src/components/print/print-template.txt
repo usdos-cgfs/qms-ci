@@ -1,0 +1,261 @@
+export const template = html`<link
+    rel="stylesheet"
+    type="text/css"
+    href="/sites/CGFS-QMS/Style Library/apps/qms-ci/dist/styles.css"
+  />
+  <style>
+    #ms-designer-ribbon,
+    .min-banner,
+    #sp-navigationbar {
+      display: none;
+    }
+
+    .report table,
+    .report th,
+    .report td {
+      border-collapse: collapse;
+      border: 1px solid black;
+      padding: 3px 7px;
+    }
+  </style>
+  <div data-bind="visible: !selectedRecord.isLoaded() && recordExists">
+    Loading...
+  </div>
+  <div data-bind="visible: !recordExists()">
+    Couldn't Find Record: <span data-bind="text: selectedTitle"></span>
+  </div>
+  <div
+    class="report"
+    data-bind="visible: selectedRecord.isLoaded() && recordExists"
+  >
+    <div data-bind="with: selectedRecord">
+      <div class="section-title" data-bind="text: Title"></div>
+      <table>
+        <tr>
+          <td>Record Id:</td>
+          <td data-bind="text: Title"></td>
+        </tr>
+        <tr>
+          <td>Type:</td>
+          <td data-bind="text: RecordType"></td>
+        </tr>
+        <tr>
+          <td>Subject:</td>
+          <td data-bind="text: Subject"></td>
+        </tr>
+        <tr>
+          <td>Business Office:</td>
+          <td
+            data-bind="text: BusinessOffice() && BusinessOffice().get_lookupValue()"
+          ></td>
+        </tr>
+        <tr>
+          <td>CGFS Location:</td>
+          <td data-bind="text: CGFSLocation"></td>
+        </tr>
+        <tr>
+          <td>QSO:</td>
+          <td data-bind="text: QSO.getValueForHuman()"></td>
+        </tr>
+        <tr>
+          <td>QAO:</td>
+          <td data-bind="text: QAO.getValueForHuman()"></td>
+        </tr>
+        <tr>
+          <td>Source:</td>
+          <td data-bind="text: Source"></td>
+        </tr>
+        <tr>
+          <td>Self-Initiated:</td>
+          <td data-bind="text: SelfInitiated"></td>
+        </tr>
+        <tr>
+          <td>Coordinator:</td>
+          <td data-bind="text: ProblemResolverName.getValueForHuman()"></td>
+        </tr>
+        <tr>
+          <td>Submitted Date:</td>
+          <td data-bind="text: SubmittedDate.dateFormat()"></td>
+        </tr>
+        <tr>
+          <td>Submitted By:</td>
+          <td data-bind="text: Author.getValueForHuman()"></td>
+        </tr>
+        <tr>
+          <td>Extension Count:</td>
+          <td data-bind="text: ExtensionCount"></td>
+        </tr>
+        <tr>
+          <td>Target Implementation Date:</td>
+          <td data-bind="text: ImplementationTargetDate.dateFormat()"></td>
+        </tr>
+        <tr>
+          <td>Implementation Completed Date:</td>
+          <td data-bind="text: QSOImplementAdjudicationDate.dateFormat()"></td>
+        </tr>
+        <tr>
+          <td>Target Verification Date:</td>
+          <td
+            data-bind="text: EffectivenessVerificationTargetD.dateFormat()"
+          ></td>
+        </tr>
+        <tr>
+          <td>Supporting Docs Count:</td>
+          <td data-bind="text: $root.supportDocuments().length"></td>
+        </tr>
+        <tr>
+          <td>Effectiveness Docs Count:</td>
+          <td data-bind="text: $root.effectivenessDocuments().length"></td>
+        </tr>
+      </table>
+      <!-- ko if: RecordType() == 'CAP' -->
+      <div>
+        <div class="section-title">Opportunity for Improvement:</div>
+        <div data-bind="html: OFIDescription"></div>
+      </div>
+      <div>
+        <div class="section-title">Discovery Data and Analysis:</div>
+        <div data-bind="html: DiscoveryDataAnalysis"></div>
+      </div>
+      <!-- /ko -->
+      <!-- ko if: RecordType() == 'CAR' -->
+      <div>
+        <div class="section-title">Problem Description:</div>
+        <div data-bind="html: ProblemDescription"></div>
+      </div>
+      <div>
+        <div class="section-title">Containment Action:</div>
+        <div data-bind="html: ContainmentAction"></div>
+      </div>
+      <div>
+        <div class="section-title">Root Cause Determination:</div>
+        <div class="section-subtitle">5 whys:</div>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Question</th>
+              <th>Answer</th>
+            </tr>
+          </thead>
+          <tbody data-bind="foreach: $root.whys">
+            <tr>
+              <td data-bind="text: Number"></td>
+              <td data-bind="text: Question"></td>
+              <td data-bind="text: Answer"></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="section-subtitle">Root Cause Determination:</div>
+        <div data-bind="html: RootCauseDetermination"></div>
+      </div>
+      <div>
+        <div class="section-title">Similar Nonconformities:</div>
+        <div class="section-subtitle">
+          Could this noncomformance occur in another one of your office
+          processes or in a corresponding office in another CGFS location?
+        </div>
+        <div data-bind="text: SimilarNoncomformityBool"></div>
+        <div class="section-subtitle">Explanation:</div>
+        <div data-bind="html: SimilarNoncomformityDesc"></div>
+      </div>
+      <!-- /ko -->
+    </div>
+    <div>
+      <div class="section-title">Support Docs:</div>
+      <ul data-bind="foreach: supportDocuments">
+        <li data-bind="text: Title"></li>
+      </ul>
+    </div>
+    <div>
+      <div class="section-title">Actions:</div>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Description</th>
+            <th>Responsible Person</th>
+            <th>Target Date</th>
+            <th>Completion Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody data-bind="foreach: actions">
+          <tr>
+            <td data-bind="text: ActionID"></td>
+            <td data-bind="text: ActionDescription"></td>
+            <td
+              data-bind="text: ActionResponsiblePerson && ActionResponsiblePerson.get_lookupValue()"
+            ></td>
+            <td
+              data-bind="text: TargetDate && TargetDate.format('yyyy-MM-dd')"
+            ></td>
+            <td
+              data-bind="text: ImplementationDate && ImplementationDate.format('yyyy-MM-dd')"
+            ></td>
+            <td data-bind="text: ImplementationStatus"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div data-bind="with: selectedRecord">
+      <div>
+        <div class="section-title">Office Risk Impact</div>
+        <div class="section-subtitle">
+          Does this CAR/CAP impact your Office Risks, Mitigations, or Internal
+          Controls?
+        </div>
+        <div data-bind="text: OfficeImpactBool"></div>
+        <div class="section-subtitle">Please give a brief description:</div>
+        <div data-bind="html: OfficeImpactDesc"></div>
+      </div>
+      <div>
+        <div class="section-title">Proof of Effectiveness:</div>
+        <div class="section-subtitle">
+          Does this CAR/CAP impact your Office Risks, Mitigations, or Internal
+          Controls?
+        </div>
+        <span data-bind="text: OfficeImpactBool"></span>
+        <div class="section-subtitle">Please give a brief description:</div>
+        <div data-bind="html: OfficeImpactDesc"></div>
+        <div class="section-subtitle">Effectiveness Docs:</div>
+        <ul data-bind="foreach: $root.effectivenessDocuments">
+          <li data-bind="text: Title"></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="/_layouts/15/SP.Runtime.js"></script>
+  <script src="/_layouts/15/SP.js"></script>
+  <script src="/_layouts/15/SP.UI.Dialog.js"></script>
+  <script
+    language="javascript"
+    src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery/jquery-3.3.1.min.js"
+    type="text/javascript"
+  ></script>
+  <script
+    language="javascript"
+    src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/knockout/knockout-3.5.1.js"
+    type="text/javascript"
+  ></script>
+
+  <!-- <script
+  language="javascript"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/js/app/ViewModels.js"
+  type="text/javascript"
+></script> -->
+  <script
+    language="javascript"
+    src="/sites/CGFS-QMS/Style Library/apps/qms-ci/dist/common.js"
+    type="text/javascript"
+  ></script>
+  <script
+    language="javascript"
+    src="/sites/CGFS-QMS/Style Library/apps/qms-ci/dist/sal-v2.js"
+    type="text/javascript"
+  ></script>
+  <script
+    type="module"
+    src="/sites/CGFS-QMS/Style Library/apps/qms-ci/dist/pages/print/print.js"
+  ></script>`;

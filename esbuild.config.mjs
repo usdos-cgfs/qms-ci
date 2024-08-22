@@ -9,6 +9,7 @@ await esbuild.build({
     "./src/pages/app/app.js",
     "./src/pages/migrations/migrations.js",
     "./src/pages/manage-qo/manage-qo.js",
+    "./src/pages/print/print.js",
     "./src/styles.css",
   ],
   bundle: true,
@@ -24,6 +25,7 @@ const referenceFiles = [
   "pages/migrations/migrations.txt",
   "pages/app/app.txt",
   "pages/manage-qo/manage-qo.txt",
+  "pages/print/print.txt",
 ];
 
 referenceFiles.forEach(copyReferenceFiles);

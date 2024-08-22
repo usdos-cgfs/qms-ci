@@ -3189,7 +3189,7 @@ export function CAPViewModel(capIdstring) {
     }
     return (
       _spPageContextInfo.siteServerRelativeUrl +
-      "/SitePages/ReportView.aspx?capid=" +
+      "/SitePages/print.aspx?capid=" +
       self.selectedTitle()
     );
   });
