@@ -96,6 +96,7 @@ import { printPlan } from "../../components/print/print.js";
     Status bar
 */
 window.app = window.app || {};
+document.title = "CAR-CAP Tool";
 
 var timer = null;
 var refreshInterval = 100 * 60 * 1000; // 10 minutes
