@@ -36,7 +36,7 @@ export async function printPlan(planId) {
 
   let recordTypeBody = "";
   if (plan.isCAP()) {
-    recordTypeBody = capBodyTemplate(plan);
+    recordTypeBody = capBodyTemplate({ plan });
   } else {
     const whysResult = await appContext.RootCauseWhys.FindByColumnValue(
       [`substringof('${planTitle}', Title)`],
@@ -144,7 +144,7 @@ const printTemplate = ({
       ${plan.Title.toString()} - ${plan.Subject.toString()}
     </h1>
     <div class="section">
-      <span class="plan-link">(${linkToPlan})</span>
+      <span class="plan-link">[${linkToPlan}]</span>
       <table>
         <tbody>
           <tr>
