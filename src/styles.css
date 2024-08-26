@@ -360,6 +360,19 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   padding-block-end: 0.75rem;
 }
 
+label.file-upload-field .dropzone {
+  color: gray;
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 1.5rem;
+  border: 2px dashed lightgray;
+}
+
+label.file-upload-field.dragging .dropzone {
+  border: 2px dashed gray;
+}
+
 /* SAL FIELDS */
 
 .form-field-component label {
