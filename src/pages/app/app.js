@@ -2802,7 +2802,7 @@ export function CAPViewModel(capIdstring) {
         if (action.PreviousActionResponsiblePerson) {
           valuePair.push([
             "ActionResponsiblePerson",
-            action.PreviousActionResponsiblePerson.userId,
+            action.PreviousActionResponsiblePerson.get_lookupId(),
           ]);
         }
 

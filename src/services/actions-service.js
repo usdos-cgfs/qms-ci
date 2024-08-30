@@ -31,10 +31,16 @@ export async function editAction(plan, action) {
   }
 
   let revisions = action.RevisionCount.Value() ?? 0;
-  action.RevisionCount.Value(revisions++);
+  action.RevisionCount.Value(++revisions);
   // Plan requires QSO approval
+
+  // action.PreviousActionDescription.set(action.ActionDescription.get());
+  // action.PreviousTargetDate.set(action.TargetDate.get());
+  // action.PreviousActionResponsiblePerson.set(
+  //   action.ActionResponsiblePerson.get()
+  // );
 
   action.ImplementationStatus.Value(ACTIONSTATES.QSOAPPROVAL);
 
-  return appContext.Actions.UpdateEntity(action, Action.Views.Edit);
+  return appContext.Actions.UpdateEntity(action, Action.Views.EditApproval);
 }
