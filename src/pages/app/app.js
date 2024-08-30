@@ -966,7 +966,7 @@ function OnCallbackFormRefresh(result, value) {
 
 function closePlan(id, { title, newStage, prevStage, cancelReason }) {
   addTask(tasks.closing);
-  valuePair = [
+  const valuePair = [
     ["ProcessStage", newStage],
     ["Active", "0"],
     ["PreviousStage", prevStage],
@@ -2767,7 +2767,7 @@ export function CAPViewModel(capIdstring) {
         return false;
       },
       approvalApproveClick: function (action) {
-        valuePair = [
+        const valuePair = [
           ["ImplementationStatus", "In progress"],
           ["PreviousActionDescription", ""],
           ["PreviousActionResponsiblePerson", ""],
@@ -2784,7 +2784,7 @@ export function CAPViewModel(capIdstring) {
         });
       },
       approvalRejectClick: function (action) {
-        valuePair = [
+        const valuePair = [
           ["ImplementationStatus", "In progress"],
           ["PreviousActionDescription", ""],
           ["PreviousActionResponsiblePerson", ""],
