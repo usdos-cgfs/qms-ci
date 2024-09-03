@@ -18,7 +18,7 @@ if (process.argv.includes("-p")) {
   // PRODUCTION BUILD
   console.log("PRODUCTION BUILD");
   // buildOpts.sourcemap = false;
-  buildOpts.minify = true;
+  buildOpts.minify = false;
   buildOpts.outdir = "dist";
 }
 
