@@ -64,7 +64,7 @@ if (process.argv.includes("-d")) {
 function copyFile(source, destination) {
   return new Promise((resolve, reject) => {
     const readStream = fs.createReadStream(source);
-    const writeStream = fs.createWriteStream(destination);
+    const writeStream = fs.createWriteStream(destination, { flags: "w" });
 
     readStream.on("error", reject);
     writeStream.on("error", reject);
@@ -93,7 +93,9 @@ async function copyDirectory(source, destination) {
         await copyDirectory(sourcePath, destinationPath);
       } else {
         // Copy files
-        await copyFile(sourcePath, destinationPath);
+        await copyFile(sourcePath, destinationPath).catch((e) =>
+          console.warn(`Failed to copy $entry.name:`, e)
+        );
       }
     }
 
