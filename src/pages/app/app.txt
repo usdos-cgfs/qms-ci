@@ -169,9 +169,7 @@
     It looks like you're using Internet Explorer, for best performance, please
     use Edge or Chrome.
   </div>
-
   <div id="divLoading" style="color: green; padding-bottom: 10px"></div>
-
   <div id="showme">
     <div class="d-flex align-items-center">
       <strong>Please wait. <span id="spanLoadStatus">Loading</span>...</strong>
@@ -179,7 +177,6 @@
     </div>
     <p>This application is currently only supported in Chrome or Edge.</p>
   </div>
-
   <div id="tabs" class="tabclass" style="display: none">
     <div>
       <div class="mb-2 w-sm">
@@ -1285,13 +1282,15 @@
               data-bind="text: vm.selectedRecord.NextTargetDate.date().getTime() ? 
                                   vm.selectedRecord.NextTargetDate.date().toDateString() : 'N/A'"
             ></span>
-            <!-- ko if: vm.AdminType() == ROLES.ADMINTYPE.QTM -->
-            <a href="javascript:;">
-              <span
-                class="ui-icon ui-icon-refresh"
-                data-bind="click: vm.controls.record.calculateNextTargetDate.bind()"
-              ></span>
-            </a>
+            <!-- ko if:  $root.controls.record.showCalculateNextTargetDate-->
+            <button
+              title="Recalculate Next Target Date"
+              type="button"
+              class="btn btn-link"
+              data-bind="click: $root.controls.record.calculateNextTargetDate"
+            >
+              <i class="fa-solid fa-arrows-rotate"></i>
+            </button>
             <!-- /ko -->
           </h4>
           <!-- /ko -->
@@ -1506,12 +1505,14 @@
                       ></div>
                       <!-- /ko -->
                       <!-- ko if: vm.AdminType() == ROLES.ADMINTYPE.QTM -->
-                      <a href="javascript:;">
-                        <span
-                          class="ui-icon ui-icon-refresh"
-                          data-bind="click: $root.controls.record.updateImplementationDate.bind()"
-                        ></span>
-                      </a>
+                      <button
+                        title="Recalculate Next Target Date"
+                        type="button"
+                        class="btn btn-link"
+                        data-bind="click: $root.controls.record.updateImplementationDate"
+                      >
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                      </button>
                       <!-- /ko -->
                     </div>
                   </td>

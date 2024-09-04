@@ -3625,6 +3625,15 @@ export function CAPViewModel(capIdstring) {
         return newNextDate;
       },
     },
+    showCalculateNextTargetDate: ko.pureComputed(function () {
+      if (!vm.selectedRecord.Active()) {
+        return false;
+      }
+      if (self.selectedRecord.curUserHasRole(ROLES.ADMINTYPE.QTM)) {
+        return true;
+      }
+      return false;
+    }),
     calculateNextTargetDate: function () {
       if (!vm.selectedRecord.Active()) {
         alert("Record is not active!");
