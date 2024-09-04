@@ -552,22 +552,26 @@
 
 <!-- Detail Tab -->
 <script type="text/html" id="tabs-detail">
-  <div id="datalinkDropDown" style="padding-bottom: 15px" class="row">
+  <div
+    id="datalinkDropDown"
+    class="d-flex justify-content-start align-items-center my-2"
+  >
     <span>ID: </span>
     <select
       id="ddlCAPID"
-      class="form-control"
+      class="form-control w-auto ms-1"
       title="Select a CAP ID"
       data-bind="value: selectedTitle, options: CAPIDOptions, optionsCaption: '-Select-'"
     ></select>
-    <a href="javascript:;"
-      ><span id="linkRefresh" class="ui-icon ui-icon-refresh"></span
-    ></a>
+    <button
+      id="linkRefresh"
+      title="Refresh Selected Record"
+      type="button"
+      class="btn btn-link"
+    >
+      <i class="fa-solid fa-arrows-rotate"></i>
+    </button>
   </div>
-  <!--<div>
-                  <button id="linkRefresh" type="button" class="btn btn-outline-success">Refresh</button>
-              </div>-->
-
   <!-- ko if: selectedRecord.isLoaded() -->
   <div id="detailstab" data-bind="">
     <div class="progress" style="height: 30px">
