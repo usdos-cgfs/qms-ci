@@ -1,12 +1,13 @@
 <script
   language="javascript"
-  src="../SiteAssets/js/lib/jquery-1.12.4.min.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery/jquery-3.3.1.min.js"
   type="text/javascript"
 ></script>
+
 <script
   language="javascript"
-  src="../SiteAssets/js/app/page_manage_qo.js"
-  type="text/javascript"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/dist/pages/manage-qo/manage-qo.js"
+  type="module"
 ></script>
 
 <style>
@@ -26,14 +27,6 @@
     Note: Synchronizing will remove members who are no longer assigned in the
     "Business Office" list.
   </p>
-  <button class="button" type="button" onclick="syncArrays()">
-    Synchronize
-  </button>
-  <button
-    class="button"
-    type="button"
-    onclick="window.open('/sites/QMS-CI/_layouts/15/people.aspx?MembershipGroupId=24', '_blank')"
-  >
-    Manage
-  </button>
+  <button id="btnSyncArrays" class="button" type="button">Synchronize</button>
+  <button id="btnManageQoGroup" class="button" type="button">Manage</button>
 </div>

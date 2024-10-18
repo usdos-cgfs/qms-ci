@@ -18,6 +18,15 @@ export function pendingEffectivenessSubmissionTemplate(plan) {
       When ready, please submit proof of effectiveness by navigating to the link
       below.
     </p>
+    <p>
+      For guidance, refer to GFS-RD-QMS-0503 Guidance for CAR/CAP Stage 4 -
+      Verification of Effectiveness (<a
+        href="http://kbi.cgfs.state.sbu/article.aspx?article=39561&p=28"
+        target="_blank"
+      >
+        KB #39561</a
+      >)
+    </p>
   `;
 }
 
@@ -47,6 +56,15 @@ export function pendingEffectivenessSubmissionRejectedTemplate(
     <p>
       When ready, please update proof of effectiveness by navigating to the link
       below.
+    </p>
+    <p>
+      For guidance, refer to GFS-RD-QMS-0503 Guidance for CAR/CAP Stage 4 -
+      Verification of Effectiveness (<a
+        href="http://kbi.cgfs.state.sbu/article.aspx?article=39561&p=28"
+        target="_blank"
+      >
+        KB #39561</a
+      >)
     </p>
   `;
 }

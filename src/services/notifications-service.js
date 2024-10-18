@@ -101,10 +101,10 @@ async function pendingQtmProblemApproval(plan) {
   });
 }
 
-function pendingQsoProblemApproval(plan) {
-  const qso = plan.QSO.Value();
-  if (!qso) return;
-  const to = [qso.Email];
+async function pendingQsoProblemApproval(plan) {
+  const qo = await getQsoEmail(plan); // plan.QSO.Value();
+  if (!qo) return;
+  const to = [qo];
 
   const subject = subjectTemplate(plan);
   let body = pendingProblemApprovalTemplate(plan);
@@ -118,10 +118,10 @@ function pendingQsoProblemApproval(plan) {
   });
 }
 
-function pendingQaoProblemApproval(plan) {
-  const qo = plan.QAO.Value();
+async function pendingQaoProblemApproval(plan) {
+  const qo = await getQaoEmail(plan);
   if (!qo) return;
-  const to = [qo.Email];
+  const to = [qo];
 
   const subject = subjectTemplate(plan);
   let body = pendingProblemApprovalTemplate(plan);

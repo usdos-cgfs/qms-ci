@@ -26,11 +26,7 @@ import {
   SUPPORTINGDOCUMENTTYPES,
 } from "../../constants.js";
 
-import {
-  EditActionForm,
-  EditPlanForm,
-  NewPlanForm,
-} from "../../forms/index.js";
+import { EditActionForm, NewPlanForm } from "../../forms/index.js";
 
 import {
   editAction,
@@ -62,6 +58,7 @@ import {
   stageApprovedNotification,
   stageRejectedNotification,
 } from "../../services/notifications-service.js";
+import { printPlan } from "../../components/print/print.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -99,6 +96,7 @@ import {
     Status bar
 */
 window.app = window.app || {};
+document.title = "CAR/CAP Tool";
 
 var timer = null;
 var refreshInterval = 100 * 60 * 1000; // 10 minutes
@@ -262,6 +260,7 @@ $("#btnRequestAllRecords").click(LoadMainData);
 // This is where we structure the query for what get's loaded on main tab page and the drop-down on the specific record page.
 function LoadMainData(next) {
   const refreshTask = addTask(tasks.refreshPlans);
+  document.getElementById("spanLoadStatus").innerText = "Loading Data";
   next = next ? next : function () {};
   var dataLoadIncrementer = new Incremental(0, 3, () => {
     finishTask(refreshTask);
@@ -270,21 +269,25 @@ function LoadMainData(next) {
   // Let's load our Actions and our Items
   app.listRefs.Plans.getListItems("", function (plans) {
     vm.allRecordsArray(plans);
+    document.getElementById("spanLoadStatus").innerText = "Plans Loaded";
     dataLoadIncrementer.inc();
   });
 
   app.listRefs.Actions.getListItems("", function (actions) {
     vm.allActionsArray(actions);
+    document.getElementById("spanLoadStatus").innerText = "Actions Loaded";
     dataLoadIncrementer.inc();
   });
 
   app.listRefs.BusinessOffices.getListItems("", function (offices) {
     vm.allBusinessOffices(offices);
+    document.getElementById("spanLoadStatus").innerText = "Offices Loaded";
     dataLoadIncrementer.inc();
   });
 
   app.listRefs.TempQOs.getListItems("", function (offices) {
     vm.allTempQOs(offices);
+    document.getElementById("spanLoadStatus").innerText = "QOs Loaded";
     dataLoadIncrementer.inc();
   });
 }
@@ -963,7 +966,7 @@ function OnCallbackFormRefresh(result, value) {
 
 function closePlan(id, { title, newStage, prevStage, cancelReason }) {
   addTask(tasks.closing);
-  valuePair = [
+  const valuePair = [
     ["ProcessStage", newStage],
     ["Active", "0"],
     ["PreviousStage", prevStage],
@@ -1107,6 +1110,7 @@ function toggleLockPlan(title, lock, callback) {
 
 function initComplete() {
   ko.applyBindings(vm);
+  document.getElementById("spanLoadStatus").innerText = "Building Interface";
 
   vm.currentUser(sal.globalConfig.currentUser);
   var tabId = getUrlParam("tab");
@@ -1118,7 +1122,7 @@ function initComplete() {
   // $("#tabs").tabs();
 
   if (!tabId) {
-    const defaultTab = vm.tabOpts.myPlans;
+    let defaultTab = vm.tabOpts.myPlans;
     switch (vm.AdminType()) {
       case ROLES.ADMINTYPE.QO:
         defaultTab = vm.tabOpts.qo;
@@ -1153,6 +1157,8 @@ function initComplete() {
   // var idTab =
   // $('#injectAdditionalTabs').
   loadFinish = new Date();
+  var loadTimeSeconds = (loadFinish - loadStart) / 1000;
+  vm.appLoadTime(loadTimeSeconds + "s");
   console.log("Application Load Time: ", (loadFinish - loadStart) / 1000);
 }
 
@@ -1164,6 +1170,8 @@ async function initApp() {
   initSal();
   InitSal();
   Common.Init();
+  document.getElementById("spanLoadStatus").innerText =
+    "Initiating Application";
   vm = await App.Create();
   const initTask = addTask(tasks.init);
   initStaticListRefs();
@@ -2759,7 +2767,7 @@ export function CAPViewModel(capIdstring) {
         return false;
       },
       approvalApproveClick: function (action) {
-        valuePair = [
+        const valuePair = [
           ["ImplementationStatus", "In progress"],
           ["PreviousActionDescription", ""],
           ["PreviousActionResponsiblePerson", ""],
@@ -2776,7 +2784,7 @@ export function CAPViewModel(capIdstring) {
         });
       },
       approvalRejectClick: function (action) {
-        valuePair = [
+        const valuePair = [
           ["ImplementationStatus", "In progress"],
           ["PreviousActionDescription", ""],
           ["PreviousActionResponsiblePerson", ""],
@@ -2794,7 +2802,7 @@ export function CAPViewModel(capIdstring) {
         if (action.PreviousActionResponsiblePerson) {
           valuePair.push([
             "ActionResponsiblePerson",
-            action.PreviousActionResponsiblePerson.userId,
+            action.PreviousActionResponsiblePerson.get_lookupId(),
           ]);
         }
 
@@ -3183,10 +3191,14 @@ export function CAPViewModel(capIdstring) {
     }
     return (
       _spPageContextInfo.siteServerRelativeUrl +
-      "/SitePages/ReportView.aspx?capid=" +
+      "/SitePages/print.aspx?capid=" +
       self.selectedTitle()
     );
   });
+
+  self.clickPrintPlan = () => {
+    printPlan(self.selectedRecord.ID());
+  };
 
   // Return the percentage complete for the record for our progress bar.
   self.ProcessPercentage = ko.computed(function () {
@@ -3302,7 +3314,7 @@ export function CAPViewModel(capIdstring) {
     //   }
     // });
 
-    return records.length;
+    return records.length + 1;
   };
 
   function GetNewID(type, count) {
@@ -3613,6 +3625,15 @@ export function CAPViewModel(capIdstring) {
         return newNextDate;
       },
     },
+    showCalculateNextTargetDate: ko.pureComputed(function () {
+      if (!vm.selectedRecord.Active()) {
+        return false;
+      }
+      if (self.selectedRecord.curUserHasRole(ROLES.ADMINTYPE.QTM)) {
+        return true;
+      }
+      return false;
+    }),
     calculateNextTargetDate: function () {
       if (!vm.selectedRecord.Active()) {
         alert("Record is not active!");
@@ -4138,6 +4159,8 @@ class App {
     const app = new CAPViewModel();
     Object.assign(this, app);
   }
+
+  appLoadTime = ko.observable();
 
   clickNewPlan() {
     const plan = new Plan();
