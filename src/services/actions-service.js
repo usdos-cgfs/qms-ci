@@ -1,7 +1,8 @@
-import { ACTIONSTATES } from "../constants.js";
+import { ACTIONSTATES, stageDescriptions } from "../constants.js";
 import { Action } from "../entities/index.js";
 import { appContext } from "../infrastructure/app-db-context.js";
 import { Result } from "../sal/shared/index.js";
+import { actionRequiresApprovalNotification } from "./notifications-service.js";
 
 export function getNextActionId(planId, actions) {
   let actionNoMax = 1;
@@ -24,23 +25,32 @@ export async function submitNewAction(plan, action) {
 }
 
 export async function editAction(plan, action) {
-  const stage = ko.unwrap(plan.ProcessStage.Value);
+  const planStage = ko.unwrap(plan.ProcessStage.Value);
+  const actionStatus = ko.unwrap(action.ImplementationStatus.Value);
 
-  if (["Developing Action Plan", "Pending QSO Plan Approval"].includes(stage)) {
+  // If the plan hasn't been approved, or the action is pending approval,
+  // we don't need to increment
+  const planNotApproved = [
+    stageDescriptions.DevelopingActionPlan.stage,
+    stageDescriptions.PlanApprovalQSO.stage,
+  ].includes(planStage);
+
+  if (planNotApproved || actionStatus == ACTIONSTATES.QSOAPPROVAL) {
     return appContext.Actions.UpdateEntity(action, Action.Views.Edit);
   }
 
+  // Plan requires QSO approval
   let revisions = action.RevisionCount.Value() ?? 0;
   action.RevisionCount.Value(++revisions);
-  // Plan requires QSO approval
-
-  // action.PreviousActionDescription.set(action.ActionDescription.get());
-  // action.PreviousTargetDate.set(action.TargetDate.get());
-  // action.PreviousActionResponsiblePerson.set(
-  //   action.ActionResponsiblePerson.get()
-  // );
 
   action.ImplementationStatus.Value(ACTIONSTATES.QSOAPPROVAL);
 
-  return appContext.Actions.UpdateEntity(action, Action.Views.EditApproval);
+  const result = await appContext.Actions.UpdateEntity(
+    action,
+    Action.Views.EditApproval
+  );
+
+  if (result.isFailure) return result;
+
+  return actionRequiresApprovalNotification(plan, action);
 }

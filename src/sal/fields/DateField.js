@@ -76,7 +76,13 @@ export class DateField extends BaseField {
     write: (val) => {
       if (!val) return;
       //writes in format
-      this.Value(new Date(val));
+      if (this.type == dateFieldTypes.datetime) {
+        this.Value(new Date(val));
+        return;
+      }
+
+      // make sure we're using midnight local time
+      this.Value(new Date(val + "T00:00"));
     },
   });
 

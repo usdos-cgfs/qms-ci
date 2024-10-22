@@ -2,6 +2,7 @@ import { ROLES, stageDescriptions } from "../constants.js";
 import { Notification } from "../entities/index.js";
 import { appContext } from "../infrastructure/app-db-context.js";
 import {
+  actionRequiresQsoApprovalTemplate,
   developingActionPlanRejectedTemplate,
   developingActionPlanTemplate,
   implementingActionPlanTemplate,
@@ -401,6 +402,24 @@ export async function stageRejectedNotification(plan, rejection) {
   finishTask(notificationTask);
 }
 
+export async function actionRequiresApprovalNotification(plan, action) {
+  const qoEmail = await getQsoEmail(plan);
+  const to = [qoEmail];
+
+  const subject = subjectTemplate(plan, "Action Requires Approval");
+  let body = actionRequiresQsoApprovalTemplate(plan, action);
+  body += getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
+
+  const notification = Notification.FromTemplate({
+    title: plan.Title.Value(),
+    to,
+    subject,
+    body,
+  });
+
+  return sendPlanNotification(plan, notification);
+}
+
 async function sendPlanNotification(plan, notification) {
   if (!notification) return;
   const folderPath = plan.Title.Value();
@@ -409,5 +428,5 @@ async function sendPlanNotification(plan, notification) {
     notification,
     folderPath
   );
-  return;
+  return result;
 }
