@@ -18,70 +18,70 @@
 
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/jquery/jquery-3.3.1.min.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery/jquery-3.3.1.min.js"
   type="text/javascript"
 ></script>
 
 <!-- <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.13.3.custom/jquery-ui.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery-ui-1.13.3.custom/jquery-ui.min.css"
 />
 <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.13.3.custom/jquery-ui.theme.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery-ui-1.13.3.custom/jquery-ui.theme.min.css"
 />
 <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.13.3.custom/jquery-ui.structure.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery-ui-1.13.3.custom/jquery-ui.structure.min.css"
 />
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.13.3.custom/jquery-ui.min.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery-ui-1.13.3.custom/jquery-ui.min.js"
   type="text/javascript"
 ></script> -->
 
 <!-- <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.12.1/redmond/jquery-ui.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery-ui-1.12.1/redmond/jquery-ui.min.css"
 />
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/jquery-ui-1.12.1/jquery-ui.min.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery-ui-1.12.1/jquery-ui.min.js"
   type="text/javascript"
 ></script> -->
 
 <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/bootstrap-5.3.0/css/bootstrap.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/bootstrap-5.3.0/css/bootstrap.min.css"
 />
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/bootstrap-5.3.0/js/bootstrap.bundle.min.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/bootstrap-5.3.0/js/bootstrap.bundle.min.js"
   type="text/javascript"
 ></script>
 
 <link
   rel="stylesheet"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/fontawesome-6.5.1/css/fontawesome.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/fontawesome-6.5.1/css/fontawesome.min.css"
 />
 <link
   rel="stylesheet"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/fontawesome-6.5.1/css/solid.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/fontawesome-6.5.1/css/solid.min.css"
 />
 
 <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/datatables/datatables.min.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/datatables/datatables.min.css"
 />
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/datatables/dataTables.min.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/datatables/dataTables.min.js"
   type="text/javascript"
 ></script>
 
@@ -94,43 +94,43 @@
 
 <script
   type="module"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/webcomponents/searchselect/searchselect.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/webcomponents/searchselect/searchselect.js"
 ></script>
 
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/lib/knockout/knockout-3.5.1.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/knockout/knockout-3.5.1.js"
   type="text/javascript"
 ></script>
 
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/src/common.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/dist/common.js"
   type="text/javascript"
 ></script>
 
 <!-- <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/src/vm.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/src/vm.js"
   type="module"
 ></script> -->
 
 <script
   language="javascript"
-  src="/sites/CGFS/Style Library/apps/car-cap/src/sal-v2.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/dist/sal-v2.js"
   type="text/javascript"
 ></script>
 
 <!-- <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/lib/tablesorter/style.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/tablesorter/style.css"
 /> -->
 
 <link
   rel="stylesheet"
   type="text/css"
-  href="/sites/CGFS/Style Library/apps/car-cap/src/styles.css"
+  href="/sites/CGFS-QMS/Style Library/apps/qms-ci/dist/styles.css"
 />
 
 <div class="app">
@@ -144,13 +144,15 @@
   <!-- /ko -->
 
   <!-- ko with: runningTasks -->
-  <!-- ko if: $data.length -->
-  <div class="tasks running">
+  <div
+    class="tasks running"
+    style="display: none"
+    data-bind="visible: $data.length"
+  >
     <ul class="" data-bind="foreach: $data">
       <li data-bind="text: msg + '... ' + Status()"></li>
     </ul>
   </div>
-  <!-- /ko -->
   <!-- /ko -->
 
   <!-- ko foreach: app.currentDialogs -->
@@ -167,14 +169,14 @@
     It looks like you're using Internet Explorer, for best performance, please
     use Edge or Chrome.
   </div>
-
   <div id="divLoading" style="color: green; padding-bottom: 10px"></div>
-
   <div id="showme">
-    <p>Please wait... loading.</p>
+    <div class="d-flex align-items-center">
+      <strong>Please wait. <span id="spanLoadStatus">Loading</span>...</strong>
+      <div class="spinner-border ms-4" aria-hidden="true"></div>
+    </div>
     <p>This application is currently only supported in Chrome or Edge.</p>
   </div>
-
   <div id="tabs" class="tabclass" style="display: none">
     <div>
       <div class="mb-2 w-sm">
@@ -217,11 +219,14 @@
     <div class="tab-content">
       <div id="injectAdditionalTabs"></div>
     </div>
-  </div>
-  <div>
-    <!-- ko if: currentUserObj.id -->
-    <p>User ID: <span data-bind="text: currentUserObj.id"></span></p>
-    <!-- /ko -->
+    <div>
+      <!-- ko if: currentUserObj.id -->
+      <p>
+        User ID: <span data-bind="text: currentUserObj.id"></span><br />
+        Load Time: <span data-bind="text: appLoadTime"></span>
+      </p>
+      <!-- /ko -->
+    </div>
   </div>
 </div>
 
@@ -547,22 +552,26 @@
 
 <!-- Detail Tab -->
 <script type="text/html" id="tabs-detail">
-  <div id="datalinkDropDown" style="padding-bottom: 15px" class="row">
+  <div
+    id="datalinkDropDown"
+    class="d-flex justify-content-start align-items-center my-2"
+  >
     <span>ID: </span>
     <select
       id="ddlCAPID"
-      class="form-control"
+      class="form-control w-auto ms-1"
       title="Select a CAP ID"
       data-bind="value: selectedTitle, options: CAPIDOptions, optionsCaption: '-Select-'"
     ></select>
-    <a href="javascript:;"
-      ><span id="linkRefresh" class="ui-icon ui-icon-refresh"></span
-    ></a>
+    <button
+      id="linkRefresh"
+      title="Refresh Selected Record"
+      type="button"
+      class="btn btn-link"
+    >
+      <i class="fa-solid fa-arrows-rotate"></i>
+    </button>
   </div>
-  <!--<div>
-                  <button id="linkRefresh" type="button" class="btn btn-outline-success">Refresh</button>
-              </div>-->
-
   <!-- ko if: selectedRecord.isLoaded() -->
   <div id="detailstab" data-bind="">
     <div class="progress" style="height: 30px">
@@ -1277,13 +1286,15 @@
               data-bind="text: vm.selectedRecord.NextTargetDate.date().getTime() ? 
                                   vm.selectedRecord.NextTargetDate.date().toDateString() : 'N/A'"
             ></span>
-            <!-- ko if: vm.AdminType() == ROLES.ADMINTYPE.QTM -->
-            <a href="javascript:;">
-              <span
-                class="ui-icon ui-icon-refresh"
-                data-bind="click: vm.controls.record.calculateNextTargetDate.bind()"
-              ></span>
-            </a>
+            <!-- ko if:  $root.controls.record.showCalculateNextTargetDate-->
+            <button
+              title="Recalculate Next Target Date"
+              type="button"
+              class="btn btn-link"
+              data-bind="click: $root.controls.record.calculateNextTargetDate"
+            >
+              <i class="fa-solid fa-arrows-rotate"></i>
+            </button>
             <!-- /ko -->
           </h4>
           <!-- /ko -->
@@ -1498,12 +1509,14 @@
                       ></div>
                       <!-- /ko -->
                       <!-- ko if: vm.AdminType() == ROLES.ADMINTYPE.QTM -->
-                      <a href="javascript:;">
-                        <span
-                          class="ui-icon ui-icon-refresh"
-                          data-bind="click: $root.controls.record.updateImplementationDate.bind()"
-                        ></span>
-                      </a>
+                      <button
+                        title="Recalculate Next Target Date"
+                        type="button"
+                        class="btn btn-link"
+                        data-bind="click: $root.controls.record.updateImplementationDate"
+                      >
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                      </button>
                       <!-- /ko -->
                     </div>
                   </td>
@@ -1527,18 +1540,26 @@
                     >
                   </td>
                   <td>
-                    <a
-                      style="color: #007bff"
-                      data-bind="attr: {href: printUrl()}"
-                      target="_blank"
-                      >View a Print Friendly Version.</a
+                    <button
+                      class="btn btn-link"
+                      data-bind="click: $root.clickPrintPlan"
                     >
+                      View a Print Friendly Version.
+                    </button>
                   </td>
                 </tr>
               </tbody>
             </table>
             <br />
             <div class="container row d-flex flex-col gap-2">
+              <!-- ko if: controls.record.isEditable() -->
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                data-bind="click: $root.clickSendStageNotification"
+              >
+                Resend Stage notification
+              </button>
               <button
                 type="button"
                 class="btn btn-outline-primary"
@@ -1546,7 +1567,6 @@
               >
                 View
               </button>
-              <!-- ko if: controls.record.isEditable() -->
               <button
                 type="button"
                 class="btn btn-outline-primary"
@@ -2859,5 +2879,5 @@
 
 <script
   type="module"
-  src="/sites/CGFS/Style Library/apps/car-cap/src/pages/app/app.js"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/dist/pages/app/app.js"
 ></script>

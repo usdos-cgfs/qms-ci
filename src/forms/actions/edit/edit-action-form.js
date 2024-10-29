@@ -14,6 +14,13 @@ export class EditActionForm extends BaseForm {
 
     this.onComplete = onComplete;
     this._plan = plan;
+
+    const action = ko.unwrap(entity);
+    action.PreviousActionDescription.set(action.ActionDescription.get());
+    action.PreviousTargetDate.set(action.TargetDate.get());
+    action.PreviousActionResponsiblePerson.set(
+      action.ActionResponsiblePerson.get()
+    );
   }
 
   showStageWarning = ko.pureComputed(() => {

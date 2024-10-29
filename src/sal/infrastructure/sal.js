@@ -50,7 +50,7 @@ export function executeQuery(currCtx) {
 }
 
 function principalToPeople(oPrincipal, isGroup = null) {
-  return {
+  const people = {
     ID: oPrincipal.get_id(),
     Title: oPrincipal.get_title(),
     LoginName: oPrincipal.get_loginName(),
@@ -61,6 +61,9 @@ function principalToPeople(oPrincipal, isGroup = null) {
         : oPrincipal.constructor.getName() == "SP.Group",
     oPrincipal,
   };
+  if (oPrincipal.get_email) people.Email = oPrincipal.get_email();
+
+  return people;
 }
 
 // Used in authorization
@@ -532,6 +535,17 @@ async function getCurrentUserPropertiesAsync() {
 }
 
 // Used in Knockout people custom binding
+export async function ensurePerson(person) {
+  const uri = `/web/getuserbyid(${person.ID})`;
+  // const alternateUri = `/web/siteusers(@v)?@v='i%3A0%23.f%7Cmembership%7C${person.LoginName}`;
+
+  const user = await fetchSharePointData(uri);
+  if (!user) return;
+
+  Object.assign(person, user.d);
+  return person;
+}
+
 export async function ensureUserByKeyAsync(userName) {
   return new Promise((resolve, reject) => {
     var group = sal.globalConfig.siteGroups.find(function (group) {
@@ -887,7 +901,14 @@ export function SPList(listDef) {
     return item;
   }
 
-  function createListItemAsync(entity, folderPath = null) {
+  async function createListItemAsync(entity, folderPath = null) {
+    let serverRelFolderPath;
+
+    if (folderPath) {
+      serverRelFolderPath = getServerRelativeFolderPath(folderPath);
+      // await ensureFolder(serverRelFolderPath);
+    }
+
     return new Promise((resolve, reject) => {
       //self.updateConfig();
       const currCtx = new SP.ClientContext.get_current();
@@ -897,13 +918,7 @@ export function SPList(listDef) {
       const itemCreateInfo = new SP.ListItemCreationInformation();
 
       if (folderPath) {
-        var folderUrl =
-          sal.globalConfig.siteUrl +
-          "/Lists/" +
-          self.config.def.name +
-          "/" +
-          folderPath;
-        itemCreateInfo.set_folderUrl(folderUrl);
+        itemCreateInfo.set_folderUrl(serverRelFolderPath);
       }
 
       const oListItem = oList.addItem(itemCreateInfo);
@@ -1131,13 +1146,14 @@ export function SPList(listDef) {
       : "";
     // TODO: fieldfilter should use 'lookupcolumnId' e.g. ServiceTypeId eq 1
     const colFilterArr = columnFilters.map((colFilter) => {
-      const value = colFilter.value ? `'${colFilter.value}'` : colFilter.value;
+      if (typeof colFilter == "string") return colFilter;
 
-      return `${colFilter.column} ${colFilter.op ?? "eq"} ` + value; // '${colFilter.value}'
+      const value = colFilter.value ? `'${colFilter.value}'` : colFilter.value;
+      return `(${colFilter.column} ${colFilter.op ?? "eq"} ${value})`; // '${colFilter.value}'
     });
     if (!includeFolders) colFilterArr.push(`FSObjType eq '0'`);
 
-    const filter = "$filter=(" + colFilterArr.join(`) and (`) + ")";
+    const filter = "$filter=" + colFilterArr.join(` and `);
 
     //const fsObjTypeFilter = `FSObjType eq '0'`;
     // const fieldFilter = `${column} eq '${value}'`;

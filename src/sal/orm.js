@@ -1,5 +1,5 @@
-import { Page } from "./entities/index.js";
-import { SPList, copyFileAsync } from "./infrastructure/index.js";
+import { SitePage } from "./entities/index.js";
+import { SPList, copyFileAsync, ensurePerson } from "./infrastructure/index.js";
 import { Result } from "./shared/index.js";
 
 const DEBUG = false;
@@ -7,13 +7,14 @@ const DEBUG = false;
 export class DbContext {
   constructor() {}
 
-  Pages = new EntitySet(Page);
+  SitePages = new EntitySet(SitePage);
 
   utilities = {
     copyFileAsync,
+    ensurePerson,
   };
 
-  virtualSets = new Map();
+  _virtualSets = new Map();
 
   Set = (entityType) => {
     const key = entityType.ListDef.name;
@@ -24,12 +25,12 @@ export class DbContext {
       .find((set) => set.ListDef?.name == key);
     if (set) return set;
 
-    if (!this.virtualSets.has(key)) {
+    if (!this._virtualSets.has(key)) {
       const newSet = new EntitySet(entityType);
-      this.virtualSets.set(key, newSet);
+      this._virtualSets.set(key, newSet);
       return newSet;
     }
-    return this.virtualSets.get(key);
+    return this._virtualSets.get(key);
   };
 }
 

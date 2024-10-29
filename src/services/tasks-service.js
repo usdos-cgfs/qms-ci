@@ -14,6 +14,8 @@ export const tasks = {
   newComment: new Task({ msg: "Refreshing Comments..." }),
   newAction: new Task({ msg: "Refreshing Actions...", blocking: true }),
   approve: new Task({ msg: "Approving Plan...", blocking: true }),
+  reject: (planTitle) => new TaskDef(`Rejecting ${planTitle}`, true),
+  notification: () => new TaskDef("Sending Notification", true),
 };
 
 export const runningTasks = ko.observableArray();

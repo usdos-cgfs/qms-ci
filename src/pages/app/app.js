@@ -2,7 +2,7 @@ import { getUrlParam, setUrlParam } from "../../common/router.js";
 import { Tab, TabsModule } from "../../components/tabs/tabs.js";
 import { makeDataTable } from "../../common/data-table.js";
 
-import { InitSal } from "../../sal/infrastructure/index.js";
+import { InitSal, sortByTitle } from "../../sal/infrastructure/index.js";
 import { appContext } from "../../infrastructure/app-db-context.js";
 
 import * as ModalDialog from "../../sal/components/modal/index.js";
@@ -26,11 +26,7 @@ import {
   SUPPORTINGDOCUMENTTYPES,
 } from "../../constants.js";
 
-import {
-  EditActionForm,
-  EditPlanForm,
-  NewPlanForm,
-} from "../../forms/index.js";
+import { EditActionForm, NewPlanForm } from "../../forms/index.js";
 
 import {
   editAction,
@@ -57,6 +53,12 @@ import {
   currentUser,
   userRoleOpts,
 } from "../../services/authorization.js";
+
+import {
+  stageApprovedNotification,
+  stageRejectedNotification,
+} from "../../services/notifications-service.js";
+import { printPlan } from "../../components/print/print.js";
 
 // import { CAPViewModel } from "../../vm.js";
 /*      app-main.js
@@ -94,6 +96,7 @@ import {
     Status bar
 */
 window.app = window.app || {};
+document.title = "CAR/CAP Tool";
 
 var timer = null;
 var refreshInterval = 100 * 60 * 1000; // 10 minutes
@@ -257,6 +260,7 @@ $("#btnRequestAllRecords").click(LoadMainData);
 // This is where we structure the query for what get's loaded on main tab page and the drop-down on the specific record page.
 function LoadMainData(next) {
   const refreshTask = addTask(tasks.refreshPlans);
+  document.getElementById("spanLoadStatus").innerText = "Loading Data";
   next = next ? next : function () {};
   var dataLoadIncrementer = new Incremental(0, 3, () => {
     finishTask(refreshTask);
@@ -265,21 +269,25 @@ function LoadMainData(next) {
   // Let's load our Actions and our Items
   app.listRefs.Plans.getListItems("", function (plans) {
     vm.allRecordsArray(plans);
+    document.getElementById("spanLoadStatus").innerText = "Plans Loaded";
     dataLoadIncrementer.inc();
   });
 
   app.listRefs.Actions.getListItems("", function (actions) {
     vm.allActionsArray(actions);
+    document.getElementById("spanLoadStatus").innerText = "Actions Loaded";
     dataLoadIncrementer.inc();
   });
 
   app.listRefs.BusinessOffices.getListItems("", function (offices) {
     vm.allBusinessOffices(offices);
+    document.getElementById("spanLoadStatus").innerText = "Offices Loaded";
     dataLoadIncrementer.inc();
   });
 
   app.listRefs.TempQOs.getListItems("", function (offices) {
     vm.allTempQOs(offices);
+    document.getElementById("spanLoadStatus").innerText = "QOs Loaded";
     dataLoadIncrementer.inc();
   });
 }
@@ -378,7 +386,7 @@ function m_fnApproveProblemQSO() {
     ["QSOProblemAdjudicationDate", ts],
     ["ProcessStage", "Developing Action Plan"],
   ];
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnApproveProblemQAO() {
@@ -396,7 +404,7 @@ function m_fnApproveProblemQAO() {
     ["ProcessStage", "Developing Action Plan"],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnApproveProblemQTMB() {
@@ -413,7 +421,7 @@ function m_fnApproveProblemQTMB() {
     ["ProcessStage", "Pending QTM Problem Approval"],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 function m_fnApproveProblemQTM() {
   var planId = vm.selectedRecord.ID();
@@ -437,10 +445,10 @@ function m_fnApproveProblemQTM() {
     ["NextTargetDate", target_deadline],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
-function m_fnRejectProblemQSO() {
+function m_fnRejectProblemQSO(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QSO)) {
     alert('You don\'t have the correct role "QSO" to perform this action');
@@ -453,9 +461,9 @@ function m_fnRejectProblemQSO() {
     ["QSOProblemAdjudicationDate", ts],
     ["ProcessStage", "Pending QAO Problem Approval"],
   ];
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
-function m_fnRejectProblemQAO() {
+function m_fnRejectProblemQAO(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QAO)) {
     alert('You don\'t have the correct role "QAO" to perform this action');
@@ -468,10 +476,10 @@ function m_fnRejectProblemQAO() {
     ["QAOProblemAdjudicationDate", ts],
     ["ProcessStage", "Editing"],
   ];
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
-function m_fnRejectProblemQTMB() {
+function m_fnRejectProblemQTMB(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTMB)) {
     alert('You don\'t have the correct role "QTM-B" to perform this action');
@@ -485,10 +493,10 @@ function m_fnRejectProblemQTMB() {
     ["ProcessStage", "Editing"],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
-function m_fnRejectProblemQTM(planId) {
+function m_fnRejectProblemQTM(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTM)) {
     alert('You don\'t have the correct role "QTM" to perform this action');
@@ -501,7 +509,7 @@ function m_fnRejectProblemQTM(planId) {
     ["QTMProblemAdjudicationDate", ts],
     ["ProcessStage", "Editing"],
   ];
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
 /* Plan Approval */
@@ -528,7 +536,7 @@ function m_fnApprovePlanQSO(planId) {
       valuePair.push(["ProcessStage", stageDescriptions.PlanApprovalQTM.stage]);
   }
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnApprovePlanQTMB(planId) {
@@ -545,7 +553,7 @@ function m_fnApprovePlanQTMB(planId) {
     ["ProcessStage", "Pending QTM Plan Approval"],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnApprovePlanQTM(planId) {
@@ -566,7 +574,11 @@ function m_fnApprovePlanQTM(planId) {
     ],
   ];
   activateActions(function () {
-    app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+    app.listRefs.Plans.updateListItem(
+      planId,
+      valuePair,
+      onStageApprovedCallback
+    );
   });
 }
 
@@ -595,7 +607,7 @@ function activateActions(callback) {
 }
 
 // Plan Rejections
-function m_fnRejectPlanQSO() {
+function m_fnRejectPlanQSO(callback) {
   var planId = vm.selectedRecord.ID();
 
   if (!vm.selectedRecord.curUserHasRole(ROLES.QSO)) {
@@ -613,10 +625,10 @@ function m_fnRejectPlanQSO() {
     ],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
-function m_fnRejectPlanQTMB() {
+function m_fnRejectPlanQTMB(callback) {
   var planId = vm.selectedRecord.ID();
 
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTMB)) {
@@ -634,10 +646,10 @@ function m_fnRejectPlanQTMB() {
     ],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
-function m_fnRejectPlanQTM() {
+function m_fnRejectPlanQTM(callback) {
   var planId = vm.selectedRecord.ID();
 
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTM)) {
@@ -655,7 +667,7 @@ function m_fnRejectPlanQTM() {
     ],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
 /* Implementation Approval */
@@ -676,11 +688,11 @@ function m_fnApproveImplement() {
     ],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 // Set the CAPProcessStage to Pending QSO Approval
-function m_fnRejectImplement() {
+function m_fnRejectImplement(callback) {
   var planId = vm.selectedRecord.ID();
   var ts = new Date().toISOString();
   var valuePair = [
@@ -689,7 +701,7 @@ function m_fnRejectImplement() {
     ["QSOImplementAdjudicationDate", ts],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
 /* Effectiveness Approval and Verification Stage */
@@ -714,7 +726,7 @@ function m_fnApproveEffectivenessQSO() {
       valuePair.push(["ProcessStage", "Pending QTM Effectiveness Approval"]);
   }
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnApproveEffectivenessQTMB() {
@@ -731,7 +743,7 @@ function m_fnApproveEffectivenessQTMB() {
     ["ProcessStage", "Pending QTM Effectiveness Approval"],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
 function m_fnApproveEffectivenessQTM() {
@@ -750,10 +762,10 @@ function m_fnApproveEffectivenessQTM() {
     ["Active", "0"],
   ];
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, onStageApprovedCallback);
 }
 
-function m_fnRejectEffectivenessQSO(planId) {
+function m_fnRejectEffectivenessQSO(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QSO)) {
     alert('You don\'t have the correct role "QSO" to perform this action');
@@ -783,10 +795,10 @@ function m_fnRejectEffectivenessQSO(planId) {
       break;
   }
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
-function m_fnRejectEffectivenessQTMB(planId) {
+function m_fnRejectEffectivenessQTMB(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTMB)) {
     alert('You don\'t have the correct role "QTMB" to perform this action');
@@ -798,7 +810,7 @@ function m_fnRejectEffectivenessQTMB(planId) {
 
   var valuePair = [
     ["QMSBEffectivenessAdjudication", "Rejected"],
-    ["QMSBEffectivenessAdjudicationDate", ts],
+    ["QMSBEffectivenessAdjudicationDat", ts],
   ];
 
   switch (rejectReason) {
@@ -816,10 +828,10 @@ function m_fnRejectEffectivenessQTMB(planId) {
       break;
   }
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
-function m_fnRejectEffectivenessQTM() {
+function m_fnRejectEffectivenessQTM(callback) {
   var planId = vm.selectedRecord.ID();
   if (!vm.selectedRecord.curUserHasRole(ROLES.QTM)) {
     alert('You don\'t have the correct role "QTM" to perform this action');
@@ -849,7 +861,7 @@ function m_fnRejectEffectivenessQTM() {
       break;
   }
 
-  app.listRefs.Plans.updateListItem(planId, valuePair, m_fnRefresh);
+  app.listRefs.Plans.updateListItem(planId, valuePair, callback);
 }
 
 /* CALLBACKS AND PAGE MANIPULATIONS */
@@ -862,6 +874,37 @@ function m_fnRefresh(result, value) {
   LoadMainData(function () {
     LoadSelectedCAP(vm.selectedTitle());
     finishTask(tasks.refresh);
+  });
+}
+
+async function onStageApprovedCallback(result) {
+  if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
+    return;
+  }
+  const refreshTask = addTask(tasks.refresh);
+
+  LoadMainData(async function () {
+    await LoadSelectedCAP(vm.selectedTitle());
+    const plan = ko.unwrap(vm.selectedPlan);
+    await stageApprovedNotification(plan);
+    finishTask(refreshTask);
+  });
+}
+
+async function onStageRejectedCallback(plan, rejection) {
+  // if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
+  //   return;
+  // }
+  return new Promise((resolve) => {
+    const refreshTask = addTask(tasks.refresh);
+
+    LoadMainData(async function () {
+      await LoadSelectedCAP(vm.selectedTitle());
+      const plan = ko.unwrap(vm.selectedPlan);
+      await stageRejectedNotification(plan, rejection);
+      finishTask(refreshTask);
+      resolve();
+    });
   });
 }
 
@@ -923,7 +966,7 @@ function OnCallbackFormRefresh(result, value) {
 
 function closePlan(id, { title, newStage, prevStage, cancelReason }) {
   addTask(tasks.closing);
-  valuePair = [
+  const valuePair = [
     ["ProcessStage", newStage],
     ["Active", "0"],
     ["PreviousStage", prevStage],
@@ -1067,6 +1110,7 @@ function toggleLockPlan(title, lock, callback) {
 
 function initComplete() {
   ko.applyBindings(vm);
+  document.getElementById("spanLoadStatus").innerText = "Building Interface";
 
   vm.currentUser(sal.globalConfig.currentUser);
   var tabId = getUrlParam("tab");
@@ -1078,7 +1122,7 @@ function initComplete() {
   // $("#tabs").tabs();
 
   if (!tabId) {
-    const defaultTab = vm.tabOpts.myPlans;
+    let defaultTab = vm.tabOpts.myPlans;
     switch (vm.AdminType()) {
       case ROLES.ADMINTYPE.QO:
         defaultTab = vm.tabOpts.qo;
@@ -1113,6 +1157,8 @@ function initComplete() {
   // var idTab =
   // $('#injectAdditionalTabs').
   loadFinish = new Date();
+  var loadTimeSeconds = (loadFinish - loadStart) / 1000;
+  vm.appLoadTime(loadTimeSeconds + "s");
   console.log("Application Load Time: ", (loadFinish - loadStart) / 1000);
 }
 
@@ -1124,6 +1170,8 @@ async function initApp() {
   initSal();
   InitSal();
   Common.Init();
+  document.getElementById("spanLoadStatus").innerText =
+    "Initiating Application";
   vm = await App.Create();
   const initTask = addTask(tasks.init);
   initStaticListRefs();
@@ -2719,7 +2767,7 @@ export function CAPViewModel(capIdstring) {
         return false;
       },
       approvalApproveClick: function (action) {
-        valuePair = [
+        const valuePair = [
           ["ImplementationStatus", "In progress"],
           ["PreviousActionDescription", ""],
           ["PreviousActionResponsiblePerson", ""],
@@ -2736,7 +2784,7 @@ export function CAPViewModel(capIdstring) {
         });
       },
       approvalRejectClick: function (action) {
-        valuePair = [
+        const valuePair = [
           ["ImplementationStatus", "In progress"],
           ["PreviousActionDescription", ""],
           ["PreviousActionResponsiblePerson", ""],
@@ -2754,7 +2802,7 @@ export function CAPViewModel(capIdstring) {
         if (action.PreviousActionResponsiblePerson) {
           valuePair.push([
             "ActionResponsiblePerson",
-            action.PreviousActionResponsiblePerson.userId,
+            action.PreviousActionResponsiblePerson.get_lookupId(),
           ]);
         }
 
@@ -3143,10 +3191,14 @@ export function CAPViewModel(capIdstring) {
     }
     return (
       _spPageContextInfo.siteServerRelativeUrl +
-      "/SitePages/ReportView.aspx?capid=" +
+      "/SitePages/print.aspx?capid=" +
       self.selectedTitle()
     );
   });
+
+  self.clickPrintPlan = () => {
+    printPlan(self.selectedRecord.ID());
+  };
 
   // Return the percentage complete for the record for our progress bar.
   self.ProcessPercentage = ko.computed(function () {
@@ -3262,7 +3314,7 @@ export function CAPViewModel(capIdstring) {
     //   }
     // });
 
-    return records.length;
+    return records.length + 1;
   };
 
   function GetNewID(type, count) {
@@ -3573,6 +3625,15 @@ export function CAPViewModel(capIdstring) {
         return newNextDate;
       },
     },
+    showCalculateNextTargetDate: ko.pureComputed(function () {
+      if (!vm.selectedRecord.Active()) {
+        return false;
+      }
+      if (self.selectedRecord.curUserHasRole(ROLES.ADMINTYPE.QTM)) {
+        return true;
+      }
+      return false;
+    }),
     calculateNextTargetDate: function () {
       if (!vm.selectedRecord.Active()) {
         alert("Record is not active!");
@@ -3701,34 +3762,20 @@ export function CAPViewModel(capIdstring) {
     const options = {
       title: "New Rejection",
       form,
-      dialogReturnValueCallback: self.controls.rejectStageSubmit,
+      dialogReturnValueCallback: (result) =>
+        self.controls.rejectStageSubmit(result, plan, rejection),
     };
 
     ModalDialog.showModalDialog(options);
   };
 
-  self.controls.rejectStageSubmit = function (result) {
+  self.controls.rejectStageSubmit = async function (result, plan, rejection) {
     if (result !== SP.UI.DialogResult.OK) {
       return;
     }
     // When the user submits the modal with the reason, create a
     // new rejection, then execute the stages reject function
-    var next = null;
-
-    // var rejectVp = [
-    //   ["Title", self.selectedRecord.Title()],
-    //   ["Reason", self.rejectReason()],
-    //   ["Stage", self.selectedRecord.ProcessStage()],
-    //   ["Date", new Date().toISOString()],
-    //   ["Active", 1],
-    //   ["Rejector", self.currentUser().get_title()],
-    //   [
-    //     "RejectionId",
-    //     self.selectedRecord.Title() +
-    //       "-R" +
-    //       String(self.Rejections().length).padStart(2, "0"),
-    //   ],
-    // ];
+    let next = null;
 
     switch (self.selectedRecord.ProcessStageKey()) {
       case "ProblemApprovalQSO":
@@ -3765,8 +3812,14 @@ export function CAPViewModel(capIdstring) {
         next = m_fnRejectEffectivenessQTMB;
         break;
     }
+    if (!next) return;
 
-    next();
+    const rejectionTask = addTask(tasks.reject(plan.Title.Value()));
+    await new Promise(next);
+
+    await onStageRejectedCallback(plan, rejection);
+
+    finishTask(rejectionTask);
 
     // app.listRefs.Rejections.createListItem(rejectVp, next);
 
@@ -3816,7 +3869,7 @@ export function CAPViewModel(capIdstring) {
       app.listRefs.Plans.updateListItem(
         vm.selectedRecord.ID(),
         valuePair,
-        m_fnRefresh
+        onStageApprovedCallback
       );
     },
     planApproveQSO: function () {
@@ -3868,7 +3921,7 @@ export function CAPViewModel(capIdstring) {
       app.listRefs.Plans.updateListItem(
         vm.selectedRecord.ID(),
         valuePair,
-        m_fnRefresh
+        onStageApprovedCallback
       );
     },
     implementationApproveQSO: m_fnApproveImplement,
@@ -3920,7 +3973,7 @@ export function CAPViewModel(capIdstring) {
       app.listRefs.Plans.updateListItem(
         vm.selectedRecord.ID(),
         valuePair,
-        m_fnRefresh
+        onStageApprovedCallback
       );
     },
     effectivenessApproveQSO: m_fnApproveEffectivenessQSO,
@@ -4082,11 +4135,19 @@ export function CAPViewModel(capIdstring) {
         app.listRefs.Plans.updateListItem(
           newPlan.ID,
           [["Title", newTitle]],
-          () => {}
+          async () => {
+            // Send Notification
+            const notificationTask = addTask(tasks.notification());
+            const plan = await appContext.Plans.FindById(newPlan.ID);
+            vm.selectedPlan(plan);
+            await stageApprovedNotification(plan);
+            finishTask(notificationTask);
+          }
         );
       }
       vm.selectedTitle(newPlan.Title);
       vm.tabs.selectTab(vm.tabOpts.detail);
+
       finishTask(refreshTask);
       // m_fnForward();
     });
@@ -4098,6 +4159,8 @@ class App {
     const app = new CAPViewModel();
     Object.assign(this, app);
   }
+
+  appLoadTime = ko.observable();
 
   clickNewPlan() {
     const plan = new Plan();
@@ -4115,6 +4178,11 @@ class App {
     ModalDialog.showModalDialog(options);
   }
 
+  async clickSendStageNotification() {
+    const plan = ko.unwrap(vm.selectedPlan);
+    await stageApprovedNotification(plan);
+  }
+
   async clickEditPlan() {
     const plan = await appContext.Plans.FindById();
   }
@@ -4122,14 +4190,15 @@ class App {
   /******************************** Application Logic ***************************/
   async init() {
     stores: {
-      const businessOfficesPromise =
-        await appContext.BusinessOffices.ToList().then(businessOfficeStore);
-
-      const recordSourcesPromise = await appContext.RecordSources.ToList().then(
-        sourcesStore
+      const businessOfficesPromise = appContext.BusinessOffices.ToList().then(
+        (offices) => businessOfficeStore(offices.sort(sortByTitle))
       );
 
-      await Promise.all([businessOfficeStore, recordSourcesPromise]);
+      const recordSourcesPromise = appContext.RecordSources.ToList().then(
+        (records) => sourcesStore(records.sort(sortByTitle))
+      );
+
+      await Promise.all([businessOfficesPromise, recordSourcesPromise]);
     }
   }
 

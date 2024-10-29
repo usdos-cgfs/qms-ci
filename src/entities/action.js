@@ -13,6 +13,14 @@ export class Action extends ConstrainedEntity {
     super(params);
   }
 
+  PendingApproval = ko.pureComputed(() => {
+    [
+      ACTIONSTATES.QSOAPPROVAL,
+      ACTIONSTATES.QAOAPPROVAL,
+      ACTIONSTATES.QTMAPPROVAL,
+    ].includes(this.ImplementationStatus.Value());
+  });
+
   Title = new TextField({
     displayName: "Plan #",
     isEditable: false,
@@ -54,6 +62,34 @@ export class Action extends ConstrainedEntity {
     isEditable: false,
   });
 
+  ImplementationDate = new DateField({
+    displayName: "Implementation Date",
+    isEditable: false,
+  });
+
+  PreviousActionDescription = new TextAreaField({
+    displayName: "Previous Action Description",
+    isRequired: false,
+    isRichText: true,
+    classList: ["min-w-full"],
+    isEditable: false,
+    isVisible: this.PendingApproval,
+  });
+
+  PreviousTargetDate = new DateField({
+    displayName: "Previous Target Date",
+    isRequired: false,
+    isEditable: false,
+    isVisible: this.PendingApproval,
+  });
+
+  PreviousActionResponsiblePerson = new PeopleField({
+    displayName: "Previous Action Responsible Person",
+    isRequired: false,
+    isEditable: false,
+    isVisible: this.PendingApproval,
+  });
+
   static Views = {
     All: [
       "ID",
@@ -64,6 +100,11 @@ export class Action extends ConstrainedEntity {
       "ActionResponsiblePerson",
       "RevisionCount",
       "ImplementationStatus",
+      "ImplementationDate",
+      "PrevImplementationStatus",
+      "PreviousActionDescription",
+      "PreviousTargetDate",
+      "PreviousActionResponsiblePerson",
     ],
     New: [
       "ActionID",
@@ -77,6 +118,16 @@ export class Action extends ConstrainedEntity {
       "ActionResponsiblePerson",
       "RevisionCount",
       "ImplementationStatus",
+    ],
+    EditApproval: [
+      "ActionDescription",
+      "TargetDate",
+      "ActionResponsiblePerson",
+      "RevisionCount",
+      "ImplementationStatus",
+      "PreviousActionDescription",
+      "PreviousTargetDate",
+      "PreviousActionResponsiblePerson",
     ],
   };
 

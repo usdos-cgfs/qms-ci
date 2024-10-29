@@ -154,6 +154,9 @@ export class Plan extends ConstrainedEntity {
     type: dateFieldTypes.date,
   });
 
+  RootCauseDetermination = new TextAreaField({
+    displayName: "Root Cause Determination",
+  });
   // CAP
 
   OFIDescription = new TextAreaField({
@@ -215,6 +218,35 @@ export class Plan extends ConstrainedEntity {
     isRequired: true,
   });
 
+  ExtensionCount = new TextField({
+    displayName: "Extension Count",
+  });
+
+  OfficeImpactBool = new CheckboxField({
+    displayName:
+      "Has Impact on Office Risks, Mitigations, or Internal Controls",
+  });
+
+  OfficeImpactDesc = new TextAreaField({
+    displayName: "Office Impact Description",
+  });
+
+  ImplementationTargetDate = new DateField({
+    displayName: "Implementation Target Date",
+  });
+
+  QSOImplementAdjudicationDate = new DateField({
+    displayName: "QSO Implementation Adjudication Date",
+  });
+
+  EffectivenessVerificationTargetD = new DateField({
+    displayName: "Effectiveness Verification Target Date",
+  });
+
+  EffectivenessDescription = new TextAreaField({
+    displayName: "Effectiveness Description",
+  });
+
   Author = new PeopleField({
     displayName: "Submitted By",
   });
@@ -265,9 +297,17 @@ export class Plan extends ConstrainedEntity {
       "Source",
       "SimilarNoncomformityBool",
       "SimilarNoncomformityDesc",
+      "RootCauseDetermination",
       "ProcessStage",
       "PreviousStage",
       "NextTargetDate",
+      "ExtensionCount",
+      "ImplementationTargetDate",
+      "OfficeImpactBool",
+      "OfficeImpactDesc",
+      "QSOImplementAdjudicationDate",
+      "EffectivenessVerificationTargetD",
+      "EffectivenessDescription",
       "CancelReason",
       "CloseDate",
       "Author",

@@ -5,13 +5,14 @@
 
 #MSO_ContentTable,
 #contentBox {
-  /* margin: 25px 5%; */
+  margin: 25px 5%;
 }
 
 #SRSB,
 #DeltaSiteLogo,
+#SearchBox,
 #sideNavBox {
-  /* display: none; */
+  display: none;
 }
 
 #s4-ribbonrow {
@@ -358,6 +359,19 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
   font-weight: 500;
   margin-inline-start: 0;
   padding-block-end: 0.75rem;
+}
+
+label.file-upload-field .dropzone {
+  color: gray;
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 1.5rem;
+  border: 2px dashed lightgray;
+}
+
+label.file-upload-field.dragging .dropzone {
+  border: 2px dashed gray;
 }
 
 /* SAL FIELDS */

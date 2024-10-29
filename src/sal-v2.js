@@ -282,7 +282,7 @@ sal.NewUtilities = function () {
     }
 
     function onRequestFail(sender, args) {
-      alert("error msg");
+      console.warn(args.get_message());
     }
     data = { user: user, callback: callback };
 
@@ -383,8 +383,8 @@ function ensureUser(userName, callback) {
   );
 }
 
-ensureUserRest = function (userName) {
-  userName = userName === undefined ? "i:0#.w|cgfs\backlundpf" : userName;
+const ensureUserRest = function (userName) {
+  if (!userName) return;
 
   // sample userName
   var item = {

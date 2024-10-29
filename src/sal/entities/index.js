@@ -1,2 +1,2 @@
 export * from "./People.js";
-export * from "./Page.js";
+export * from "./SitePage.js";
