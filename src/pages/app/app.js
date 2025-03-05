@@ -2597,6 +2597,20 @@ export function CAPViewModel(capIdstring) {
           "Implementing Action Plan",
         ].includes(self.selectedRecord.ProcessStage());
       }),
+      allowDeleteSupportDoc: ko.pureComputed(() => {
+        if (!self.selectedRecord.Active()) {
+          return false;
+        }
+        if (!self.selectedRecord.curUserHasRole(ROLES.IMPLEMENTOR)) {
+          return false;
+        }
+        return [
+          "Pending QTM-B Problem Approval",
+          "Pending QTM Problem Approval",
+          "Developing Action Plan",
+          "Implementing Action Plan",
+        ].includes(self.selectedRecord.ProcessStage());
+      }),
       new: function () {
         const planNum = self.selectedRecord.Title();
 
@@ -2649,6 +2663,11 @@ export function CAPViewModel(capIdstring) {
         };
 
         ModalDialog.showModalDialog(options);
+      },
+      delete: async function (doc) {
+        if (!confirm("Delete Document?")) return;
+        await appContext.SupportingDocuments.RemoveEntityById(doc.ID);
+        m_fnRefresh();
       },
     },
     Actions: {

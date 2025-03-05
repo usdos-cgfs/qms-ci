@@ -2276,6 +2276,16 @@
                     <i class="fa-solid fa-pen-to-square"></i>
                   </button>
                   <!-- /ko -->
+                  <!-- ko if: $root.section.SupportDocs.allowDeleteSupportDoc -->
+                  <button
+                    type="button"
+                    class="btn btn-link"
+                    title="Edit Document"
+                    data-bind="click: $root.section.SupportDocs.delete"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                  <!-- /ko -->
                 </td>
               </tr>
             </tbody>
