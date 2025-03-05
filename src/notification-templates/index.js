@@ -6,3 +6,4 @@ export * from "./pending-implementation-approval.js";
 export * from "./pending-effectiveness-submission.js";
 export * from "./pending-effectiveness-approval.js";
 export * from "./actions-templates.js";
+export * from "./extension-requested.js";

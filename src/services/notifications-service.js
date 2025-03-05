@@ -420,6 +420,43 @@ export async function actionRequiresApprovalNotification(plan, action) {
   return sendPlanNotification(plan, notification);
 }
 
+export async function extensionRequiresApprovalNotification(plan) {
+  const extensionCount = parseInt(plan.ExtensionCount.Value());
+
+  const notificationTask = addTask(tasks.notification());
+  const to = [];
+  let link;
+  switch (extensionCount) {
+    case 0:
+      const qsoEmail = await getQsoEmail(plan);
+      to.push(qsoEmail);
+      link = getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
+      break;
+    case 1:
+      const qaoEmail = await getQaoEmail(plan);
+      to.push(qaoEmail);
+      getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QO);
+      break;
+    default:
+      to.push(defaultContact.QTM);
+      getAnchorRoleLinkToPlan(plan, ROLES.ADMINTYPE.QTM);
+  }
+
+  const subject = subjectTemplate(plan, "Extension Request");
+  let body = extensionRequiresApprovalNotification(plan);
+  body += link;
+
+  const notification = Notification.FromTemplate({
+    title: plan.Title.Value(),
+    to,
+    subject,
+    body,
+  });
+
+  await sendPlanNotification(plan, notification);
+  finishTask(notificationTask);
+}
+
 async function sendPlanNotification(plan, notification) {
   if (!notification) return;
   const folderPath = plan.Title.Value();

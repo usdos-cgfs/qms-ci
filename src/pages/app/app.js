@@ -55,6 +55,7 @@ import {
 } from "../../services/authorization.js";
 
 import {
+  extensionRequiresApprovalNotification,
   stageApprovedNotification,
   stageRejectedNotification,
 } from "../../services/notifications-service.js";
@@ -3554,13 +3555,11 @@ export function CAPViewModel(capIdstring) {
         }
         return true;
       },
-      requestExtension: function () {
-        var valuePair = [["ExtensionRequested", true]];
-        app.listRefs.Plans.updateListItem(
-          self.selectedRecord.ID(),
-          valuePair,
-          m_fnRefresh
-        );
+      requestExtension: async function () {
+        const plan = await appContext.Plans.FindById(self.selectedRecord.ID());
+        plan.ExtensionRequested.Value(true);
+        await appContext.Plans.UpdateEntity(plan, ["ExtensionRequested"]);
+        await extensionRequiresApprovalNotification(plan);
       },
       cancelRequest: function () {
         var valuePair = [["ExtensionRequested", false]];
