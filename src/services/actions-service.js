@@ -54,3 +54,9 @@ export async function editAction(plan, action) {
 
   return actionRequiresApprovalNotification(plan, action);
 }
+
+export async function deleteActionById(actionId) {
+  const action = await appContext.Actions.FindById(actionId);
+
+  await appContext.Actions.RemoveEntity(action);
+}

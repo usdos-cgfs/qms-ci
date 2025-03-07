@@ -2395,6 +2395,14 @@
                   </button>
                   <button
                     type="button"
+                    data-bind="enable: $root.section.Actions.isDeletable($data),
+                                click: $root.section.Actions.deleteClick"
+                    class="btn btn-outline-danger"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    type="button"
                     data-bind="click: $root.section.Actions.historyClick.bind($data)"
                     class="btn btn-outline-info"
                   >

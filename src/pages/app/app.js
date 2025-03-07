@@ -29,6 +29,7 @@ import {
 import { EditActionForm, NewPlanForm } from "../../forms/index.js";
 
 import {
+  deleteActionById,
   editAction,
   getNextActionId,
   submitNewAction,
@@ -2769,6 +2770,27 @@ export function CAPViewModel(capIdstring) {
         };
 
         ModalDialog.showModalDialog(options);
+      },
+      isDeletable: function (action) {
+        if (!self.selectedRecord.curUserHasRole(ROLES.IMPLEMENTOR)) {
+          return false;
+        }
+        // Only edit in progress actions
+        if (action.ImplementationStatus == ACTIONSTATE.COMPLETED) {
+          return false;
+        }
+        const processStage = self.selectedRecord.ProcessStageKey();
+        return [
+          "DevelopingActionPlan",
+          "PlanApprovalQSO",
+          "PlanApprovalQSOAction",
+          "ImplementingActionPlan",
+        ].includes(processStage);
+      },
+      deleteClick: async function (action) {
+        if (!confirm("Are you sure you want to delete this record?")) return;
+        await deleteActionById(action.ID);
+        m_fnRefresh();
       },
       requiresApproval: function (action) {
         if (vm.AdminType()) {
