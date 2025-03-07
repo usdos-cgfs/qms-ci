@@ -2742,12 +2742,18 @@ export function CAPViewModel(capIdstring) {
         ModalDialog.showModalDialog(options);
       },
       isEditable: function (action) {
+        if (!vm.selectedRecord.Active()) {
+          return false;
+        }
         if (!self.selectedRecord.curUserHasRole(ROLES.IMPLEMENTOR)) {
           return false;
         }
         // Only edit in progress actions
         if (action.ImplementationStatus == ACTIONSTATE.COMPLETED) {
           return false;
+        }
+        if (self.selectedRecord.curUserHasRole(ROLES.ADMINTYPE.QTM)) {
+          return true;
         }
         return [
           "DevelopingActionPlan",
@@ -2772,8 +2778,14 @@ export function CAPViewModel(capIdstring) {
         ModalDialog.showModalDialog(options);
       },
       isDeletable: function (action) {
+        if (!vm.selectedRecord.Active()) {
+          return false;
+        }
         if (!self.selectedRecord.curUserHasRole(ROLES.IMPLEMENTOR)) {
           return false;
+        }
+        if (self.selectedRecord.curUserHasRole(ROLES.ADMINTYPE.QTM)) {
+          return true;
         }
         // Only edit in progress actions
         if (action.ImplementationStatus == ACTIONSTATE.COMPLETED) {
@@ -2784,7 +2796,6 @@ export function CAPViewModel(capIdstring) {
           "DevelopingActionPlan",
           "PlanApprovalQSO",
           "PlanApprovalQSOAction",
-          "ImplementingActionPlan",
         ].includes(processStage);
       },
       deleteClick: async function (action) {
