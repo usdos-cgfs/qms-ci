@@ -1,3 +1,5 @@
+import appTemplate from "./app.html";
+
 import { getUrlParam, setUrlParam } from "../../common/router.js";
 import { Tab, TabsModule } from "../../components/tabs/tabs.js";
 import { makeDataTable } from "../../common/data-table.js";
@@ -4262,14 +4264,11 @@ class App {
 
 window.vm = {};
 
-if (document.readyState === "ready" || document.readyState === "complete") {
+export async function load(element, context) {
+  /*********NOTE: the Contribute permission level needs to have manage permissions turned on ************/
+  window.context = context;
+
+  element.innerHTML = appTemplate;
+
   initApp();
-} else {
-  document.onreadystatechange = () => {
-    if (document.readyState === "complete" || document.readyState === "ready") {
-      ExecuteOrDelayUntilScriptLoaded(function () {
-        SP.SOD.executeFunc("sp.js", "SP.ClientContext", initApp);
-      }, "sp.js");
-    }
-  };
 }

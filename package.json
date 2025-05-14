@@ -1,9 +1,41 @@
 {
   "devDependencies": {
-    "esbuild": "^0.23.0"
+    "@rollup/plugin-commonjs": "^28.0.1",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "google-charts": "^2.0.0",
+    "rollup": "^4.39.0",
+    "rollup-plugin-html": "^0.2.1",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-serve": "^3.0.0",
+    "sass": "^1.87.0"
   },
   "scripts": {
-    "dev": "node esbuild.config.mjs -d",
-    "build": "node esbuild.config.mjs -p"
+    "dev": "npx rollup -c rollup.config.dev.mjs --watch",
+    "build": "npx rollup -c rollup.config.mjs"
+  },
+  "name": "qms-ci",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/usdos-cgfs/qms-ci.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/usdos-cgfs/qms-ci/issues"
+  },
+  "homepage": "https://github.com/usdos-cgfs/qms-ci#readme",
+  "dependencies": {
+    "bootstrap": "^5.3.6",
+    "datatables.net-dt": "^2.3.0",
+    "knockout": "^3.5.1",
+    "quill": "^2.0.3"
   }
 }
