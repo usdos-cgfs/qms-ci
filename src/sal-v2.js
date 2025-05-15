@@ -1,3 +1,4 @@
+import * as ModalDialog from "./sal/components/modal/index.js";
 /*
     SharePoint Acces Layer - SAL.js
 
@@ -1284,7 +1285,7 @@ sal.NewSPList = function (listDef) {
 
   function showModal(formName, title, args, callback) {
     var id = "";
-    var options = SP.UI.$create_DialogOptions();
+    var options = {};
     options.title = title;
     options.dialogReturnValueCallback = callback;
     if (args.id) {
@@ -1323,11 +1324,11 @@ sal.NewSPList = function (listDef) {
       "&RootFolder=" +
       rootFolder;
     console.log("Options url: " + options.url);
-    SP.UI.ModalDialog.showModalDialog(options);
+    ModalDialog.showModalDialog(options);
   }
 
   function showVersions(id, title, callback) {
-    var options = SP.UI.$create_DialogOptions();
+    var options = {};
     options.title = title;
     options.dialogReturnValueCallback = callback;
 
@@ -1339,12 +1340,12 @@ sal.NewSPList = function (listDef) {
       id +
       "&IsDlg=1";
 
-    SP.UI.ModalDialog.showModalDialog(options);
+    ModalDialog.showModalDialog(options);
   }
 
   function uploadNewDocument(folder, title, args, callback) {
     //folder = folder != '/' ? folder : '';
-    var options = SP.UI.$create_DialogOptions();
+    var options = {};
     options.title = title;
     options.dialogReturnValueCallback = callback;
 
@@ -1368,7 +1369,7 @@ sal.NewSPList = function (listDef) {
       encodeURI(JSON.stringify(args));
 
     console.log("Options url: " + options.url);
-    SP.UI.ModalDialog.showModalDialog(options);
+    ModalDialog.showModalDialog(options);
   }
 
   function upsertListFolderPath(folderPath, callback) {

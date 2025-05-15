@@ -28,7 +28,7 @@ export class CancelPlanForm extends BaseForm {
 
     try {
       const result = await cancelPlan(entity);
-      if (result?.isSuccess) this.onComplete(SP.UI.DialogResult.OK);
+      if (result?.isSuccess) this.onComplete(true);
       else alert(result?.error);
     } catch (e) {
       alert(e);

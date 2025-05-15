@@ -2274,7 +2274,7 @@ export function SPList(listDef) {
     if (args.id) {
       id = args.id;
     }
-    const options = SP.UI.$create_DialogOptions();
+    const options = {};
 
     var listPath = self.config.def.isLib
       ? "/" + self.config.def.name + "/"
@@ -2307,17 +2307,11 @@ export function SPList(listDef) {
         "&RootFolder=" +
         rootFolder,
     });
-    SP.UI.ModalDialog.showModalDialog(options);
-
-    // SP.SOD.execute(
-    //   "sp.ui.dialog.js",
-    //   "SP.UI.ModalDialog.showModalDialog",
-    //   options
-    // );
+    ModalDialog.showModalDialog(options);
   }
 
   function showCheckinModal(fileRef, callback) {
-    var options = SP.UI.$create_DialogOptions();
+    var options = {};
     options.title = "Check in Document";
     options.height = "600";
     options.dialogReturnValueCallback = callback;
@@ -2329,7 +2323,7 @@ export function SPList(listDef) {
       "}&FileName=" +
       fileRef;
 
-    SP.UI.ModalDialog.showModalDialog(options);
+    ModalDialog.showModalDialog(options);
   }
 
   function checkinWithComment(fileRef, comment) {
@@ -2375,7 +2369,7 @@ export function SPList(listDef) {
           var siteString =
             sal.globalConfig.siteUrl == "/" ? "" : sal.globalConfig.siteUrl;
 
-          const options = SP.UI.$create_DialogOptions();
+          const options = {};
           Object.assign(options, {
             title: title,
             dialogReturnValueCallback: resolve,
@@ -2396,12 +2390,7 @@ export function SPList(listDef) {
               encodeURI(JSON.stringify(args)),
           });
           //console.log("Options url: " + options.url);
-          SP.UI.ModalDialog.showModalDialog(options);
-          // SP.SOD.execute(
-          //   "sp.ui.dialog.js",
-          //   "SP.UI.ModalDialog.showModalDialog",
-          //   options
-          // );
+          ModalDialog.showModalDialog(options);
         },
         function (sender, args) {
           console.error("Error showing file modal: ");

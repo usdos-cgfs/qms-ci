@@ -888,7 +888,7 @@ function m_fnRejectEffectivenessQTM(callback) {
 /* CALLBACKS AND PAGE MANIPULATIONS */
 
 function m_fnRefresh(result, value) {
-  if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
+  if (!result) {
     return;
   }
   addTask(tasks.refresh);
@@ -899,7 +899,7 @@ function m_fnRefresh(result, value) {
 }
 
 async function onStageApprovedCallback(result) {
-  if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
+  if (!result) {
     return;
   }
   const refreshTask = addTask(tasks.refresh);
@@ -913,9 +913,6 @@ async function onStageApprovedCallback(result) {
 }
 
 async function onStageRejectedCallback(plan, rejection) {
-  // if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
-  //   return;
-  // }
   return new Promise((resolve) => {
     const refreshTask = addTask(tasks.refresh);
 
@@ -930,7 +927,7 @@ async function onStageRejectedCallback(plan, rejection) {
 }
 
 function OnCapCreateCallback(result, value) {
-  if (result === SP.UI.DialogResult.OK) {
+  if (result) {
     addTask(tasks.refreshPlans);
     app.listRefs.Plans.getListItems("", function (items) {
       var id = items[items.length - 1];
@@ -948,13 +945,13 @@ function OnCapEditRefresh(result, value) {
   // result = 0 is Cancel
   // result = -1 is Uh oh, something is wrong
   //TODO: Check if the processstage is now closed.
-  if (result === SP.UI.DialogResult.OK) {
+  if (result) {
     m_fnRefresh();
   }
 }
 
 function OnActionEditCallback(result, value) {
-  if (result === SP.UI.DialogResult.OK) {
+  if (result) {
     addTask(tasks.newAction);
     app.listRefs.Actions.getListItems("", function (actions) {
       vm.allActionsArray(actions);
@@ -965,7 +962,7 @@ function OnActionEditCallback(result, value) {
 }
 
 function OnActionCreateCallback(result, value) {
-  if (result === SP.UI.DialogResult.OK) {
+  if (result) {
     addTask(tasks.newAction);
     // The user has modified the Action, the Associated CAP must be updated.
     app.listRefs.Actions.getListItems("", function (actions) {
@@ -980,7 +977,7 @@ function OnCallbackFormRefresh(result, value) {
   // result = 1 is OK
   // result = 0 is Cancel
   // result = -1 is Uh oh, something is wrong
-  if (result === SP.UI.DialogResult.OK) {
+  if (result) {
     m_fnRefresh();
   }
 }
@@ -3424,7 +3421,7 @@ export function CAPViewModel(capIdstring) {
         "Create a New CAP or CAR",
         args,
         (result, value) => {
-          if (result === SP.UI.DialogResult.OK) {
+          if (result) {
             const refreshTask = addTask(tasks.refreshPlans);
             const userId = vm.currentUserObj.id();
             app.listRefs.Plans.getListItems("", function (items) {
@@ -3845,7 +3842,7 @@ export function CAPViewModel(capIdstring) {
   };
 
   self.controls.rejectStageSubmit = async function (result, plan, rejection) {
-    if (result !== SP.UI.DialogResult.OK) {
+    if (!result) {
       return;
     }
     // When the user submits the modal with the reason, create a
@@ -4192,7 +4189,7 @@ export function CAPViewModel(capIdstring) {
   /******************************** Lock Editing Logic ***************************/
 
   self.onNewPlanCreated = function (result, args) {
-    if (result !== SP.UI.DialogResult.OK) {
+    if (!result) {
       return;
     }
     const refreshTask = addTask(tasks.refreshPlans);
