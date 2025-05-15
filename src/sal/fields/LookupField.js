@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 // import { appContext } from "../../infrastructure/app-db-context.js";
 import {
   LookupModule,

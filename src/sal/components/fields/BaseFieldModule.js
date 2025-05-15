@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 // Hint: use the es6-string-html VS Code module to make template literals easier to read
 export const html = String.raw;
 

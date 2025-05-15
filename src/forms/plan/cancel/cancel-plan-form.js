@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { Plan } from "../../../entities/plan.js";
 import { BaseForm, html } from "../../../sal/components/forms/index.js";
 import { TextAreaField } from "../../../sal/fields/index.js";

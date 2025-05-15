@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { SitePage } from "./entities/index.js";
 import { SPList, copyFileAsync, ensurePerson } from "./infrastructure/index.js";
 import { Result } from "./shared/index.js";

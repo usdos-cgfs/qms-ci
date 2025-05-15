@@ -26,15 +26,8 @@ window.console = window.console || { log: function () {} };
 // var sal = window.sal;
 const sal = {};
 
-const serverRelativeUrl =
-  _spPageContextInfo.webServerRelativeUrl == "/"
-    ? ""
-    : _spPageContextInfo.webServerRelativeUrl;
-
 sal.globalConfig = sal.globalConfig || {
   siteGroups: [],
-  siteUrl: serverRelativeUrl,
-  listServices: serverRelativeUrl + "/_vti_bin/ListData.svc/",
   defaultGroups: {},
 };
 sal.site = sal.site || {};
@@ -94,16 +87,29 @@ export async function getGroupUsers(groupName) {
 }
 
 // Used in router
-export const webRoot =
-  _spPageContextInfo.webAbsoluteUrl == "/"
-    ? ""
-    : _spPageContextInfo.webAbsoluteUrl;
+export let webRoot;
 
 export async function InitSal() {
+  refreshDigestValue();
   if (sal.utilities) return;
   console.log("Init Sal");
   var currCtx = SP.ClientContext.get_current();
+
+  webRoot =
+    window.context.pageContext.legacyPageContext.webAbsoluteUrl == "/"
+      ? ""
+      : window.context.pageContext.legacyPageContext.webAbsoluteUrl;
+
   var web = currCtx.get_web();
+
+  const serverRelativeUrl =
+    window.context.pageContext.legacyPageContext.webServerRelativeUrl == "/"
+      ? ""
+      : window.context.pageContext.legacyPageContext.webServerRelativeUrl;
+
+  sal.globalConfig.siteUrl = serverRelativeUrl;
+
+  sal.globalConfig.listServices = serverRelativeUrl + "/_vti_bin/ListData.svc/";
   //sal.site = sal.siteConnection;
 
   // Get default groups
@@ -211,7 +217,8 @@ sal.NewAppConfig = function () {
 };
 
 // Used in Authorization
-export async function getUserPropsAsync(userId = _spPageContextInfo.userId) {
+export async function getUserPropsAsync(userId = null) {
+  userId = userId ?? window.context.pageContext.legacyPageContext.userId;
   // We need to make two api calls, one to user info list, and one to web
   // const userInfoUrl = `/Web/lists/getbytitle('User%20Information%20List')/Items(${userId})`;
   const userPropsUrl = `/sp.userprofiles.peoplemanager/getmyproperties`;
@@ -511,7 +518,7 @@ async function getCurrentUserPropertiesAsync() {
   };
   try {
     var response = await fetch(
-      _spPageContextInfo.webAbsoluteUrl +
+      window.context.pageContext.legacyPageContext.webAbsoluteUrl +
         "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
       {
         method: "GET",
@@ -2451,7 +2458,7 @@ https://learn.microsoft.com/en-us/previous-versions/office/developer/sharepoint-
 
   async function uploadFileRest(file, relFolderPath, fileName) {
     return await fetch(
-      _spPageContextInfo.webServerRelativeUrl +
+      window.context.pageContext.legacyPageContext.webServerRelativeUrl +
         `/_api/web/GetFolderByServerRelativeUrl('${relFolderPath}')/Files/add(url='${fileName}',overwrite=true)`,
       {
         method: "POST",
@@ -2619,6 +2626,7 @@ https://learn.microsoft.com/en-us/previous-versions/office/developer/sharepoint-
   return publicMembers;
 }
 
+let requestDigest;
 async function fetchSharePointData(
   uri,
   method = "GET",
@@ -2633,7 +2641,7 @@ async function fetchSharePointData(
     method,
     headers: {
       Accept: "application/json; odata=verbose",
-      "X-RequestDigest": document.getElementById("__REQUESTDIGEST").value,
+      "X-RequestDigest": requestDigest,
       ...headers,
     },
     ...opts,
@@ -2661,6 +2669,39 @@ async function fetchSharePointData(
   } catch (e) {
     return;
   }
+}
+
+async function getRequestDigest() {
+  const response = await fetch(
+    window.context.pageContext.legacyPageContext.webServerRelativeUrl +
+      "/_api/contextinfo",
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json; odata=verbose",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    console.error("Cannot refresh token", response);
+    return;
+  }
+  const result = await response.json();
+  return result.d.GetContextWebInformation;
+}
+
+async function refreshDigestValue() {
+  const result = await getRequestDigest();
+
+  if (!result) return;
+
+  requestDigest = result.FormDigestValue;
+
+  // document.getElementById("__REQUESTDIGEST").value = result.FormDigestValue;
+
+  // Refresh before timeout
+  window.setTimeout(refreshDigestValue, result.FormDigestTimeoutSeconds * 900);
 }
 
 window.fetchSharePointData = fetchSharePointData;

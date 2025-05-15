@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { businessOfficeStore, sourcesStore } from "../infrastructure/store.js";
 import {
   CheckboxField,
@@ -415,7 +416,7 @@ export class Plan extends ConstrainedEntity {
   };
 
   static ListDef = {
-    name: "CAP_Main",
-    title: "CAP_Main",
+    name: "CAP_Main2",
+    title: "CAP_Main2",
   };
 }

@@ -1,3 +1,5 @@
+import DataTable from "datatables.net-dt";
+
 export function makeDataTable(tableId) {
   tableId = tableId.startsWith("#") ? tableId.substring(1) : tableId;
   const elm = document.getElementById(tableId);

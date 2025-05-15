@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 export const html = String.raw;
 
 export function registerComponent({

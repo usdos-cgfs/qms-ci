@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { ProgressTask, Task, TaskDef } from "../value-objects/task.js";
 
 export const tasks = {

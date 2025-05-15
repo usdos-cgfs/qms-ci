@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { Entity } from "./index.js";
 import { BaseField } from "../fields/index.js";
 

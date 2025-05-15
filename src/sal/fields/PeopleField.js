@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { sortByTitle } from "../infrastructure/index.js";
 import { PeopleModule } from "../components/fields/PeopleModule.js";
 import { People } from "../entities/People.js";

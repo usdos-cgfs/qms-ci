@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { FormDisplayModes } from "../../../enums/display_modes.js";
 import { DomainError } from "../../../primitives/index.js";
 import { Result } from "../../../shared/index.js";

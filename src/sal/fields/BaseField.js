@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { ValidationError } from "../primitives/validation_error.js";
 
 export class BaseField {

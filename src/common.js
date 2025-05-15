@@ -1,5 +1,6 @@
+import * as ko from "knockout";
 // Common Functions and Objects
-var Common = Common || {};
+export const Common = {};
 
 Common.Init = function () {
   Common.Utilities = new NewUtilities();
@@ -150,7 +151,7 @@ function NewUtilities() {
     var regex = new RegExp("([?;&])" + param + "[^&;]*[;&]?");
     var query = search.replace(regex, "$1").replace(/&$/, "");
 
-    urlParams =
+    const urlParams =
       (query.length > 2 ? query + "&" : "?") +
       (newval ? param + "=" + newval : "");
 
@@ -182,7 +183,7 @@ function NewUtilities() {
   return publicMembers;
 }
 
-function Incremental(entry, target, next) {
+export function Incremental(entry, target, next) {
   var entry = entry === undefined ? 0 : entry;
   var target = target === undefined ? null : target;
   var next = next === undefined ? null : next;
@@ -253,11 +254,14 @@ function PeopleField(schemaOpts) {
         //First check if we can find and add the group by id.
         if (self.addGroupById(value.get_lookupId())) break;
         //Then attempt to ensure the user.
-        sal.utilities.ensureUserById(value.get_lookupId(), function (user) {
-          if (user.get_id && !self.containsPeopleById(user.get_id())) {
-            self.ensuredPeople.push(user);
+        window.sal.utilities.ensureUserById(
+          value.get_lookupId(),
+          function (user) {
+            if (user.get_id && !self.containsPeopleById(user.get_id())) {
+              self.ensuredPeople.push(user);
+            }
           }
-        });
+        );
         break;
       case "SP.User":
       case "SP.Group":
@@ -275,7 +279,7 @@ function PeopleField(schemaOpts) {
     if (self.containsPeopleById(id)) return true;
 
     //Check for group
-    var foundGroup = sal.globalConfig.siteGroups.find(function (group) {
+    var foundGroup = window.sal.globalConfig.siteGroups.find(function (group) {
       return group.ID == id;
     });
 
@@ -355,7 +359,7 @@ ko.bindingHandlers.people = {
         userJSObjects.forEach(function (user) {
           if (valueAccessor().containsPeopleByLogin(user.Key)) return;
           if (user.EntityType == "User") {
-            sal.utilities.ensureUserByLogin(user.Key, addUserOrGroup);
+            window.sal.utilities.ensureUserByLogin(user.Key, addUserOrGroup);
             return;
           }
           //Check for SP Group

@@ -13,22 +13,25 @@
 
 window.console = window.console || { log: function () {} };
 
-var sal = window.sal || {};
+export const sal = window.sal || {};
+
+window.sal = sal;
+
 sal.globalConfig = sal.globalConfig || {};
 sal.site = sal.site || {};
 
 //ExecuteOrDelayUntilScriptLoaded(InitSal, "sp.js");
 
-function initSal(next) {
+export function initSal(next) {
   var next = typeof next === "function" ? next : function () {};
   sal.globalConfig.siteGroups = [];
 
   console.log("we are initing sal");
   // Initialize the sitewide settings here.
   sal.globalConfig.siteUrl =
-    _spPageContextInfo.webServerRelativeUrl == "/"
+    window.context.pageContext.legacyPageContext.webServerRelativeUrl == "/"
       ? ""
-      : _spPageContextInfo.webServerRelativeUrl;
+      : window.context.pageContext.legacyPageContext.webServerRelativeUrl;
 
   //sal.globalConfig.user =
   sal.globalConfig.listServices =
@@ -57,11 +60,11 @@ function initSal(next) {
       getUserProperties();
 
       sal.globalConfig.siteGroups = m_fnLoadSiteGroups(siteGroupCollection);
-      sal.globalConfig.siteGroups.forEach(function (group) {
-        sal.getUsersWithGroup(group.group, function (users) {
-          group.users = users;
-        });
-      });
+      // sal.globalConfig.siteGroups.forEach(function (group) {
+      //   sal.getUsersWithGroup(group.group, function (users) {
+      //     group.users = users;
+      //   });
+      // });
       //alert("User is: " + user.get_title()); //there is also id, email, so this is pretty useful.
 
       // Role Definitions
@@ -284,7 +287,7 @@ sal.NewUtilities = function () {
     function onRequestFail(sender, args) {
       console.warn(args.get_message());
     }
-    data = { user: user, callback: callback };
+    const data = { user: user, callback: callback };
 
     context.load(user);
     context.executeQueryAsync(
@@ -309,7 +312,7 @@ sal.NewUtilities = function () {
           args.get_stackTrace()
       );
     }
-    data = { user: user, callback: callback };
+    const data = { user: user, callback: callback };
 
     context.load(user);
     context.executeQueryAsync(
@@ -338,7 +341,7 @@ function getUserProperties() {
 
   jQuery.ajax({
     url:
-      _spPageContextInfo.webAbsoluteUrl +
+      window.context.pageContext.legacyPageContext.webAbsoluteUrl +
       "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
     type: "GET",
     contentType: "application/json;odata=verbose",
@@ -391,7 +394,9 @@ const ensureUserRest = function (userName) {
     logonName: userName,
   };
   var UserId = $.ajax({
-    url: _spPageContextInfo.siteAbsoluteUrl + "/_api/web/ensureuser",
+    url:
+      window.context.pageContext.legacyPageContext.siteAbsoluteUrl +
+      "/_api/web/ensureuser",
     type: "POST",
     async: false,
     contentType: "application/json;odata=verbose",
@@ -656,7 +661,7 @@ sal.NewSPList = function (listDef) {
   /*****************************************************************
                                 Common Private Methods       
     ******************************************************************/
-  onQueryFailed = function (sender, args) {
+  function onQueryFailed(sender, args) {
     console.log("unsuccessful read", sender);
     // alert(
     //   "Request failed: " + args.get_message() + "\n" + args.get_stackTrace()
@@ -669,7 +674,7 @@ sal.NewSPList = function (listDef) {
         "\nStackTrack: \n" +
         args.get_stackTrace()
     );
-  };
+  }
 
   self.updateConfig = function () {
     //console.log('update', self.config)

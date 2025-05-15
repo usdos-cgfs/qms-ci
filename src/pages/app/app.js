@@ -1,11 +1,25 @@
 import appTemplate from "./app.html";
+import quillStyles from "quill/dist/quill.snow.css";
+import dataTablesStyles from "datatables.net-dt/css/dataTables.dataTables.min.css";
+import bootstrap from "bootstrap";
+
+import "../../webcomponents/searchselect/searchselect.js";
+
+import * as ko from "knockout";
+
+import { sal } from "../../sal-v2.js";
+import { Common, Incremental } from "../../common.js";
 
 import { getUrlParam, setUrlParam } from "../../common/router.js";
 import { Tab, TabsModule } from "../../components/tabs/tabs.js";
 import { makeDataTable } from "../../common/data-table.js";
 
 import { InitSal, sortByTitle } from "../../sal/infrastructure/index.js";
-import { appContext } from "../../infrastructure/app-db-context.js";
+import { initSal } from "../../sal-v2.js";
+import {
+  appContext,
+  initAppcontext,
+} from "../../infrastructure/app-db-context.js";
 
 import * as ModalDialog from "../../sal/components/modal/index.js";
 import * as FormManager from "../../sal/infrastructure/form_manager.js";
@@ -54,6 +68,7 @@ import { CancelPlanForm } from "../../forms/plan/cancel/cancel-plan-form.js";
 import {
   currentRole,
   currentUser,
+  initAuth,
   userRoleOpts,
 } from "../../services/authorization.js";
 
@@ -1172,7 +1187,9 @@ var loadStart,
 async function initApp() {
   loadStart = new Date();
   initSal();
-  InitSal();
+  await InitSal();
+  initAppcontext();
+  await initAuth();
   Common.Init();
   document.getElementById("spanLoadStatus").innerText =
     "Initiating Application";
@@ -1268,8 +1285,8 @@ var RecordSourcesListDef = {
 };
 
 var CIItemListDef = {
-  name: "CAP_Main",
-  title: "CAP_Main",
+  name: "CAP_Main2",
+  title: "CAP_Main2",
   viewModelObj: "selectedRecord",
   viewFields: {
     ID: { type: "Text" },
@@ -1592,6 +1609,9 @@ export function CAPViewModel(capIdstring) {
   // );
   var APPPROCESSTIMEOUT = 10 * 1000; // 10 seconds
   var APPPROCESSDISMISSTIMEOUT = 1000;
+
+  self.Common = Common;
+
   self.app = {
     currentDialogs: ModalDialog.currentDialogs,
   };
@@ -1625,7 +1645,7 @@ export function CAPViewModel(capIdstring) {
   self.currentUser = ko.observable();
 
   self.currentUserObj = {
-    id: ko.observable(_spPageContextInfo.userId),
+    id: ko.observable(window.context.pageContext.legacyPageContext.userId),
     businessOfficeOwnership: ko.pureComputed(function () {
       var userId = self.currentUserObj.id();
       var myOffices = [];
@@ -1869,7 +1889,7 @@ export function CAPViewModel(capIdstring) {
   self.myOpenActionsArray = ko.pureComputed(function () {
     var userId = self.currentUserObj.id();
     return self.allOpenActionsArray().filter(function (action) {
-      return action.ActionResponsiblePerson.get_lookupId() == userId;
+      return action.ActionResponsiblePerson?.get_lookupId() == userId;
     });
   });
 
@@ -3245,7 +3265,7 @@ export function CAPViewModel(capIdstring) {
       return "javascript: void(0)";
     }
     return (
-      _spPageContextInfo.siteServerRelativeUrl +
+      window.context.pageContext.legacyPageContext.siteServerRelativeUrl +
       "/SitePages/print.aspx?capid=" +
       self.selectedTitle()
     );

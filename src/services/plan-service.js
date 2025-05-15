@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { html, LOCATION, PLANTYPE, stageDescriptions } from "../constants.js";
 import { Plan } from "../entities/plan.js";
 import { appContext } from "../infrastructure/app-db-context.js";
@@ -7,7 +8,7 @@ import { currentRole, currentUser } from "./authorization.js";
 
 export function getRoleLinkToPlan(plan, role = null) {
   return `${
-    _spPageContextInfo.webAbsoluteUrl
+    window.context.pageContext.legacyPageContext.webAbsoluteUrl
   }/?capid=${plan.Title.Value()}&tab=detail${role ? `&role=${role}` : ""}`;
 }
 
@@ -53,9 +54,7 @@ export async function addNewPlan(plan) {
 
     plan.NextTargetDate.set(target_deadline);
 
-    const user = currentUser;
-
-    plan.ProblemResolverName.set(user);
+    plan.ProblemResolverName.set(currentUser);
 
     // We only mark it as submitted once it's been approved.
     plan.SubmittedDate.Value(new Date());

@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { directRegisterComponent } from "../../infrastructure/index.js";
 import { modalDialogTemplate } from "./ModalDialogTemplate.js";
 

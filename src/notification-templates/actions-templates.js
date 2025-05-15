@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { html, ROLES } from "../constants.js";
 import { getAnchorRoleLinkToPlan } from "../services/plan-service.js";
 

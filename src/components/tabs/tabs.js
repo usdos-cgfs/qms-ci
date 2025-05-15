@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { getUrlParam, setUrlParam } from "../../common/router.js";
 
 // const urlParam = "Tab";
