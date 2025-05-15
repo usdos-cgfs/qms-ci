@@ -3,6 +3,7 @@ import { SitePage } from "./entities/index.js";
 import {
   SPList,
   copyFileAsync,
+  ensurePerson,
   getSitePermissions,
   setSitePermissions,
 } from "./infrastructure/index.js";
@@ -18,6 +19,7 @@ export class DbContext {
     copyFileAsync,
     getBasePermissions: getSitePermissions,
     setBasePermissions: setSitePermissions,
+    ensurePerson,
   };
   virtualSets = new Map();
 

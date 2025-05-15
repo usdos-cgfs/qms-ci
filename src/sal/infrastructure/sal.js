@@ -587,12 +587,58 @@ sal.NewUtilities = function () {
     });
   }
 
+  function ensureUserById(userId, callback) {
+    var context = new SP.ClientContext.get_current();
+    var user = context.get_web().getUserById(userId);
+
+    function onRequestSuccess() {
+      callback(user);
+    }
+
+    function onRequestFail(sender, args) {
+      console.warn(args.get_message());
+    }
+    const data = { user: user, callback: callback };
+
+    context.load(user);
+    context.executeQueryAsync(
+      Function.createDelegate(data, onRequestSuccess),
+      Function.createDelegate(data, onRequestFail)
+    );
+  }
+  function ensureUserByLogin(userName, callback) {
+    var context = new SP.ClientContext.get_current();
+    var user = context.get_web().ensureUser(userName);
+
+    function onEnsureUserSucceeded(sender, args) {
+      var self = this;
+      self.callback(user);
+    }
+
+    function onEnsureUserFailed(sender, args) {
+      console.error(
+        "Failed to ensure user :" +
+          args.get_message() +
+          "\n" +
+          args.get_stackTrace()
+      );
+    }
+    const data = { user: user, callback: callback };
+
+    context.load(user);
+    context.executeQueryAsync(
+      Function.createDelegate(data, onEnsureUserSucceeded),
+      Function.createDelegate(data, onEnsureUserFailed)
+    );
+  }
   var publicMembers = {
     copyFiles: copyFiles,
     copyFilesAsync,
     createSiteGroup: createSiteGroup,
     getUserGroups: getUserGroups,
     getUsersWithGroup: getUsersWithGroup,
+    ensureUserById,
+    ensureUserByLogin,
   };
 
   return publicMembers;

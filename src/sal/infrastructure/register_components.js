@@ -1,34 +1,6 @@
 import * as ko from "knockout";
 export const html = String.raw;
 
-export function registerComponent({
-  name,
-  folder,
-  module = null,
-  moduleFilename = null,
-  template: templateFilename,
-}) {
-  if (ko.components.isRegistered(name)) {
-    return;
-  }
-  if (moduleFilename || module) {
-    ko.components.register(name, {
-      template: {
-        fromPath: `/components/${folder}/${templateFilename}.html`,
-      },
-      viewModel: module ?? {
-        viaLoader: `/components/${folder}/${moduleFilename}.js`,
-      },
-    });
-  } else {
-    ko.components.register(name, {
-      template: {
-        fromPath: `/components/${folder}/${templateFilename}.html`,
-      },
-    });
-  }
-}
-
 export function directRegisterComponent(name, { template, viewModel = null }) {
   ko.components.register(name, {
     template,

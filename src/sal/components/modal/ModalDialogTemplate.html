@@ -1,12 +1,12 @@
 <dialog
   id=""
-  class="card bg-dark draggable modal-dialog"
+  class="card draggable modal-dialog"
   data-bind="attr: {id: getUniqueId() }"
 >
   <!-- Can't use 'with: currentDialog' since we need to register our 
       javascript event listeners for grabbing and resizing -->
-  <div class="card-header bg-dark grabber">
-    <h2 class="card-title" data-bind="text: title"></h2>
+  <div class="card-header header grabber">
+    <h2 class="card-title title" data-bind="text: title"></h2>
     <h2 class="card-title">
       <i class="fa-solid fa-xmark pointer" data-bind="click: clickClose"></i>
     </h2>
@@ -19,19 +19,19 @@
     </ul>
   </div>
   <div
-    class="card-body"
+    class="card-body body"
     data-bind="component: { name: form.componentName, params: form.params }"
   ></div>
   <!-- /ko -->
   <!-- ko if: url -->
-  <div class="card-body">
+  <div class="card-body body">
     <iframe frameborder="0" data-bind="attr: {src: url}"></iframe>
   </div>
   <!-- /ko -->
   <!-- ko if: html -->
-  <div class="card-body" data-bind="html: html"></div>
+  <div class="card-body body" data-bind="html: html"></div>
   <!-- /ko -->
-  <div class="card-actions">
+  <div class="card-actions actions">
     <button
       style
       type="button"
@@ -51,3 +51,64 @@
     <!-- /ko -->
   </div>
 </dialog>
+
+<style>
+  .modal-dialog {
+    pointer-events: auto;
+    display: none;
+    position: absolute;
+    z-index: 15;
+    width: 615px;
+    min-width: 400px;
+    max-height: 85vh;
+    padding: 0;
+    margin: 0;
+    top: 125px;
+    resize: both;
+
+    border: 2px solid var(--primary-color);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .modal-dialog.active {
+    display: flex;
+  }
+
+  .modal-dialog .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* background-color: inherit; */
+    /* position: sticky;
+      top: 0; */
+    padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+  }
+
+  .modal-dialog .title {
+    color: inherit;
+    margin: 0;
+  }
+
+  .modal-dialog .body {
+    padding: 0.5rem 1.5rem;
+    overflow: auto;
+  }
+
+  .modal-dialog .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: auto;
+    padding: 0.5rem 1.5rem 1.5rem 1.5rem;
+  }
+
+  .draggable {
+    position: absolute;
+  }
+
+  .draggable .grabber {
+    cursor: move;
+  }
+</style>
