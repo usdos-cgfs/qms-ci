@@ -1287,8 +1287,8 @@ var RecordSourcesListDef = {
 };
 
 var CIItemListDef = {
-  name: "CAP_Main2",
-  title: "CAP_Main2",
+  name: "CAP_Main",
+  title: "CAP_Main",
   viewModelObj: "selectedRecord",
   viewFields: {
     ID: { type: "Text" },

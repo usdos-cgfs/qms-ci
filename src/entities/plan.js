@@ -416,7 +416,7 @@ export class Plan extends ConstrainedEntity {
   };
 
   static ListDef = {
-    name: "CAP_Main2",
-    title: "CAP_Main2",
+    name: "CAP_Main",
+    title: "CAP_Main",
   };
 }
