@@ -1,7 +1,9 @@
 import appTemplate from "./app.html";
 import quillStyles from "quill/dist/quill.snow.css";
 import dataTablesStyles from "datatables.net-dt/css/dataTables.dataTables.min.css";
-import bootstrap from "bootstrap";
+import bsStyles from "bootstrap/dist/css/bootstrap.min.css";
+import styles from "../../styles.css";
+import * as bs from "bootstrap";
 
 import "../../webcomponents/searchselect/searchselect.js";
 

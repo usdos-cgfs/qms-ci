@@ -29,11 +29,16 @@ const pages = [
 const entryPoints = pages.map((page) => {
   return {
     ...page,
+    output: {
+      format: "umd",
+      sourcemap: true,
+      ...page.output,
+    },
     plugins: [
       html({
         include: "**/*.html",
       }),
-      postcss(), // Import CSS files as part of the bundle
+      postcss(),
       json(),
       serve({
         contentBase: "./",
@@ -44,5 +49,5 @@ const entryPoints = pages.map((page) => {
     ],
   };
 });
-
+console.log(entryPoints);
 export default entryPoints;
