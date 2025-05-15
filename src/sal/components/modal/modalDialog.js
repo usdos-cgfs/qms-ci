@@ -1,6 +1,6 @@
 import * as ko from "knockout";
 import { directRegisterComponent } from "../../infrastructure/index.js";
-import { modalDialogTemplate } from "./ModalDialogTemplate.js";
+import modalDialogTemplate from "./ModalDialogTemplate.html";
 
 const componentName = "modal-dialog-component";
 
@@ -18,16 +18,37 @@ class ModalDialogModule {
     this.title = dialogOpts.title;
     this.dialogReturnValueCallback = dialogOpts.dialogReturnValueCallback;
 
+    // this.url = dialogOpts.url;
     this.form = dialogOpts.form;
 
-    if (this.form?.onComplete) {
-      alert("Pass the form onComplete to the modal dialog!");
-      return;
+    if (this.form) {
+      if (this.form?.onComplete) {
+        alert("Pass the form onComplete to the modal dialog!");
+        return;
+      }
+      this.form.onComplete = this.close.bind(this);
     }
-    this.form.onComplete = this.close.bind(this);
 
-    toggle = this.toggle;
+    if (dialogOpts.url) {
+      const parsedUrl = new URL(
+        dialogOpts.url.startsWith("http")
+          ? dialogOpts.url
+          : window.location.origin + dialogOpts.url
+      );
+      parsedUrl.searchParams.set("env", "WebView");
+      this.url = parsedUrl.href;
+    }
+
+    if (dialogOpts.html) {
+      this.html = dialogOpts.html;
+    }
+
+    this.showSubmit = dialogOpts.url || dialogOpts.showSubmit;
+    // toggle = this.toggle;
   }
+
+  url = null;
+  html = null;
 
   toggle = (show = null) => {
     if (show == null) show = !this.dlgElement.hasAttribute("open");
@@ -42,6 +63,10 @@ class ModalDialogModule {
 
   clickClose = () => {
     this.close(false);
+  };
+
+  clickSubmit = () => {
+    this.close(true);
   };
 
   hide = () => {
@@ -67,7 +92,7 @@ class ModalDialogModule {
   koDescendantsComplete = function (node) {
     this.dlgElement = node.querySelector("dialog");
     dragElement(this.dlgElement);
-    resizeDialog(this.dlgElement);
+    resizeDialog(this.dlgElement, this.dialogOpts);
     this.showModal();
   };
 }
@@ -77,11 +102,23 @@ directRegisterComponent(componentName, {
   viewModel: ModalDialogModule,
 });
 
-function resizeDialog(elmnt) {
-  elmnt.style.width = "550px";
-  elmnt.style.height = "";
+function resizeDialog(elmnt, options) {
+  if (options.autoSize) {
+  }
+  const autoWidth = options.autoSize
+    ? Math.max(window.visualViewport.width - 200, 550)
+    : 550;
+
+  const autoHeight = options.autoSize
+    ? Math.max(window.visualViewport.height - 200, 750)
+    : null;
+  const width = options.width ?? autoWidth;
+  const height = options.height ?? autoHeight;
+
+  elmnt.style.width = width + "px";
+  if (height) elmnt.style.height = height + "px";
   elmnt.style.top = "125px";
-  elmnt.style.left = (window.GetViewportWidth() - 550) / 2 + "px";
+  elmnt.style.left = (window.GetViewportWidth() - width) / 2 + "px";
 }
 
 // TODO: this should be in a utility class or something

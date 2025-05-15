@@ -1,11 +1,9 @@
 import * as ko from "knockout";
-import { DateModule } from "../components/fields/index.js";
-import { BaseField } from "./index.js";
+import { DateModule, dateFieldTypes } from "../components/fields/index.js";
+import { BaseField } from "./BaseField.js";
 
-export const dateFieldTypes = {
-  date: "date",
-  datetime: "datetime-local",
-};
+// Re-export datefield types instead of allowing anything to reference the graphical component
+export { dateFieldTypes } from "../components/fields/index.js";
 
 /**
  * This field needs to convert between locale and UTC Dates stored on the server;
@@ -33,16 +31,6 @@ export class DateField extends BaseField {
   toLocaleDateString = () => this.Value()?.toLocaleDateString();
   toLocaleString = () => this.Value()?.toLocaleString();
 
-  toInputDateString = () => {
-    const d = this.Value();
-    return [
-      d.getUTCFullYear().toString().padStart(4, "0"),
-      (d.getUTCMonth() + 1).toString().padStart(2, "0"),
-      d.getUTCDate().toString().padStart(2, "0"),
-    ].join("-");
-  };
-  toInputDateTimeString = () => this.Value().format("yyyy-MM-ddThh:mm");
-
   get = ko.pureComputed(() => {
     if (!this.Value() || isNaN(this.Value().valueOf())) {
       return null;
@@ -61,31 +49,6 @@ export class DateField extends BaseField {
     }
     this.Value(newDate);
   };
-
-  inputBinding = ko.pureComputed({
-    read: () => {
-      if (!this.Value()) return null;
-      switch (this.type) {
-        case dateFieldTypes.date:
-          return this.toInputDateString();
-        case dateFieldTypes.datetime:
-          return this.toInputDateTimeString();
-        default:
-          return null;
-      }
-    },
-    write: (val) => {
-      if (!val) return;
-      //writes in format
-      if (this.type == dateFieldTypes.datetime) {
-        this.Value(new Date(val));
-        return;
-      }
-
-      // make sure we're using midnight local time
-      this.Value(new Date(val + "T00:00"));
-    },
-  });
 
   components = DateModule;
 }

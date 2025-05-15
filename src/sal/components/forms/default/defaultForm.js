@@ -87,7 +87,7 @@ export class DefaultForm extends BaseForm {
 }
 
 const template = html`
-  <div class="app-form">
+  <div class="audit-form bg-dark">
     <div class="form-fields vertical" data-bind="foreach: FormFields">
       <div
         class="form-field-component"

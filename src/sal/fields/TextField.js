@@ -1,5 +1,5 @@
 import { TextModule } from "../components/fields/index.js";
-import { BaseField } from "./index.js";
+import { BaseField } from "./BaseField.js";
 
 // import ValidationError from "../primitives/ValidationError.js";
 

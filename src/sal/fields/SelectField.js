@@ -3,18 +3,22 @@ import {
   SearchSelectModule,
   SelectModule,
 } from "../components/fields/index.js";
-import { BaseField } from "./index.js";
+import { BaseField } from "./BaseField.js";
 
 export class SelectField extends BaseField {
-  constructor(params) {
-    super(params);
-    const { options, multiple = false, optionsText } = params;
-    this._options = options;
-
-    this.Options = ko.pureComputed(() => {
-      return ko.unwrap(options);
-    });
-
+  constructor({
+    displayName,
+    isRequired = false,
+    Visible,
+    options = [],
+    optionsFilter = (val) => val,
+    multiple = false,
+    optionsText,
+    instructions,
+  }) {
+    super({ Visible, displayName, isRequired, instructions });
+    this.allOpts = options;
+    this.optionsFilter = optionsFilter;
     this.multiple = multiple;
     this.Value = multiple ? ko.observableArray() : ko.observable();
     this.optionsText = optionsText;
@@ -40,5 +44,12 @@ export class SelectField extends BaseField {
     this.Value(val);
   };
 
-  // Options = ko.observableArray();
+  allOpts = [];
+  optionsFilter = (val) => val;
+
+  Options = ko.pureComputed(() => {
+    const optsFilter = ko.unwrap(this.optionsFilter);
+    const allOpts = ko.unwrap(this.allOpts);
+    return allOpts.filter(optsFilter);
+  });
 }

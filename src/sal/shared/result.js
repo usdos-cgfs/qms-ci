@@ -21,5 +21,6 @@ export class Result {
   static Failure(error) {
     const result = new Result();
     result.error = error;
+    return result;
   }
 }

@@ -22,8 +22,8 @@ const editTemplate = html`
       id=""
       multiple="true"
       data-bind="options: Options, 
-        selectedOptions: Value,
-        optionsText: optionsText,
+  selectedOptions: Value,
+  optionsText: optionsText,
         class: ValidationClass
         enable: Enable"
     ></select>
@@ -40,9 +40,9 @@ const editTemplate = html`
       name=""
       id=""
       data-bind="options: Options, 
-        optionsCaption: 'Select...', 
-        value: Value,
-        optionsText: optionsText,
+    optionsCaption: 'Select...', 
+    value: Value,
+    optionsText: optionsText,
         class: ValidationClass
         enable: Enable"
     ></select>

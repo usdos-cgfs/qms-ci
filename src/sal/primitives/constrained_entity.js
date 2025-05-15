@@ -1,5 +1,5 @@
 import * as ko from "knockout";
-import { Entity } from "./index.js";
+import { Entity } from "./entity.js";
 import { BaseField } from "../fields/index.js";
 
 /**
@@ -21,6 +21,7 @@ export class ConstrainedEntity extends Entity {
   };
 
   fromJSON(inputObj) {
+    if (!inputObj) return;
     if (window.DEBUG)
       console.log("Setting constrained entity from JSON", inputObj);
     Object.keys(inputObj).map((key) => this.FieldMap[key]?.set(inputObj[key]));

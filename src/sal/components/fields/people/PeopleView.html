@@ -1,0 +1,17 @@
+<div class="fw-semibold" data-bind="text: displayName"></div>
+<!-- ko if: toString -->
+<!-- ko ifnot: multiple -->
+<div
+  data-bind="text: toString, 
+    attr: {title: Value()?.LoginName}"
+></div>
+<!-- /ko -->
+<!-- ko if: multiple -->
+<ul data-bind="foreach: Value">
+  <li data-bind="attr: {title: LoginName}, text: Title"></li>
+</ul>
+<!-- /ko -->
+<!-- /ko -->
+<!-- ko ifnot: toString -->
+<div class="fst-italic">Not provided.</div>
+<!-- /ko -->

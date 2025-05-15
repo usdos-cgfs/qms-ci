@@ -10,22 +10,15 @@ export class BaseField {
     defaultValue,
     width,
     classList = [],
-    isVisible = true,
-    isEditable = true,
+    Visible = ko.pureComputed(() => true),
+    isEditable = ko.pureComputed(() => true),
   }) {
     this.displayName = displayName;
     this.systemName = systemName;
     this.instructions = instructions;
     this.isRequired = isRequired;
-
-    this.Visible = ko.pureComputed(() => {
-      return ko.unwrap(isVisible);
-    });
-
-    this.Enable = ko.pureComputed(() => {
-      return ko.unwrap(isEditable);
-    });
-
+    this.Visible = Visible;
+    this.Enable = isEditable;
     this.width = width ? "col-md-" + width : "col-md-6";
     this.classList = classList;
 
@@ -86,7 +79,7 @@ function isRequiredValidationRequirement(field) {
 
       const value = ko.unwrap(field.Value);
       if (value?.constructor == Array) return !value.length;
-      return value === null || value === undefined;
+      return value === null || value === undefined || value === "";
     }),
     error: new ValidationError(
       "text-field",

@@ -14,13 +14,6 @@ export function registerFieldComponents(constructor) {
   });
 }
 
-const viewTemplate = html`
-  <div class="fw-semibold" data-bind="text: displayName"></div>
-  <div data-bind="text: toString()"></div>
-`;
-
-const editTemplate = html`<div>Uh oh!</div>`;
-
 export class BaseFieldModule {
   constructor(params) {
     Object.assign(this, params);
@@ -55,7 +48,10 @@ export class BaseFieldModule {
     return this.Errors().length ? "is-invalid" : "is-valid";
   });
 
-  static viewTemplate = viewTemplate;
+  static viewTemplate = html`
+    <div class="fw-semibold" data-bind="text: displayName"></div>
+    <div data-bind="text: toString()"></div>
+  `;
 
-  static editTemplate = editTemplate;
+  static editTemplate = html`<div>Uh oh!</div>`;
 }
