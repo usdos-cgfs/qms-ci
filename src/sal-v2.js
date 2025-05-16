@@ -230,7 +230,7 @@ sal.NewUtilities = function () {
     }
     currCtx.load(everyone);
     currCtx.load(oGroups);
-    data = { everyone: everyone, oGroups: oGroups, callback: callback };
+    const data = { everyone: everyone, oGroups: oGroups, callback: callback };
 
     currCtx.executeQueryAsync(
       Function.createDelegate(data, onQueryGroupsSucceeded),
@@ -378,7 +378,7 @@ function ensureUser(userName, callback) {
         args.get_stackTrace()
     );
   }
-  data = { user: user, callback: callback };
+  const data = { user: user, callback: callback };
 
   context.load(user);
   context.executeQueryAsync(
@@ -778,7 +778,7 @@ sal.NewSPList = function (listDef) {
           args.get_stackTrace()
       );
     }
-    data = { oListItem: oListItem, callback: callback };
+    const data = { oListItem: oListItem, callback: callback };
 
     self.config.currentContext.load(oListItem);
     self.config.currentContext.executeQueryAsync(
@@ -891,7 +891,7 @@ sal.NewSPList = function (listDef) {
     var oList = web.get_lists().getByTitle(self.config.def.title);
 
     var oListItem = oList.getItemById(id);
-    for (i = 0; i < valuePairs.length; i++) {
+    for (let i = 0; i < valuePairs.length; i++) {
       oListItem.set_item(valuePairs[i][0], valuePairs[i][1]);
     }
 
@@ -901,7 +901,7 @@ sal.NewSPList = function (listDef) {
     function onUpdateListItemsSucceeded(sender, args) {
       //alert('Item updated!');
       console.log("Successfully updated " + this.oListItem.get_item("Title"));
-      this.callback();
+      this.callback(true);
     }
 
     function onUpdateListItemFailed(sender, args) {
@@ -911,7 +911,7 @@ sal.NewSPList = function (listDef) {
     }
 
     self.config.currentContext.load(oListItem);
-    data = { oListItem: oListItem, callback: callback };
+    const data = { oListItem: oListItem, callback: callback };
     self.config.currentContext.executeQueryAsync(
       Function.createDelegate(data, onUpdateListItemsSucceeded),
       Function.createDelegate(data, onUpdateListItemFailed)
@@ -1270,7 +1270,7 @@ sal.NewSPList = function (listDef) {
       );
     }
 
-    data = { files: files, callback: callback };
+    const data = { files: files, callback: callback };
 
     self.config.currentContext.load(files);
     self.config.currentContext.executeQueryAsync(
@@ -1498,7 +1498,7 @@ sal.NewSPList = function (listDef) {
         function onQueryFolderItemFailure(sender, args) {
           console.error("Failed to find folder at " + path, args);
         }
-        data = { folderItem: folderItem, path: path, onExists: onExists };
+        const data = { folderItem: folderItem, path: path, onExists: onExists };
         currCtx.load(folderItem);
         currCtx.executeQueryAsync(
           Function.createDelegate(data, onQueryFolderItemSuccess),
