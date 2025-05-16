@@ -2793,7 +2793,7 @@ export function CAPViewModel(capIdstring) {
         const options = {
           title: "Editing Action " + entity.ActionID.Value(),
           form,
-          dialogReturnValueCallback: m_fnRefresh,
+          dialogReturnValueCallback: OnActionEditCallback,
         };
 
         ModalDialog.showModalDialog(options);
