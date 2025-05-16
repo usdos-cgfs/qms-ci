@@ -7,6 +7,7 @@ import {
   getSitePermissions,
   setSitePermissions,
 } from "./infrastructure/index.js";
+import { Result } from "./shared/result.js";
 
 const DEBUG = false;
 
@@ -229,7 +230,8 @@ export class EntitySet {
     writeableEntity.ID =
       typeof entity.ID == "function" ? entity.ID() : entity.ID;
     if (DEBUG) console.log(writeableEntity);
-    return this.ListRef.updateListItemAsync(writeableEntity);
+    const result = this.ListRef.updateListItemAsync(writeableEntity);
+    return Result.Success(result);
   };
 
   TouchEntity = async function (entity) {

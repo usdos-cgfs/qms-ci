@@ -978,7 +978,7 @@ function OnCallbackFormRefresh(result, value) {
   // result = 0 is Cancel
   // result = -1 is Uh oh, something is wrong
   if (result) {
-    m_fnRefresh();
+    m_fnRefresh(true);
   }
 }
 
@@ -997,7 +997,7 @@ function closePlan(id, { title, newStage, prevStage, cancelReason }) {
     //     alert("Plan has been locked. Please contact QTM to Re-Open.");
     //     m_fnRefresh();
     //   });
-    m_fnRefresh();
+    m_fnRefresh(true);
     finishTask(tasks.closing);
   });
 }
@@ -2690,7 +2690,7 @@ export function CAPViewModel(capIdstring) {
       delete: async function (doc) {
         if (!confirm("Delete Document?")) return;
         await appContext.SupportingDocuments.RemoveEntityById(doc.ID);
-        m_fnRefresh();
+        m_fnRefresh(true);
       },
     },
     Actions: {
@@ -2822,7 +2822,7 @@ export function CAPViewModel(capIdstring) {
       deleteClick: async function (action) {
         if (!confirm("Are you sure you want to delete this record?")) return;
         await deleteActionById(action.ID);
-        m_fnRefresh();
+        m_fnRefresh(true);
       },
       requiresApproval: function (action) {
         if (vm.AdminType()) {
@@ -2854,7 +2854,7 @@ export function CAPViewModel(capIdstring) {
           app.listRefs.Actions.getListItems("", vm.allActionsArray);
 
           vm.controls.record.updateImplementationDate();
-          m_fnRefresh();
+          m_fnRefresh(true);
         });
       },
       approvalRejectClick: function (action) {
@@ -2893,7 +2893,7 @@ export function CAPViewModel(capIdstring) {
           app.listRefs.Actions.getListItems("", vm.allActionsArray);
 
           vm.controls.record.updateImplementationDate();
-          m_fnRefresh();
+          m_fnRefresh(true);
         });
       },
       changesClick: function (action) {
@@ -3589,7 +3589,7 @@ export function CAPViewModel(capIdstring) {
             //     alert("Plan has been unlocked.");
             //     m_fnRefresh();
             //   });
-            m_fnRefresh();
+            m_fnRefresh(true);
           }
         );
       }
