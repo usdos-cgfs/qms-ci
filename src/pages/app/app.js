@@ -2907,11 +2907,7 @@ export function CAPViewModel(capIdstring) {
         );
       },
       historyClick: function (action) {
-        app.listRefs.Actions.showVersions(
-          action.ID,
-          action.Title,
-          function () {}
-        );
+        appContext.Actions.ListRef.showVersionHistoryModal(action.ID);
       },
       findLastActionTargetDate: function () {
         let actionItems = vm.allActionsArray().filter(function (action) {
