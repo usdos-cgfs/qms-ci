@@ -6,17 +6,14 @@ import {
 import { BaseField } from "./BaseField.js";
 
 export class SelectField extends BaseField {
-  constructor({
-    displayName,
-    isRequired = false,
-    Visible,
-    options = [],
-    optionsFilter = (val) => val,
-    multiple = false,
-    optionsText,
-    instructions,
-  }) {
-    super({ Visible, displayName, isRequired, instructions });
+  constructor(params) {
+    super(params);
+    const {
+      options = [],
+      optionsFilter = (val) => val,
+      multiple = false,
+      optionsText,
+    } = params;
     this.allOpts = options;
     this.optionsFilter = optionsFilter;
     this.multiple = multiple;
