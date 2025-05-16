@@ -39,6 +39,7 @@
               class="display-name"
               data-bind="text: Title, attr: {title: LoginName}"
             ></div>
+            <!-- ko if: $parent.Enable -->
             <div
               class="remove"
               title="Remove User"
@@ -46,14 +47,17 @@
             >
               <i class="fa-solid fa-xmark"></i>
             </div>
+            <!-- /ko -->
           </div>
         </div>
+        <!-- ko if: Enable -->
         <input
           type="text"
           class=""
           placeholder="Search..."
           data-bind="textInput: searchTerm, event: { focusin }"
         />
+        <!-- /ko -->
       </div>
       <ul
         class="search-opts"
@@ -87,6 +91,10 @@
     /* background-color: white; */
     position: relative;
     outline: none;
+
+    & .selected-person {
+      overflow: hidden;
+    }
   }
 
   .search-group {

@@ -19,6 +19,10 @@ const editTemplate = html`
       data-bind="html: instructions"
     ></div>
     <!-- /ko -->
+    <!-- ko ifnot: Enable -->
+    <div data-bind="html: Value"></div>
+    <!-- /ko -->
+    <!-- ko if: Enable -->
     <div
       class="richtext-field"
       data-bind="childrenComplete: childrenHaveLoaded"
@@ -57,6 +61,7 @@ const editTemplate = html`
         enable: Enable"
       ></textarea>
     </label>
+    <!-- /ko -->
     <!-- /ko -->
     <!-- ko if: ShowErrors -->
     <!-- ko foreach: Errors -->
