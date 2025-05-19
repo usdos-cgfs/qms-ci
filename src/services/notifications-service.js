@@ -422,7 +422,7 @@ export async function actionRequiresApprovalNotification(plan, action) {
 }
 
 export async function extensionRequiresApprovalNotification(plan) {
-  const extensionCount = parseInt(plan.ExtensionCount.Value());
+  const extensionCount = parseInt(plan.ExtensionCount.Value() ?? 0);
 
   const notificationTask = addTask(tasks.notification());
   const to = [];
