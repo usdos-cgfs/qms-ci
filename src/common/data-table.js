@@ -52,7 +52,7 @@ export function makeDataTable(tableId) {
                 } else {
                   vals = vals.map(function (value) {
                     return value
-                      ? "^" + $.fn.dataTable.util.escapeRegex(value) + "$"
+                      ? "^" + DataTable.util.escapeRegex(value) + "$"
                       : null;
                   });
                 }
