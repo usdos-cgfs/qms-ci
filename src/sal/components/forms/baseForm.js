@@ -11,11 +11,10 @@ export class BaseForm {
 
   FormFields = ko.pureComputed(() => {
     const entity = ko.utils.unwrapObservable(this.entity);
-    return Object.entries(entity.FieldMap)
-      .filter(
-        ([key, field]) => this.view.includes(key) && ko.unwrap(field?.Visible)
-      )
-      .map(([key, field]) => field);
+    const fields = this.view
+      .map((key) => entity.FieldMap[key])
+      .filter((field) => field && ko.unwrap(field.Visible));
+    return fields;
   });
 
   // Validate just the fields on this form

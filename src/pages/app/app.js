@@ -2896,15 +2896,30 @@ export function CAPViewModel(capIdstring) {
           m_fnRefresh(true);
         });
       },
-      changesClick: function (action) {
-        app.listRefs.Actions.showModal(
-          "ChangeForm.aspx",
-          action.Title,
-          {
-            id: action.ID,
-          },
-          function () {}
-        );
+      changesClick: async function ({ ID }) {
+        const action = await appContext.Actions.FindById(ID);
+        if (!action) return;
+
+        const form = FormManager.DispForm({
+          entity: action,
+          view: Action.Views.EditApproval,
+        });
+
+        const options = {
+          title: "Action Changes",
+          form,
+          dialogReturnValueCallback: () => {},
+        };
+        ModalDialog.showModalDialog(options);
+
+        // app.listRefs.Actions.showModal(
+        //   "ChangeForm.aspx",
+        //   action.Title,
+        //   {
+        //     id: action.ID,
+        //   },
+        //   function () {}
+        // );
       },
       historyClick: function (action) {
         appContext.Actions.ListRef.showVersionHistoryModal(action.ID);

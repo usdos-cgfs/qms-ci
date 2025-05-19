@@ -223,6 +223,11 @@ export class Plan extends ConstrainedEntity {
     displayName: "Extension Count",
   });
 
+  ExtensionRequested = new CheckboxField({
+    displayName: "Extension Requested",
+    isEditable: false,
+  });
+
   OfficeImpactBool = new CheckboxField({
     displayName:
       "Has Impact on Office Risks, Mitigations, or Internal Controls",
@@ -304,6 +309,7 @@ export class Plan extends ConstrainedEntity {
       "PreviousStage",
       "NextTargetDate",
       "ExtensionCount",
+      "ExtensionRequested",
       "ImplementationTargetDate",
       "OfficeImpactBool",
       "OfficeImpactDesc",

@@ -15,7 +15,7 @@ export class Action extends ConstrainedEntity {
   }
 
   PendingApproval = ko.pureComputed(() => {
-    [
+    return [
       ACTIONSTATES.QSOAPPROVAL,
       ACTIONSTATES.QAOAPPROVAL,
       ACTIONSTATES.QTMAPPROVAL,
@@ -121,13 +121,13 @@ export class Action extends ConstrainedEntity {
       "ImplementationStatus",
     ],
     EditApproval: [
-      "ActionDescription",
-      "TargetDate",
-      "ActionResponsiblePerson",
-      "RevisionCount",
       "ImplementationStatus",
+      "RevisionCount",
+      "ActionDescription",
       "PreviousActionDescription",
+      "TargetDate",
       "PreviousTargetDate",
+      "ActionResponsiblePerson",
       "PreviousActionResponsiblePerson",
     ],
   };

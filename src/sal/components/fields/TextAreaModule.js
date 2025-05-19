@@ -39,6 +39,7 @@ const editTemplate = html`
       </div>
     </div>
     <!-- /ko -->
+    <!-- /ko -->
     <!-- ko ifnot: isRichText -->
     <label class="fw-semibold"
       ><span data-bind="text: displayName"></span
@@ -61,7 +62,6 @@ const editTemplate = html`
         enable: Enable"
       ></textarea>
     </label>
-    <!-- /ko -->
     <!-- /ko -->
     <!-- ko if: ShowErrors -->
     <!-- ko foreach: Errors -->
