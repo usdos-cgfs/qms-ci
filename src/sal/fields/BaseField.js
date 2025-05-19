@@ -10,14 +10,14 @@ export class BaseField {
     defaultValue,
     width,
     classList = [],
-    Visible = ko.pureComputed(() => true),
+    isVisible = ko.pureComputed(() => true),
     isEditable = ko.pureComputed(() => true),
   }) {
     this.displayName = displayName;
     this.systemName = systemName;
     this.instructions = instructions;
     this.isRequired = isRequired;
-    this.Visible = Visible;
+    this.Visible = isVisible;
     this.Enable = isEditable;
     this.width = width ? "col-md-" + width : "col-md-6";
     this.classList = classList;
