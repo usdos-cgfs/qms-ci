@@ -1,22 +1,10 @@
 import appTemplate from "./manage-qo.html";
-var user;
-var spGroup;
-var collListItem;
-var businessOfficeAssignments = [];
-var qoCurrentMembers = [];
-var qoTempCurrentMembers = [];
-var qoListMembers = [];
-
-var usersToAdd = [];
-var usersToRemove = [];
+import * as ko from "knockout";
 
 function initApp() {
-  document
-    .getElementById("btnSyncArrays")
-    .addEventListener("click", syncArrays);
-  document
-    .getElementById("btnManageQoGroup")
-    .addEventListener("click", () => viewGroup("QOs"));
+  const vm = new ViewModel();
+  ko.applyBindings(vm);
+  vm.clickSyncArrays();
 }
 
 function executeQuery(currCtx) {
@@ -115,7 +103,7 @@ function FetchBusinessOfficeAssignments() {
 
     var camlQuery = new SP.CamlQuery();
     camlQuery.set_viewXml("<Query></Query>");
-    collListItem = listRef.getItems(camlQuery);
+    const collListItem = listRef.getItems(camlQuery);
     clientContext.load(collListItem);
     clientContext.executeQueryAsync(
       function () {
@@ -153,7 +141,7 @@ function FetchTempQOAssignments() {
 
     var camlQuery = new SP.CamlQuery();
     camlQuery.set_viewXml("<Query></Query>");
-    collListItem = listRef.getItems(camlQuery);
+    const collListItem = listRef.getItems(camlQuery);
     clientContext.load(collListItem);
     clientContext.executeQueryAsync(
       function () {
@@ -184,21 +172,22 @@ function FetchTempQOAssignments() {
 async function syncArrays() {
   var qoCurrentMembers = await FetchGroupMembers("QOs");
   var qtmCurrentMembers = await FetchGroupMembers("QTM");
-  var accessGroupMembers = qoCurrentMembers
+  var currentMembers = qoCurrentMembers
     .concat(qtmCurrentMembers)
     .filter(filterById);
   var businessOfficeAssignments = await FetchBusinessOfficeAssignments();
   var tempQOAssignments = await FetchTempQOAssignments();
-  var listAssignments = businessOfficeAssignments
+  var assignedUsers = businessOfficeAssignments
     .concat(tempQOAssignments)
     .filter(filterById);
 
-  businessOfficeAssignments.concat;
-  var usersToAdd = listAssignments.filter(
-    (person) => !accessGroupMembers.find((member) => member.id === person.id)
+  return { assignedUsers, currentMembers };
+
+  var usersToAdd = assignedUsers.filter(
+    (person) => !currentMembers.find((member) => member.id === person.id)
   );
-  var usersToRemove = accessGroupMembers.filter(
-    (member) => !listAssignments.find((person) => person.id === member.id)
+  var usersToRemove = currentMembers.filter(
+    (member) => !assignedUsers.find((person) => person.id === member.id)
   );
 
   if (confirm("Add the following users:\n" + formatUserList(usersToAdd))) {
@@ -219,7 +208,7 @@ function AddUserToSharePointGroup(userArr) {
     var clientContext = new SP.ClientContext.get_current();
     var siteGroups = clientContext.get_web().get_siteGroups();
     var web = clientContext.get_web();
-    spGroup = siteGroups.getByName("QOs");
+    const spGroup = siteGroups.getByName("QOs");
     var userCollection = spGroup.get_users();
     console.log("adding " + userArr.length + " users");
     for (const user of userArr) {
@@ -246,7 +235,7 @@ function RemoveUserFromSharePointGroup(userArr) {
     var clientContext = new SP.ClientContext.get_current();
     var siteGroups = clientContext.get_web().get_siteGroups();
     var web = clientContext.get_web();
-    spGroup = siteGroups.getByName("QOs");
+    const spGroup = siteGroups.getByName("QOs");
     var userCollection = spGroup.get_users();
     console.log("removing " + userArr.length + " users");
     for (const user of userArr) {
@@ -274,6 +263,86 @@ function formatUserList(userArr) {
 
 function onQueryFailed(sender, args) {
   console.error(sender, args);
+}
+
+class ViewModel {
+  constructor() {
+    this.checkAllToAdd.subscribe((newVal) =>
+      this.onCheckAllChange(newVal, this.usersToAdd)
+    );
+    this.checkAllToRemove.subscribe((newVal) =>
+      this.onCheckAllChange(newVal, this.usersToRemove)
+    );
+  }
+
+  checkAllToAdd = ko.observable();
+  checkAllToRemove = ko.observable();
+
+  currentMembers = ko.observableArray();
+  assignedUsers = ko.observableArray();
+
+  usersToAdd = ko.pureComputed(() => {
+    return ko
+      .unwrap(this.assignedUsers)
+      .filter(
+        (person) =>
+          !ko
+            .unwrap(this.currentMembers)
+            .find((member) => member.id === person.id)
+      )
+      .map((user) => {
+        return { ...user, include: ko.observable(false) };
+      });
+  });
+
+  usersToRemove = ko.pureComputed(() =>
+    ko
+      .unwrap(this.currentMembers)
+      .filter(
+        (member) =>
+          !ko
+            .unwrap(this.assignedUsers)
+            .find((person) => person.id === member.id)
+      )
+      .map((user) => {
+        return { ...user, include: ko.observable(false) };
+      })
+  );
+
+  onCheckAllChange = (newVal, users) => {
+    ko.unwrap(users).map((user) => user.include(newVal));
+  };
+
+  clickSyncArrays = async () => {
+    const { assignedUsers, currentMembers } = await syncArrays();
+    this.currentMembers(currentMembers);
+    this.assignedUsers(assignedUsers);
+  };
+
+  clickManageQOs = () => viewGroup("QOs");
+
+  clickSubmit = async () => {
+    const usersToAdd = ko
+      .unwrap(this.usersToAdd)
+      .filter((person) => ko.unwrap(person.include));
+    const usersToRemove = ko
+      .unwrap(this.usersToRemove)
+      .filter((person) => ko.unwrap(person.include));
+
+    if (confirm("Add the following users:\n" + formatUserList(usersToAdd))) {
+      console.log("adding");
+      await AddUserToSharePointGroup(usersToAdd);
+    }
+
+    if (
+      confirm("Remove the following users:\n" + formatUserList(usersToRemove))
+    ) {
+      console.log("removing");
+      await RemoveUserFromSharePointGroup(usersToRemove);
+    }
+
+    this.clickSyncArrays();
+  };
 }
 
 export async function load(element, context) {
