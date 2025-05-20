@@ -286,6 +286,13 @@ th .ui.selection.dropdown .menu > .item:nth-child(odd) {
 }
 /* SAL FORMS */
 
+.actions-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: stretch;
+}
+
 .app-form {
   padding: 1.5rem;
   background-color: var(--bg-light-color);

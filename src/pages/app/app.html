@@ -2268,40 +2268,44 @@
             <tbody data-bind="foreach: ActionListItems">
               <tr>
                 <td data-bind="">
-                  <button
-                    data-bind="enable: $root.section.Actions.completeEnable($data),
+                  <div class="actions-cell">
+                    <button
+                      data-bind="enable: $root.section.Actions.completeEnable($data),
                                 visible: !$root.section.Actions.requiresApproval($data),
                                 css: $root.section.Actions.completeClass($data),
                                 text: $root.section.Actions.completeText($data),
                                 click: $root.section.Actions.completeClick.bind($data)"
-                    type="button"
-                    class="btn"
-                  ></button>
-                  <!-- ko if: $root.section.Actions.requiresApproval($data) -->
-                  <button
-                    data-bind="visible: $root.section.Actions.requiresApproval($data),
+                      type="button"
+                      class="btn"
+                    ></button>
+                    <!-- ko if: $root.section.Actions.requiresApproval($data) -->
+                    <div class="btn-group">
+                      <button
+                        data-bind="visible: $root.section.Actions.requiresApproval($data),
                                       click: $root.section.Actions.approvalApproveClick.bind($data)"
-                    type="button"
-                    class="btn btn-success"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    data-bind="visible: $root.section.Actions.requiresApproval($data),
+                        type="button"
+                        class="btn btn-success"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        data-bind="visible: $root.section.Actions.requiresApproval($data),
                                       click: $root.section.Actions.approvalRejectClick.bind($data)"
-                    type="button"
-                    class="btn btn-danger"
-                  >
-                    Reject
-                  </button>
-                  <button
-                    type="button"
-                    data-bind="click: $root.section.Actions.changesClick.bind($data)"
-                    class="btn btn-outline-info"
-                  >
-                    Changes
-                  </button>
-                  <!-- /ko  -->
+                        type="button"
+                        class="btn btn-danger"
+                      >
+                        Reject
+                      </button>
+                    </div>
+                    <button
+                      type="button"
+                      data-bind="click: $root.section.Actions.changesClick.bind($data)"
+                      class="btn btn-outline-info"
+                    >
+                      View Changes
+                    </button>
+                    <!-- /ko  -->
+                  </div>
                 </td>
                 <td data-bind="text: ActionID"></td>
                 <td data-bind="html: ActionDescription"></td>
@@ -2317,29 +2321,31 @@
                 <td data-bind="text: ImplementationStatus"></td>
                 <td data-bind="text: RevisionCount"></td>
                 <td data-bind="">
-                  <button
-                    type="button"
-                    data-bind="enable: $root.section.Actions.isEditable($data),
+                  <div class="actions-cell">
+                    <button
+                      type="button"
+                      data-bind="enable: $root.section.Actions.isEditable($data),
                                 click: $root.section.Actions.editClick.bind($data)"
-                    class="btn btn-outline-secondary"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    type="button"
-                    data-bind="enable: $root.section.Actions.isDeletable($data),
+                      class="btn btn-outline-secondary"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      data-bind="enable: $root.section.Actions.isDeletable($data),
                                 click: $root.section.Actions.deleteClick"
-                    class="btn btn-outline-danger"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    type="button"
-                    data-bind="click: $root.section.Actions.historyClick.bind($data)"
-                    class="btn btn-outline-info"
-                  >
-                    History
-                  </button>
+                      class="btn btn-outline-danger"
+                    >
+                      Delete
+                    </button>
+                    <button
+                      type="button"
+                      data-bind="click: $root.section.Actions.historyClick.bind($data)"
+                      class="btn btn-outline-info"
+                    >
+                      History
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
