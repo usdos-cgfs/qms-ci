@@ -32,6 +32,26 @@ ko.observableArray.fn.subscribeAdded = function (callback) {
   );
 };
 
+ko.bindingHandlers.scrollTo = {
+  init: function (element, valueAccessor, allBindingsAccessor) {
+    element.addEventListener("click", () => {
+      const scrollToId = ko.unwrap(valueAccessor);
+      // const target = document.getElementById(scrollToId());
+      const target = scrollToId();
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
+  },
+  update: function (
+    element,
+    valueAccessor,
+    allBindings,
+    viewModel,
+    bindingContext
+  ) {},
+};
+
 ko.bindingHandlers.searchSelect = {
   init: function (element, valueAccessor, allBindingsAccessor) {
     const { options, selectedOptions, optionsText, onSearchInput } =

@@ -521,7 +521,14 @@
               data-bind="visible: validateStage.stage1.ProblemResolver"
             >
               You must add a CAR/CAP Coordinator to Approve.
-              <span><a href="javascript:;">Resolve</a></span>
+
+              <button
+                type="button"
+                class="btn btn-link"
+                data-bind="scrollTo: trProblemResolver"
+              >
+                Resolve
+              </button>
             </div>
             <div>
               <h3>QSO Approval</h3>
@@ -549,7 +556,13 @@
               data-bind="visible: validateStage.stage1.ProblemResolver"
             >
               You must add a CAR/CAP Coordinator to Approve.
-              <span><a href="javascript:;">Resolve</a></span>
+              <button
+                type="button"
+                class="btn btn-link"
+                data-bind="scrollTo: trProblemResolver"
+              >
+                Resolve
+              </button>
             </div>
             <div>
               <h3>QAO Approval</h3>
@@ -628,7 +641,13 @@
                   data-bind="visible: validateStage.stage2.Actions()"
                 >
                   You must add at least one action item to submit.
-                  <span><a href="javascript:;">Resolve</a></span>
+                  <button
+                    type="button"
+                    class="btn btn-link"
+                    data-bind="scrollTo: cardActionList"
+                  >
+                    Resolve
+                  </button>
                 </div>
                 <div
                   id="warnAddContainmentAction"
@@ -637,7 +656,13 @@
                   data-bind="visible: validateStage.stage2.ContainmentAction()"
                 >
                   You must provide a containment action.
-                  <span><a href="javascript:;">Resolve</a></span>
+                  <button
+                    type="button"
+                    class="btn btn-link"
+                    data-bind="scrollTo: cardContainmentAction"
+                  >
+                    Resolve
+                  </button>
                 </div>
                 <div
                   id="warnAddWhy"
@@ -646,7 +671,13 @@
                   data-bind="visible: validateStage.stage2.RootCauseWhy()"
                 >
                   You must have at least one Question and Answer for Root Cause.
-                  <span><a href="javascript:;">Resolve</a></span>
+                  <button
+                    type="button"
+                    class="btn btn-link"
+                    data-bind="scrollTo: rootCauseDiv"
+                  >
+                    Resolve
+                  </button>
                 </div>
                 <div
                   id="warnAddRootCause"
@@ -655,7 +686,13 @@
                   data-bind="visible: validateStage.stage2.RootCause()"
                 >
                   You must provide a root cause analysis.
-                  <span><a href="javascript:;">Resolve</a></span>
+                  <button
+                    type="button"
+                    class="btn btn-link"
+                    data-bind="scrollTo: rootCauseDiv"
+                  >
+                    Resolve
+                  </button>
                 </div>
                 <div
                   id="warnAddSimilarNoncomformity"
@@ -664,7 +701,13 @@
                   data-bind="visible: validateStage.stage2.Nonconformity()"
                 >
                   You must describe any similar nonconformities.
-                  <span><a href="javascript:;">Resolve</a></span>
+                  <button
+                    type="button"
+                    class="btn btn-link"
+                    data-bind="scrollTo: cardSimilarNoncomformities"
+                  >
+                    Resolve
+                  </button>
                 </div>
                 <!--<label for="buttonSubmitInitial" data-bind="visible: NumActions">Submit the record for approval by clicking the submit button:</label>--><br />
                 <button
@@ -792,6 +835,13 @@
                   data-bind="visible: validateStage.stage3.CompleteActions()"
                 >
                   Complete all actions to submit.
+                  <button
+                    type="button"
+                    class="btn btn-link"
+                    data-bind="scrollTo: cardActionList"
+                  >
+                    Resolve
+                  </button>
                 </div>
                 <div
                   id="warnSetVerification"
@@ -808,7 +858,13 @@
                   data-bind="visible: validateStage.stage3.AddSupportDoc()"
                 >
                   Don't forget to attach supporting documents.
-                  <span><a href="javascript:;">Resolve</a></span>
+                  <button
+                    type="button"
+                    class="btn btn-link"
+                    data-bind="scrollTo: cardSupportingDocuments"
+                  >
+                    Resolve
+                  </button>
                 </div>
                 <div data-bind="visible: AdminType() == ''">
                   Once all action items have been completed, submit the record
