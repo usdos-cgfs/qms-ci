@@ -17,6 +17,7 @@ export class DateField extends BaseField {
 
   toString = ko.pureComputed(() => {
     // if this is datetime vs date we expect different things
+    if (!ko.unwrap(this.Value)) return "";
     switch (this.type) {
       case dateFieldTypes.date:
         return this.toLocaleDateString();

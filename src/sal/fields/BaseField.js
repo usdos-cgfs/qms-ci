@@ -36,7 +36,7 @@ export class BaseField {
     else this.Value(null);
   };
 
-  toString = ko.pureComputed(() => this.Value());
+  toString = ko.pureComputed(() => this.Value() ?? "");
 
   toJSON = () => this.Value();
   fromJSON = (val) => this.Value(val);
