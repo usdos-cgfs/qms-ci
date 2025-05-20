@@ -1,3 +1,4 @@
+import appTemplate from "./manage-qo.html";
 var user;
 var spGroup;
 var collListItem;
@@ -9,19 +10,41 @@ var qoListMembers = [];
 var usersToAdd = [];
 var usersToRemove = [];
 
-function initApp() {}
+function initApp() {
+  document
+    .getElementById("btnSyncArrays")
+    .addEventListener("click", syncArrays);
+  document
+    .getElementById("btnManageQoGroup")
+    .addEventListener("click", () => viewGroup("QOs"));
+}
 
-document.getElementById("btnSyncArrays").addEventListener("click", syncArrays);
-document
-  .getElementById("btnManageQoGroup")
-  .addEventListener("click", manageQoGroup);
-
-function manageQoGroup() {
-  window.open(
-    _spPageContextInfo.webAbsoluteUrl +
-      "/_layouts/15/people.aspx?MembershipGroupId=85",
-    "_blank"
+function executeQuery(currCtx) {
+  return new Promise((resolve, reject) =>
+    currCtx.executeQueryAsync(resolve, (sender, args) => {
+      reject({ sender, args });
+    })
   );
+}
+
+async function viewGroup(groupName) {
+  const ctx = new SP.ClientContext.get_current();
+  const web = ctx.get_web();
+
+  const oGroup = web.get_siteGroups().getByName(groupName);
+  ctx.load(oGroup);
+
+  await executeQuery(ctx);
+
+  const groupId = oGroup.get_id();
+  if (!groupId) return;
+
+  const uri =
+    window.context.pageContext.legacyPageContext.webAbsoluteUrl +
+    "/_layouts/15/people.aspx?MembershipGroupId=" +
+    groupId;
+
+  window.open(uri, "_blank");
 }
 
 function FetchGroupMembers(groupName) {
@@ -253,10 +276,11 @@ function onQueryFailed(sender, args) {
   console.error(sender, args);
 }
 
-$(document).ready(function () {
-  SP.SOD.executeFunc(
-    "sp.js",
-    "SP.ClientContext",
-    ExecuteOrDelayUntilScriptLoaded(initApp, "sp.js")
-  );
-});
+export async function load(element, context) {
+  /*********NOTE: the Contribute permission level needs to have manage permissions turned on ************/
+  window.context = context;
+
+  element.innerHTML = appTemplate;
+
+  initApp();
+}
