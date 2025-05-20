@@ -8,6 +8,7 @@ import * as bs from "bootstrap";
 import "../../webcomponents/searchselect/searchselect.js";
 
 import * as ko from "knockout";
+import { version } from "../../../package.json";
 
 import { sal } from "../../sal-v2.js";
 import { Common, Incremental } from "../../common.js";
@@ -1601,6 +1602,8 @@ function clearVM() {
 export function CAPViewModel(capIdstring) {
   console.log("evaluating viewmodel");
   var self = this;
+
+  self.appVersion = version;
 
   // self.currentUser = ko.observable(
   //   $().SPServices.SPGetCurrentUser({
