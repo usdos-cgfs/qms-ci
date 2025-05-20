@@ -891,10 +891,10 @@ function m_fnRefresh(result, value) {
   if (!result) {
     return;
   }
-  addTask(tasks.refresh);
+  const refreshTask = addTask(tasks.refresh);
   LoadMainData(function () {
     LoadSelectedCAP(vm.selectedTitle());
-    finishTask(tasks.refresh);
+    finishTask(refreshTask);
   });
 }
 
@@ -928,13 +928,13 @@ async function onStageRejectedCallback(plan, rejection) {
 
 function OnCapCreateCallback(result, value) {
   if (result) {
-    addTask(tasks.refreshPlans);
+    const refreshTask = addTask(tasks.refreshPlans);
     app.listRefs.Plans.getListItems("", function (items) {
       var id = items[items.length - 1];
       vm.allRecordsArray(items);
       vm.selectedTitle(id.Title);
       vm.tab(TABS.PLANDETAIL);
-      finishTask(tasks.refreshPlans);
+      finishTask(refreshTask);
       // m_fnForward();
     });
   }
@@ -963,12 +963,12 @@ function OnActionEditCallback(result, value) {
 
 function OnActionCreateCallback(result, value) {
   if (result) {
-    addTask(tasks.newAction);
+    const actionTask = addTask(tasks.newAction);
     // The user has modified the Action, the Associated CAP must be updated.
     app.listRefs.Actions.getListItems("", function (actions) {
       vm.allActionsArray(actions);
       vm.controls.record.updateImplementationDate();
-      finishTask(tasks.newAction);
+      finishTask(actionTask);
     });
   }
 }
@@ -983,7 +983,7 @@ function OnCallbackFormRefresh(result, value) {
 }
 
 function closePlan(id, { title, newStage, prevStage, cancelReason }) {
-  addTask(tasks.closing);
+  const closeTask = addTask(tasks.closing);
   const valuePair = [
     ["ProcessStage", newStage],
     ["Active", "0"],
@@ -998,7 +998,7 @@ function closePlan(id, { title, newStage, prevStage, cancelReason }) {
     //     m_fnRefresh();
     //   });
     m_fnRefresh(true);
-    finishTask(tasks.closing);
+    finishTask(closeTask);
   });
 }
 // var incrementer;
@@ -1009,7 +1009,7 @@ function closePlan(id, { title, newStage, prevStage, cancelReason }) {
  * @param {bool} lock pass true to lock request
  */
 function toggleLockPlan(title, lock, callback) {
-  addTask(tasks.lock);
+  const lockTask = addTask(tasks.lock);
   callback = callback === undefined ? m_fnRefresh : callback;
   // Pass true to lock request
 
@@ -1022,7 +1022,7 @@ function toggleLockPlan(title, lock, callback) {
   ];
 
   var incrementer = new Incremental(0, listRefs.length, () => {
-    finishTask(tasks.lock);
+    finishTask(lockTask);
     callback();
   });
 
@@ -1170,7 +1170,7 @@ function initComplete() {
   // makeDataTable("#tblAwaitingAction");
   // makeDataTable("#tblLookupRecords");
 
-  finishTask(tasks.init);
+  finishTask(initTask);
 
   // var idTab =
   // $('#injectAdditionalTabs').
@@ -1183,6 +1183,8 @@ function initComplete() {
 var loadStart,
   loadFinish = 0;
 
+let initTask;
+
 async function initApp() {
   loadStart = new Date();
   initSal();
@@ -1193,7 +1195,7 @@ async function initApp() {
   document.getElementById("spanLoadStatus").innerText =
     "Initiating Application";
   vm = await App.Create();
-  const initTask = addTask(tasks.init);
+  initTask = addTask(tasks.init);
   initStaticListRefs();
 
   LoadMainData(initComplete); // This will call initComplete() when all data is loaded
