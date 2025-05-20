@@ -1,27 +1,38 @@
-var user;
-var spGroup;
-var collListItem;
-var businessOfficeAssignments = [];
-var qoCurrentMembers = [];
-var qoTempCurrentMembers = [];
-var qoListMembers = [];
+import appTemplate from "./manage-qo.html";
+import * as ko from "knockout";
 
-var usersToAdd = [];
-var usersToRemove = [];
+function initApp() {
+  const vm = new ViewModel();
+  ko.applyBindings(vm);
+  vm.clickSyncArrays();
+}
 
-function initApp() {}
-
-document.getElementById("btnSyncArrays").addEventListener("click", syncArrays);
-document
-  .getElementById("btnManageQoGroup")
-  .addEventListener("click", manageQoGroup);
-
-function manageQoGroup() {
-  window.open(
-    _spPageContextInfo.webAbsoluteUrl +
-      "/_layouts/15/people.aspx?MembershipGroupId=85",
-    "_blank"
+function executeQuery(currCtx) {
+  return new Promise((resolve, reject) =>
+    currCtx.executeQueryAsync(resolve, (sender, args) => {
+      reject({ sender, args });
+    })
   );
+}
+
+async function viewGroup(groupName) {
+  const ctx = new SP.ClientContext.get_current();
+  const web = ctx.get_web();
+
+  const oGroup = web.get_siteGroups().getByName(groupName);
+  ctx.load(oGroup);
+
+  await executeQuery(ctx);
+
+  const groupId = oGroup.get_id();
+  if (!groupId) return;
+
+  const uri =
+    window.context.pageContext.legacyPageContext.webAbsoluteUrl +
+    "/_layouts/15/people.aspx?MembershipGroupId=" +
+    groupId;
+
+  window.open(uri, "_blank");
 }
 
 function FetchGroupMembers(groupName) {
@@ -92,7 +103,7 @@ function FetchBusinessOfficeAssignments() {
 
     var camlQuery = new SP.CamlQuery();
     camlQuery.set_viewXml("<Query></Query>");
-    collListItem = listRef.getItems(camlQuery);
+    const collListItem = listRef.getItems(camlQuery);
     clientContext.load(collListItem);
     clientContext.executeQueryAsync(
       function () {
@@ -101,7 +112,7 @@ function FetchBusinessOfficeAssignments() {
         while (listItemEnumerator.moveNext()) {
           var oListItem = listItemEnumerator.get_current();
           //console.log(oListItem);
-          $.each(keys, function (idx, loc) {
+          for (const loc of keys) {
             // Iterate through each office
             var user = oListItem.get_item(loc);
             var userObj = {};
@@ -111,7 +122,7 @@ function FetchBusinessOfficeAssignments() {
               userObj.oUser = user;
               users.push(userObj);
             }
-          });
+          }
         }
         resolve(users.filter(filterById));
       },
@@ -130,7 +141,7 @@ function FetchTempQOAssignments() {
 
     var camlQuery = new SP.CamlQuery();
     camlQuery.set_viewXml("<Query></Query>");
-    collListItem = listRef.getItems(camlQuery);
+    const collListItem = listRef.getItems(camlQuery);
     clientContext.load(collListItem);
     clientContext.executeQueryAsync(
       function () {
@@ -161,21 +172,22 @@ function FetchTempQOAssignments() {
 async function syncArrays() {
   var qoCurrentMembers = await FetchGroupMembers("QOs");
   var qtmCurrentMembers = await FetchGroupMembers("QTM");
-  var accessGroupMembers = qoCurrentMembers
+  var currentMembers = qoCurrentMembers
     .concat(qtmCurrentMembers)
     .filter(filterById);
   var businessOfficeAssignments = await FetchBusinessOfficeAssignments();
   var tempQOAssignments = await FetchTempQOAssignments();
-  var listAssignments = businessOfficeAssignments
+  var assignedUsers = businessOfficeAssignments
     .concat(tempQOAssignments)
     .filter(filterById);
 
-  businessOfficeAssignments.concat;
-  var usersToAdd = listAssignments.filter(
-    (person) => !accessGroupMembers.find((member) => member.id === person.id)
+  return { assignedUsers, currentMembers };
+
+  var usersToAdd = assignedUsers.filter(
+    (person) => !currentMembers.find((member) => member.id === person.id)
   );
-  var usersToRemove = accessGroupMembers.filter(
-    (member) => !listAssignments.find((person) => person.id === member.id)
+  var usersToRemove = currentMembers.filter(
+    (member) => !assignedUsers.find((person) => person.id === member.id)
   );
 
   if (confirm("Add the following users:\n" + formatUserList(usersToAdd))) {
@@ -196,13 +208,13 @@ function AddUserToSharePointGroup(userArr) {
     var clientContext = new SP.ClientContext.get_current();
     var siteGroups = clientContext.get_web().get_siteGroups();
     var web = clientContext.get_web();
-    spGroup = siteGroups.getByName("QOs");
+    const spGroup = siteGroups.getByName("QOs");
     var userCollection = spGroup.get_users();
     console.log("adding " + userArr.length + " users");
-    $.each(userArr, function (idx, user) {
+    for (const user of userArr) {
       console.log("adding: ", user.title);
       userCollection.addUser(web.getUserById(user.id));
-    });
+    }
     spGroup.update();
     // clientContext.load(user);
     clientContext.load(spGroup);
@@ -223,13 +235,13 @@ function RemoveUserFromSharePointGroup(userArr) {
     var clientContext = new SP.ClientContext.get_current();
     var siteGroups = clientContext.get_web().get_siteGroups();
     var web = clientContext.get_web();
-    spGroup = siteGroups.getByName("QOs");
+    const spGroup = siteGroups.getByName("QOs");
     var userCollection = spGroup.get_users();
     console.log("removing " + userArr.length + " users");
-    $.each(userArr, function (idx, user) {
+    for (const user of userArr) {
       console.log("adding: ", user.title);
       userCollection.remove(web.getUserById(user.id));
-    });
+    }
     spGroup.update();
     // clientContext.load(user);
     clientContext.load(spGroup);
@@ -253,10 +265,91 @@ function onQueryFailed(sender, args) {
   console.error(sender, args);
 }
 
-$(document).ready(function () {
-  SP.SOD.executeFunc(
-    "sp.js",
-    "SP.ClientContext",
-    ExecuteOrDelayUntilScriptLoaded(initApp, "sp.js")
+class ViewModel {
+  constructor() {
+    this.checkAllToAdd.subscribe((newVal) =>
+      this.onCheckAllChange(newVal, this.usersToAdd)
+    );
+    this.checkAllToRemove.subscribe((newVal) =>
+      this.onCheckAllChange(newVal, this.usersToRemove)
+    );
+  }
+
+  checkAllToAdd = ko.observable();
+  checkAllToRemove = ko.observable();
+
+  currentMembers = ko.observableArray();
+  assignedUsers = ko.observableArray();
+
+  usersToAdd = ko.pureComputed(() => {
+    return ko
+      .unwrap(this.assignedUsers)
+      .filter(
+        (person) =>
+          !ko
+            .unwrap(this.currentMembers)
+            .find((member) => member.id === person.id)
+      )
+      .map((user) => {
+        return { ...user, include: ko.observable(false) };
+      });
+  });
+
+  usersToRemove = ko.pureComputed(() =>
+    ko
+      .unwrap(this.currentMembers)
+      .filter(
+        (member) =>
+          !ko
+            .unwrap(this.assignedUsers)
+            .find((person) => person.id === member.id)
+      )
+      .map((user) => {
+        return { ...user, include: ko.observable(false) };
+      })
   );
-});
+
+  onCheckAllChange = (newVal, users) => {
+    ko.unwrap(users).map((user) => user.include(newVal));
+  };
+
+  clickSyncArrays = async () => {
+    const { assignedUsers, currentMembers } = await syncArrays();
+    this.currentMembers(currentMembers);
+    this.assignedUsers(assignedUsers);
+  };
+
+  clickManageQOs = () => viewGroup("QOs");
+
+  clickSubmit = async () => {
+    const usersToAdd = ko
+      .unwrap(this.usersToAdd)
+      .filter((person) => ko.unwrap(person.include));
+    const usersToRemove = ko
+      .unwrap(this.usersToRemove)
+      .filter((person) => ko.unwrap(person.include));
+
+    if (confirm("Add the following users:\n" + formatUserList(usersToAdd))) {
+      console.log("adding");
+      await AddUserToSharePointGroup(usersToAdd);
+    }
+
+    if (
+      confirm("Remove the following users:\n" + formatUserList(usersToRemove))
+    ) {
+      console.log("removing");
+      await RemoveUserFromSharePointGroup(usersToRemove);
+    }
+
+    this.clickSyncArrays();
+  };
+}
+
+export async function load(element, context) {
+  /*********NOTE: the Contribute permission level needs to have manage permissions turned on ************/
+  window.context = context;
+
+  element.innerHTML = appTemplate;
+
+  initApp();
+}

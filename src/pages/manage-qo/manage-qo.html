@@ -1,0 +1,143 @@
+<script
+  language="javascript"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/lib/jquery/jquery-3.3.1.min.js"
+  type="text/javascript"
+></script>
+
+<script
+  language="javascript"
+  src="/sites/CGFS-QMS/Style Library/apps/qms-ci/dist/pages/manage-qo/manage-qo.js"
+  type="module"
+></script>
+
+<style>
+  .button {
+    display: inline-block;
+  }
+</style>
+<div>
+  <p>
+    After updating <b>Business Office</b> and
+    <b>Temporary Quality Owners</b> lists below, click "Refresh" to update the
+    list of users to be be added/removed.
+  </p>
+  <p>
+    Select the users to be added/removed by selecting the users checkbox (Hint:
+    toggle the checkbox at the top of the respective list to select all). Click
+    "Submit Changes" to apply membership updates to the Quality Owners group.
+    This is required to give the users access to the site.
+  </p>
+  <p>Select "Manage QOs" to verify users who are currently assigned.</p>
+  <p>
+    Note: Synchronizing will remove members who are no longer assigned in the
+    "Business Office" list.
+  </p>
+  <button
+    id="btnSyncArrays"
+    class="button"
+    type="button"
+    data-bind="click: clickSyncArrays"
+  >
+    Refresh
+  </button>
+  <button
+    id="btnManageQoGroup"
+    class="button"
+    type="button"
+    data-bind="click: clickManageQOs"
+  >
+    Manage QOs
+  </button>
+  <div class="flex gap-8">
+    <div id="usersToAdd">
+      <h4>Users to be Added to QO Group:</h4>
+      <!-- ko ifnot: usersToAdd().length -->
+      0 users to add
+      <!-- /ko -->
+      <!-- ko if: usersToAdd().length -->
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <input
+                type="checkbox"
+                title="Include all"
+                data-bind="checked: checkAllToAdd"
+              />
+            </th>
+            <th>Name</th>
+          </tr>
+        </thead>
+        <tbody data-bind="foreach: usersToAdd">
+          <tr>
+            <td>
+              <input
+                type="checkbox"
+                title="Include user"
+                data-bind="checked: include"
+              />
+            </td>
+            <td><div data-bind="text: title"></div></td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- /ko -->
+    </div>
+    <div id="usersToRemove">
+      <h4>Users to be Removed from QO Group:</h4>
+      <!-- ko ifnot: usersToRemove().length -->
+      0 users to remove
+      <!-- /ko -->
+      <!-- ko if: usersToRemove().length -->
+      <table>
+        <thead>
+          <tr>
+            <th>
+              <input
+                type="checkbox"
+                title="Include all"
+                data-bind="checked: checkAllToRemove"
+              />
+            </th>
+            <th>Name</th>
+          </tr>
+        </thead>
+        <tbody data-bind="foreach: usersToRemove">
+          <tr>
+            <td>
+              <input
+                type="checkbox"
+                title="Include user"
+                data-bind="checked: include"
+              />
+            </td>
+            <td><div data-bind="text: title"></div></td>
+          </tr>
+        </tbody>
+      </table>
+      <!-- /ko -->
+    </div>
+  </div>
+  <button
+    id="btnSubmit"
+    class="button"
+    type="button"
+    data-bind="click: clickSubmit"
+  >
+    Submit Changes
+  </button>
+</div>
+
+<style>
+  .flex {
+    display: flex;
+  }
+
+  .gap-2 {
+    gap: 0.5rem;
+  }
+
+  .gap-8 {
+    gap: 2rem;
+  }
+</style>
