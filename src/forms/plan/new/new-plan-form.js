@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { BaseForm } from "../../../sal/components/forms/index.js";
 import { BusinessOffice, Plan } from "../../../entities/index.js";
 import {
@@ -46,7 +47,7 @@ export class NewPlanForm extends BaseForm {
 
     try {
       const result = await addNewPlan(entity);
-      if (result?.isSuccess) this.onComplete(SP.UI.DialogResult.OK);
+      if (result?.isSuccess) this.onComplete(true);
     } catch (e) {
       alert(e);
     }

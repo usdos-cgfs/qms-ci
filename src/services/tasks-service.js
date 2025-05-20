@@ -1,19 +1,20 @@
+import * as ko from "knockout";
 import { ProgressTask, Task, TaskDef } from "../value-objects/task.js";
 
 export const tasks = {
-  init: new Task({ msg: "Initializing the Application" }),
-  save: new Task({ msg: "Saving Plan...", blocking: true }),
-  cancelAction: new Task({ msg: "Cancelling Action..." }),
-  view: new Task({ msg: "Viewing Plan..." }),
-  refresh: new Task({ msg: "Refreshing Plan..." }),
-  lock: new Task({ msg: "Locking Plan...", blocking: true }),
-  closing: new Task({ msg: "Closing Plan...", blocking: true }),
-  opening: new Task({ msg: "Re-Opening Plan...", blocking: true }),
-  pipeline: new Task({ msg: "Progressing to Next Stage...", blocking: true }),
-  refreshPlans: new Task({ msg: "Refreshing Data..." }),
-  newComment: new Task({ msg: "Refreshing Comments..." }),
-  newAction: new Task({ msg: "Refreshing Actions...", blocking: true }),
-  approve: new Task({ msg: "Approving Plan...", blocking: true }),
+  init: new TaskDef("Initializing the Application"),
+  save: new TaskDef("Saving Plan...", true),
+  cancelAction: new TaskDef("Cancelling Action..."),
+  view: new TaskDef("Viewing Plan..."),
+  refresh: new TaskDef("Refreshing Plan..."),
+  lock: new TaskDef("Locking Plan...", true),
+  closing: new TaskDef("Closing Plan...", true),
+  opening: new TaskDef("Re-Opening Plan...", true),
+  pipeline: new TaskDef("Progressing to Next Stage...", true),
+  refreshPlans: new TaskDef("Refreshing Data..."),
+  newComment: new TaskDef("Refreshing Comments..."),
+  newAction: new TaskDef("Refreshing Actions...", true),
+  approve: new TaskDef("Approving Plan...", true),
   reject: (planTitle) => new TaskDef(`Rejecting ${planTitle}`, true),
   notification: () => new TaskDef("Sending Notification", true),
 };

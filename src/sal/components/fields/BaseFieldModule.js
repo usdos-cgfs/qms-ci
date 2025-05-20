@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 // Hint: use the es6-string-html VS Code module to make template literals easier to read
 export const html = String.raw;
 
@@ -12,13 +13,6 @@ export function registerFieldComponents(constructor) {
     viewModel: constructor,
   });
 }
-
-const viewTemplate = html`
-  <div class="fw-semibold" data-bind="text: displayName"></div>
-  <div data-bind="text: toString()"></div>
-`;
-
-const editTemplate = html`<div>Uh oh!</div>`;
 
 export class BaseFieldModule {
   constructor(params) {
@@ -54,7 +48,10 @@ export class BaseFieldModule {
     return this.Errors().length ? "is-invalid" : "is-valid";
   });
 
-  static viewTemplate = viewTemplate;
+  static viewTemplate = html`
+    <div class="fw-semibold" data-bind="text: displayName"></div>
+    <div data-bind="text: toString()"></div>
+  `;
 
-  static editTemplate = editTemplate;
+  static editTemplate = html`<div>Uh oh!</div>`;
 }

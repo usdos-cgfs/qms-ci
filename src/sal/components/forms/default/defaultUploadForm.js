@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { FormDisplayModes } from "../../../enums/display_modes.js";
 import { DomainError } from "../../../primitives/index.js";
 import { Result } from "../../../shared/index.js";
@@ -97,7 +98,7 @@ export class DefaultUploadForm extends BaseForm {
 
     try {
       const result = await this._submitAction(entity);
-      if (result?.isSuccess) this.onComplete(SP.UI.DialogResult.OK);
+      if (result?.isSuccess) this.onComplete(true);
       else alert(result?.error);
     } catch (e) {
       alert(e);

@@ -1,5 +1,5 @@
 import { TextAreaModule } from "../components/fields/index.js";
-import { BaseField } from "./index.js";
+import { BaseField } from "./BaseField.js";
 
 export class TextAreaField extends BaseField {
   constructor(params) {

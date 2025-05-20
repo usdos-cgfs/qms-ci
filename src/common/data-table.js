@@ -1,3 +1,5 @@
+import DataTable from "datatables.net-dt";
+
 export function makeDataTable(tableId) {
   tableId = tableId.startsWith("#") ? tableId.substring(1) : tableId;
   const elm = document.getElementById(tableId);
@@ -50,7 +52,7 @@ export function makeDataTable(tableId) {
                 } else {
                   vals = vals.map(function (value) {
                     return value
-                      ? "^" + $.fn.dataTable.util.escapeRegex(value) + "$"
+                      ? "^" + DataTable.util.escapeRegex(value) + "$"
                       : null;
                   });
                 }

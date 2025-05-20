@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { ROLES, stageDescriptions } from "../constants.js";
 import { Notification } from "../entities/index.js";
 import { appContext } from "../infrastructure/app-db-context.js";
@@ -421,7 +422,7 @@ export async function actionRequiresApprovalNotification(plan, action) {
 }
 
 export async function extensionRequiresApprovalNotification(plan) {
-  const extensionCount = parseInt(plan.ExtensionCount.Value());
+  const extensionCount = parseInt(plan.ExtensionCount.Value() ?? 0);
 
   const notificationTask = addTask(tasks.notification());
   const to = [];

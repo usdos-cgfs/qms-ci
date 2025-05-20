@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import {
   html,
   BaseFieldModule,
@@ -11,6 +12,8 @@ const editTemplate = html`
     <!-- ko if: multiple -->
     <select
       class="form-select"
+      name=""
+      id=""
       multiple="true"
       data-bind="options: Options, 
         optionsCaption: 'Select...', 
@@ -24,6 +27,8 @@ const editTemplate = html`
     <!-- ko ifnot: multiple -->
     <select
       class="form-select"
+      name=""
+      id=""
       data-bind="options: Options, 
         optionsCaption: 'Select...', 
         optionsText: optionsText,

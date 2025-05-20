@@ -343,11 +343,11 @@ const carBodyTemplate = ({ plan, whys }) => html` <div>
         Could this noncomformance occur in another one of your office processes
         or in a corresponding office in another CGFS location?
       </h3>
-      <div>${plan.SimilarNoncomformityBool.toString()}</div>
+      <div>${plan.SimilarNoncomformityBool?.toString() ?? ""}</div>
     </div>
     <div class="subsection">
       <h3 class="section-subtitle">Explanation:</h3>
-      <div>${plan.SimilarNoncomformityDesc.toString()}</div>
+      <div>${plan.SimilarNoncomformityDesc?.toString() ?? ""}</div>
     </div>
   </div>
 </div>`;

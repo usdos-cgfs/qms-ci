@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { BaseField } from "./index.js";
 import { BlobModule } from "../components/fields/index.js";
 

@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { EFFECTIVENESSREASONS } from "../constants.js";
 import {
   CheckboxField,

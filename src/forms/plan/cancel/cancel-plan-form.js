@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { Plan } from "../../../entities/plan.js";
 import { BaseForm, html } from "../../../sal/components/forms/index.js";
 import { TextAreaField } from "../../../sal/fields/index.js";
@@ -27,7 +28,7 @@ export class CancelPlanForm extends BaseForm {
 
     try {
       const result = await cancelPlan(entity);
-      if (result?.isSuccess) this.onComplete(SP.UI.DialogResult.OK);
+      if (result?.isSuccess) this.onComplete(true);
       else alert(result?.error);
     } catch (e) {
       alert(e);

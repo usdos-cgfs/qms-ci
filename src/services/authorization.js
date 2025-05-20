@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { ROLES, SITEROLEGROUPS } from "../constants.js";
 import { People } from "../sal/entities/index.js";
 
@@ -90,4 +91,8 @@ class User extends People {
   };
 }
 
-export const currentUser = await User.Create();
+export let currentUser;
+
+export async function initAuth() {
+  currentUser = await User.Create();
+}

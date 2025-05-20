@@ -10,16 +10,17 @@ const editTemplate = html`
     ><span data-bind="text: displayName"></span
     ><span data-bind="if: isRequired" class="fw-bold text-danger">*</span>:
   </label>
-  <search-select
+  <query-select
     class="form-select"
-    data-bind="searchSelect: { 
-      options: Options, 
+    data-bind="querySelect: { 
+      searchFunction: searchFunction,
       selectedOptions: Value,
       optionsText: optionsText,
-      onSearchInput: onSearchInput
-    }"
+      onSearchInput: onSearchInput,
+      setValueFromOpts: setValueFromOpts,
+    }, attr: { multiple: multiple }"
   >
-  </search-select>
+  </query-select>
   <div class="fw-light flex justify-between">
     <p class="fst-italic"></p>
     <button type="button" class="btn btn-link h-1" data-bind="click: clear">
@@ -39,10 +40,9 @@ const editTemplate = html`
   <!-- /ko -->
 `;
 
-export class SearchSelectModule extends BaseFieldModule {
+export class QuerySelectModule extends BaseFieldModule {
   constructor(field) {
     super(field);
-    this.Options = field.Options;
     this.Value = field.Value;
     this.optionsText =
       field.optionsText ??
@@ -52,7 +52,39 @@ export class SearchSelectModule extends BaseFieldModule {
     this.multiple = field.multiple;
     this.OptionsCaption = field.OptionsCaption ?? "Select...";
     this.onSearchInput = field.onSearchInput;
+    this.entitySet = field.entitySet;
+    this.lookupCol = field.lookupCol ?? "Title";
+    this.findOrCreateNewEntity = field.findOrCreateNewEntity;
   }
+
+  searchFunction = async (searchText) => {
+    const results = await this.entitySet.FindByColumnValue(
+      [`startswith(${this.lookupCol},'${searchText}')`],
+      {},
+      { count: 10 },
+      ["ID", "Title", this.lookupCol]
+    );
+    return results.results ?? [];
+  };
+
+  mapOptToEntity = (option) => {
+    const newMap = { ID: option.value };
+    newMap[this.lookupCol] = option.label;
+    return this.findOrCreateNewEntity(newMap);
+  };
+
+  setValueFromOpts = (options) => {
+    if (!options || !options.length) {
+      this.Value(null);
+      return;
+    }
+
+    if (this.multiple) {
+      this.Value(options.map(this.mapOptToEntity));
+    } else {
+      this.Value(this.mapOptToEntity(options[0]));
+    }
+  };
 
   GetSelectedOptions = ko.pureComputed(() => {
     if (this.multiple) return this.Value();
@@ -104,9 +136,9 @@ export class SearchSelectModule extends BaseFieldModule {
 
   static editTemplate = editTemplate;
 
-  static view = "search-select-view";
-  static edit = "search-select-edit";
-  static new = "search-select-new";
+  static view = "query-select-view";
+  static edit = "query-select-edit";
+  static new = "query-select-new";
 }
 
-registerFieldComponents(SearchSelectModule);
+registerFieldComponents(QuerySelectModule);

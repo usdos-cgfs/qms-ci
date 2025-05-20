@@ -19,22 +19,22 @@
   - remove unused functions
   - Combine functions 
 */
+import * as ModalDialog from "../components/modal/index.js";
 
 window.console = window.console || { log: function () {} };
 
-// window.sal = window.sal ?? {};
-// var sal = window.sal;
-const sal = {};
+window.sal = window.sal ?? {};
+var sal = window.sal;
 
-const serverRelativeUrl =
-  _spPageContextInfo.webServerRelativeUrl == "/"
-    ? ""
-    : _spPageContextInfo.webServerRelativeUrl;
+// const serverRelativeUrl =
+//   window.context.pageContext.legacyPageContext.webServerRelativeUrl == "/"
+//     ? ""
+//     : window.context.pageContext.legacyPageContext.webServerRelativeUrl;
 
 sal.globalConfig = sal.globalConfig || {
   siteGroups: [],
-  siteUrl: serverRelativeUrl,
-  listServices: serverRelativeUrl + "/_vti_bin/ListData.svc/",
+  siteUrl: "",
+  listServices: "",
   defaultGroups: {},
 };
 sal.site = sal.site || {};
@@ -76,6 +76,99 @@ export function getDefaultGroups() {
   return result;
 }
 
+export async function getSitePermissions() {
+  const url =
+    `/web/` +
+    `?$select=HasUniqueRoleAssignments,RoleAssignments` +
+    `&$expand=RoleAssignments/Member,RoleAssignments/RoleDefinitionBindings`;
+
+  const headers = {
+    "Cache-Control": "no-cache",
+  };
+  const result = await fetchSharePointData(url, "GET", headers);
+
+  if (!result) return;
+
+  return ItemPermissions.fromRestResult(result.d);
+}
+
+export function setSitePermissions(itemPermissions, reset) {
+  const currCtx = new SP.ClientContext.get_current();
+  const web = currCtx.get_web();
+  return setResourcePermissionsAsync(web, itemPermissions, reset);
+}
+
+async function setResourcePermissionsAsync(oResource, itemPermissions, reset) {
+  if (reset) {
+    oResource.resetRoleInheritance();
+    oResource.breakRoleInheritance(false, false);
+  }
+
+  // const result = await new Promise((resolve, reject) => {
+  //   currCtx.executeQueryAsync(
+  //     () => {
+  //       resolve();
+  //     },
+  //     (sender, args) => {
+  //       console.error(
+  //         "Failed to break permissions on item: " +
+  //           this.oListItem.get_lookupValue() +
+  //           args.get_message(),
+  //         args
+  //       );
+  //       reject();
+  //     }
+  //   );
+  // });
+
+  for (const role of itemPermissions.roles) {
+    const ensuredPrincipalResult = await ensureUserByKeyAsync(
+      role.principal.Title
+    );
+    if (!ensuredPrincipalResult) return;
+
+    const currCtx2 = new SP.ClientContext.get_current();
+    const web = currCtx2.get_web();
+
+    const oPrincipal = ensuredPrincipalResult.oPrincipal;
+
+    currCtx2.load(oPrincipal);
+
+    role.roleDefs.map((roleDef) => {
+      const roleDefBindingColl =
+        SP.RoleDefinitionBindingCollection.newObject(currCtx2);
+      roleDefBindingColl.add(web.get_roleDefinitions().getByName(roleDef.name));
+      oResource.get_roleAssignments().add(oPrincipal, roleDefBindingColl);
+    });
+
+    const data = {};
+    await executeQuery(currCtx2).catch(({ sender, args }) => {
+      console.error(
+        `Failed to set role permissions for principal ${role.principal.Title} ` +
+          args.get_message(),
+        args
+      );
+    });
+  }
+
+  if (reset) {
+    const currCtx = new SP.ClientContext.get_current();
+
+    oResource
+      .get_roleAssignments()
+      .getByPrincipal(sal.globalConfig.currentUser)
+      .deleteObject();
+
+    await executeQuery(currCtx).catch(({ sender, args }) => {
+      console.error(
+        `Failed to remove role permissions on item for Current User ` +
+          args.get_message(),
+        args
+      );
+    });
+  }
+}
+
 const siteGroups = {};
 
 export async function getGroupUsers(groupName) {
@@ -94,18 +187,26 @@ export async function getGroupUsers(groupName) {
 }
 
 // Used in router
-export const webRoot =
-  _spPageContextInfo.webAbsoluteUrl == "/"
-    ? ""
-    : _spPageContextInfo.webAbsoluteUrl;
+// export const webRoot =
+//   window.context.pageContext.legacyPageContext.webAbsoluteUrl == "/"
+//     ? ""
+//     : window.context.pageContext.legacyPageContext.webAbsoluteUrl;
 
 export async function InitSal() {
+  refreshDigestValue();
   if (sal.utilities) return;
   console.log("Init Sal");
   var currCtx = SP.ClientContext.get_current();
   var web = currCtx.get_web();
   //sal.site = sal.siteConnection;
+  const serverRelativeUrl =
+    window.context.pageContext.legacyPageContext.webServerRelativeUrl == "/"
+      ? ""
+      : window.context.pageContext.legacyPageContext.webServerRelativeUrl;
 
+  sal.globalConfig.siteUrl = serverRelativeUrl;
+
+  sal.globalConfig.listServices = serverRelativeUrl + "/_vti_bin/ListData.svc/";
   // Get default groups
   sal.globalConfig.defaultGroups = {
     owners: web.get_associatedOwnerGroup(),
@@ -211,7 +312,9 @@ sal.NewAppConfig = function () {
 };
 
 // Used in Authorization
-export async function getUserPropsAsync(userId = _spPageContextInfo.userId) {
+export async function getUserPropsAsync(
+  userId = window.context.pageContext.legacyPageContext.userId
+) {
   // We need to make two api calls, one to user info list, and one to web
   // const userInfoUrl = `/Web/lists/getbytitle('User%20Information%20List')/Items(${userId})`;
   const userPropsUrl = `/sp.userprofiles.peoplemanager/getmyproperties`;
@@ -484,19 +587,67 @@ sal.NewUtilities = function () {
     });
   }
 
+  function ensureUserById(userId, callback) {
+    var context = new SP.ClientContext.get_current();
+    var user = context.get_web().getUserById(userId);
+
+    function onRequestSuccess() {
+      callback(user);
+    }
+
+    function onRequestFail(sender, args) {
+      console.warn(args.get_message());
+    }
+    const data = { user: user, callback: callback };
+
+    context.load(user);
+    context.executeQueryAsync(
+      Function.createDelegate(data, onRequestSuccess),
+      Function.createDelegate(data, onRequestFail)
+    );
+  }
+  function ensureUserByLogin(userName, callback) {
+    var context = new SP.ClientContext.get_current();
+    var user = context.get_web().ensureUser(userName);
+
+    function onEnsureUserSucceeded(sender, args) {
+      var self = this;
+      self.callback(user);
+    }
+
+    function onEnsureUserFailed(sender, args) {
+      console.error(
+        "Failed to ensure user :" +
+          args.get_message() +
+          "\n" +
+          args.get_stackTrace()
+      );
+    }
+    const data = { user: user, callback: callback };
+
+    context.load(user);
+    context.executeQueryAsync(
+      Function.createDelegate(data, onEnsureUserSucceeded),
+      Function.createDelegate(data, onEnsureUserFailed)
+    );
+  }
   var publicMembers = {
     copyFiles: copyFiles,
     copyFilesAsync,
     createSiteGroup: createSiteGroup,
     getUserGroups: getUserGroups,
     getUsersWithGroup: getUsersWithGroup,
+    ensureUserById,
+    ensureUserByLogin,
   };
 
   return publicMembers;
 };
 
 export async function copyFileAsync(sourceFilePath, destFilePath) {
-  const uri = `/web/getfilebyserverrelativeurl('${sourceFilePath}')/copyto('${destFilePath}')`;
+  const uri =
+    `/web/getfilebyserverrelativeurl(@source)/copyto(@dest)` +
+    `?@source='${sourceFilePath}'&@dest='${destFilePath}'`;
 
   const result = await fetchSharePointData(uri, "POST");
 
@@ -511,7 +662,7 @@ async function getCurrentUserPropertiesAsync() {
   };
   try {
     var response = await fetch(
-      _spPageContextInfo.webAbsoluteUrl +
+      window.context.pageContext.legacyPageContext.webAbsoluteUrl +
         "/_api/SP.UserProfiles.PeopleManager/GetMyProperties",
       {
         method: "GET",
@@ -901,14 +1052,7 @@ export function SPList(listDef) {
     return item;
   }
 
-  async function createListItemAsync(entity, folderPath = null) {
-    let serverRelFolderPath;
-
-    if (folderPath) {
-      serverRelFolderPath = getServerRelativeFolderPath(folderPath);
-      // await ensureFolder(serverRelFolderPath);
-    }
-
+  function createListItemAsync(entity, folderPath = null) {
     return new Promise((resolve, reject) => {
       //self.updateConfig();
       const currCtx = new SP.ClientContext.get_current();
@@ -918,7 +1062,13 @@ export function SPList(listDef) {
       const itemCreateInfo = new SP.ListItemCreationInformation();
 
       if (folderPath) {
-        itemCreateInfo.set_folderUrl(serverRelFolderPath);
+        var folderUrl =
+          sal.globalConfig.siteUrl +
+          "/Lists/" +
+          self.config.def.name +
+          "/" +
+          folderPath;
+        itemCreateInfo.set_folderUrl(folderUrl);
       }
 
       const oListItem = oList.addItem(itemCreateInfo);
@@ -1076,6 +1226,23 @@ export function SPList(listDef) {
     return result.d;
   }
 
+  async function getFolderByPath(path, fields) {
+    const [queryFields, expandFields] = await getQueryFields(fields);
+
+    const include = "$select=" + queryFields;
+    const expand = `$expand=` + expandFields;
+
+    const relFolderPath = getServerRelativeFolderPath(path);
+
+    const url =
+      `/web/getFolderByServerRelativeUrl(@folder)/ListItemAllFields?` +
+      `&@folder='${relFolderPath}'` +
+      `&${include}&${expand}`;
+
+    const result = await fetchSharePointData(url);
+    return result?.d;
+  }
+
   async function getListFields() {
     if (!self.config.fieldSchema) {
       const apiEndpoint = `/web/lists/GetByTitle('${self.config.def.title}')/Fields`;
@@ -1145,15 +1312,17 @@ export function SPList(listDef) {
       ? `$orderby=${orderByColumn} ${sortAsc ? "asc" : "desc"}`
       : "";
     // TODO: fieldfilter should use 'lookupcolumnId' e.g. ServiceTypeId eq 1
-    const colFilterArr = columnFilters.map((colFilter) => {
-      if (typeof colFilter == "string") return colFilter;
-
-      const value = colFilter.value ? `'${colFilter.value}'` : colFilter.value;
-      return `(${colFilter.column} ${colFilter.op ?? "eq"} ${value})`; // '${colFilter.value}'
-    });
+    const colFilterArr = [];
+    columnFilters.forEach((colFilter) =>
+      typeof colFilter === "string"
+        ? colFilterArr.push(colFilter)
+        : colFilterArr.push(
+            `${colFilter.column} ${colFilter.op ?? "eq"} '${colFilter.value}'`
+          )
+    );
     if (!includeFolders) colFilterArr.push(`FSObjType eq '0'`);
 
-    const filter = "$filter=" + colFilterArr.join(` and `);
+    const filter = "$filter=(" + colFilterArr.join(`) and (`) + ")";
 
     //const fsObjTypeFilter = `FSObjType eq '0'`;
     // const fieldFilter = `${column} eq '${value}'`;
@@ -1280,6 +1449,70 @@ export function SPList(listDef) {
     });
   }
 
+  async function touchItemAsync(entity) {
+    if (!entity?.ID) {
+      return false;
+    }
+
+    return new Promise((resolve, reject) => {
+      const currCtx = new SP.ClientContext.get_current();
+      const web = currCtx.get_web();
+      const oList = web.get_lists().getByTitle(self.config.def.title);
+
+      const oListItem = oList.getItemById(entity.ID);
+
+      oListItem.set_item("Modified", new Date().toISOString());
+
+      oListItem.update();
+
+      function onUpdateListItemsSucceeded() {
+        //alert('Item updated!');
+        console.log("Successfully updated " + this.oListItem.get_item("Title"));
+        resolve();
+      }
+
+      function onUpdateListItemFailed(sender, args) {
+        console.error("Update Failed - List: " + self.config.def.name);
+        console.error("Item Id", this.oListItem.get_id() ?? "N/A");
+        console.error(entity);
+        console.error(sender, args);
+        reject(args);
+      }
+
+      const data = { oListItem, entity, resolve, reject };
+
+      currCtx.load(oListItem);
+      currCtx.executeQueryAsync(
+        Function.createDelegate(data, onUpdateListItemsSucceeded),
+        Function.createDelegate(data, onUpdateListItemFailed)
+      );
+    });
+
+    var itemUrl =
+      `/web/Lists/GetByTitle('${self.config.def.title}')/items(${entity.Id})` +
+      "/ListItemAllFields";
+    const item = await fetchSharePointData(itemUrl);
+
+    if (!item) return;
+
+    var touchUrl = itemUrl; // + `/ValidateUpdateListItem()`;
+
+    // Prepare payload to update Author or Editor field in SharePoint Using REST API as below
+    var payload = {
+      __metadata: { type: item.d.__metadata.type },
+      Modified: new Date().toISOString(),
+    };
+
+    return fetchSharePointData(
+      touchUrl,
+      "POST",
+      {
+        "X-HTTP-Method": "MERGE",
+        "If-Match": "*",
+      },
+      { body: JSON.stringify(payload) }
+    );
+  }
   /*****************************************************************
                             deleteListItem      
     ******************************************************************/
@@ -1318,8 +1551,8 @@ export function SPList(listDef) {
   }
 
   async function deleteListItemAsync(id) {
-    const apiEndpoint = `/web/lists/GetByTitle('${self.config.def.title}')/items(${id})`;
-    return await fetchSharePointData(apiEndpoint, "DELETE", {
+    const apiEndpoint = `/web/lists/GetByTitle('${self.config.def.title}')/items(${id})/recycle()`;
+    return await fetchSharePointData(apiEndpoint, "POST", {
       "If-Match": "*",
     });
     // return new Promise((resolve, reject) => deleteListItem(id, resolve));
@@ -1340,83 +1573,6 @@ export function SPList(listDef) {
     const oListItem = await getoListItemByIdAsync(id);
 
     return setResourcePermissionsAsync(oListItem, itemPermissions, reset);
-  }
-
-  async function setResourcePermissionsAsync(
-    oListItem,
-    itemPermissions,
-    reset
-  ) {
-    if (reset) {
-      oListItem.resetRoleInheritance();
-      oListItem.breakRoleInheritance(false, false);
-    }
-
-    // const result = await new Promise((resolve, reject) => {
-    //   currCtx.executeQueryAsync(
-    //     () => {
-    //       resolve();
-    //     },
-    //     (sender, args) => {
-    //       console.error(
-    //         "Failed to break permissions on item: " +
-    //           this.oListItem.get_lookupValue() +
-    //           args.get_message(),
-    //         args
-    //       );
-    //       reject();
-    //     }
-    //   );
-    // });
-
-    for (const role of itemPermissions.roles) {
-      const ensuredPrincipalResult = await ensureUserByKeyAsync(
-        role.principal.Title
-      );
-      if (!ensuredPrincipalResult) return;
-
-      const currCtx2 = new SP.ClientContext.get_current();
-      const web = currCtx2.get_web();
-
-      const oPrincipal = ensuredPrincipalResult.oPrincipal;
-
-      currCtx2.load(oPrincipal);
-
-      role.roleDefs.map((roleDef) => {
-        const roleDefBindingColl =
-          SP.RoleDefinitionBindingCollection.newObject(currCtx2);
-        roleDefBindingColl.add(
-          web.get_roleDefinitions().getByName(roleDef.name)
-        );
-        oListItem.get_roleAssignments().add(oPrincipal, roleDefBindingColl);
-      });
-
-      const data = {};
-      await executeQuery(currCtx2).catch(({ sender, args }) => {
-        console.error(
-          `Failed to set role permissions on item id ${id} for principal ${role.principal.Title} ` +
-            args.get_message(),
-          args
-        );
-      });
-    }
-
-    if (reset) {
-      const currCtx = new SP.ClientContext.get_current();
-
-      oListItem
-        .get_roleAssignments()
-        .getByPrincipal(sal.globalConfig.currentUser)
-        .deleteObject();
-
-      await executeQuery(currCtx).catch(({ sender, args }) => {
-        console.error(
-          `Failed to remove role permissions on item id ${id} for Current User ` +
-            args.get_message(),
-          args
-        );
-      });
-    }
   }
 
   function getoListItemByIdAsync(id) {
@@ -1555,11 +1711,6 @@ export function SPList(listDef) {
   }
 
   function upsertFolderPathAsync(folderPath) {
-    if (self.config.def.isLib) {
-      return new Promise((resolve, reject) =>
-        upsertLibFolderByPath(folderPath, resolve)
-      );
-    }
     return new Promise((resolve, reject) =>
       upsertListFolderByPath(folderPath, resolve)
     );
@@ -2001,40 +2152,6 @@ export function SPList(listDef) {
     );
   }
 
-  function upsertLibFolderByPath(folderUrl, success) {
-    const currCtx = new SP.ClientContext.get_current();
-    const web = currCtx.get_web();
-    const oList = web.get_lists().getByTitle(self.config.def.title);
-
-    // TODO: Check if the folder exists before adding it
-
-    var createFolderInternal = function (parentFolder, folderUrl, success) {
-      var ctx = parentFolder.get_context();
-      var folderNames = folderUrl.split("/");
-      var folderName = folderNames[0];
-      var curFolder = parentFolder.get_folders().add(folderName);
-      ctx.load(curFolder);
-      ctx.executeQueryAsync(
-        function () {
-          if (folderNames.length > 1) {
-            var subFolderUrl = folderNames
-              .slice(1, folderNames.length)
-              .join("/");
-            createFolderInternal(curFolder, subFolderUrl, success);
-          } else {
-            success(curFolder);
-          }
-        },
-        function (sender, args) {
-          console.error("error creating new folder");
-          console.error(sender);
-          console.error(error);
-        }
-      );
-    };
-    createFolderInternal(oList.get_rootFolder(), folderUrl, success);
-  }
-
   function setFolderPermissionsAsync(folderPath, valuePairs, reset) {
     return new Promise((resolve, reject) => {
       setFolderPermissions(folderPath, valuePairs, resolve, reset);
@@ -2157,7 +2274,7 @@ export function SPList(listDef) {
     if (args.id) {
       id = args.id;
     }
-    const options = SP.UI.$create_DialogOptions();
+    const options = {};
 
     var listPath = self.config.def.isLib
       ? "/" + self.config.def.name + "/"
@@ -2190,17 +2307,11 @@ export function SPList(listDef) {
         "&RootFolder=" +
         rootFolder,
     });
-    SP.UI.ModalDialog.showModalDialog(options);
-
-    // SP.SOD.execute(
-    //   "sp.ui.dialog.js",
-    //   "SP.UI.ModalDialog.showModalDialog",
-    //   options
-    // );
+    ModalDialog.showModalDialog(options);
   }
 
   function showCheckinModal(fileRef, callback) {
-    var options = SP.UI.$create_DialogOptions();
+    var options = {};
     options.title = "Check in Document";
     options.height = "600";
     options.dialogReturnValueCallback = callback;
@@ -2212,7 +2323,7 @@ export function SPList(listDef) {
       "}&FileName=" +
       fileRef;
 
-    SP.UI.ModalDialog.showModalDialog(options);
+    ModalDialog.showModalDialog(options);
   }
 
   function checkinWithComment(fileRef, comment) {
@@ -2222,14 +2333,14 @@ export function SPList(listDef) {
 
   function showVersionHistoryModal(itemId) {
     return new Promise((resolve) => {
-      var options = SP.UI.$create_DialogOptions();
+      var options = {};
       options.title = "Version History";
       options.height = "600";
       options.dialogReturnValueCallback = resolve;
 
       options.url = getVersionHistoryUrl(itemId);
 
-      SP.UI.ModalDialog.showModalDialog(options);
+      ModalDialog.showModalDialog(options);
     });
   }
 
@@ -2239,7 +2350,8 @@ export function SPList(listDef) {
       "/_layouts/15/versions.aspx?List={" +
       self.config.guid +
       "}&ID=" +
-      itemId
+      itemId +
+      "&env=WebView&isDlg=1"
     );
   }
 
@@ -2257,7 +2369,7 @@ export function SPList(listDef) {
           var siteString =
             sal.globalConfig.siteUrl == "/" ? "" : sal.globalConfig.siteUrl;
 
-          const options = SP.UI.$create_DialogOptions();
+          const options = {};
           Object.assign(options, {
             title: title,
             dialogReturnValueCallback: resolve,
@@ -2278,12 +2390,7 @@ export function SPList(listDef) {
               encodeURI(JSON.stringify(args)),
           });
           //console.log("Options url: " + options.url);
-          SP.UI.ModalDialog.showModalDialog(options);
-          // SP.SOD.execute(
-          //   "sp.ui.dialog.js",
-          //   "SP.UI.ModalDialog.showModalDialog",
-          //   options
-          // );
+          ModalDialog.showModalDialog(options);
         },
         function (sender, args) {
           console.error("Error showing file modal: ");
@@ -2361,7 +2468,7 @@ https://learn.microsoft.com/en-us/previous-versions/office/developer/sharepoint-
       relFolderPath
     );
 
-    for (i = 2; i < totalBlocks; i++) {
+    for (let i = 2; i < totalBlocks; i++) {
       progress({ currentBlock: i, totalBlocks });
       currentPointer = await continueUpload(
         jobGuid,
@@ -2450,27 +2557,16 @@ https://learn.microsoft.com/en-us/previous-versions/office/developer/sharepoint-
   }
 
   async function uploadFileRest(file, relFolderPath, fileName) {
-    return await fetch(
-      _spPageContextInfo.webServerRelativeUrl +
-        `/_api/web/GetFolderByServerRelativeUrl('${relFolderPath}')/Files/add(url='${fileName}',overwrite=true)`,
+    return await fetchSharePointData(
+      `/web/GetFolderByServerRelativeUrl('${relFolderPath}')/Files/add(url='${fileName}',overwrite=true)`,
+      "POST",
       {
-        method: "POST",
-        credentials: "same-origin",
+        "Content-Type": "application/json;odata=nometadata",
+      },
+      {
         body: file,
-        headers: {
-          Accept: "application/json; odata=verbose",
-          "Content-Type": "application/json;odata=nometadata",
-          "X-RequestDigest": document.getElementById("__REQUESTDIGEST").value,
-        },
       }
-    ).then((response) => {
-      if (!response.ok) {
-        console.error("Error Uploading File", response);
-        return;
-      }
-
-      return response.json();
-    });
+    );
   }
 
   async function uploadFileToFolderAndUpdateMetadata(
@@ -2511,25 +2607,18 @@ https://learn.microsoft.com/en-us/previous-versions/office/developer/sharepoint-
   }
 
   async function updateUploadedFileMetadata(fileResult, payload) {
-    var result = await fetch(fileResult.ListItemAllFields.__deferred.uri, {
-      method: "POST",
-      credentials: "same-origin",
-      body: JSON.stringify(payload),
-      headers: {
-        Accept: "application/json; odata=nometadata",
-        "Content-Type": "application/json;odata=nometadata",
-        "X-RequestDigest": document.getElementById("__REQUESTDIGEST").value,
+    var result = await fetchSharePointData(
+      fileResult.ListItemAllFields.__deferred.uri,
+      "POST",
+      {
         "X-HTTP-Method": "MERGE",
         "If-Match": "*",
       },
-    }).then((response) => {
-      if (!response.ok) {
-        console.error("Error Updating File", response);
-        return;
+      {
+        credentials: "same-origin",
+        body: JSON.stringify(payload),
       }
-
-      return response;
-    });
+    );
 
     return result;
   }
@@ -2591,11 +2680,13 @@ https://learn.microsoft.com/en-us/previous-versions/office/developer/sharepoint-
   const publicMembers = {
     findByIdAsync,
     getById,
+    getFolderByPath,
     findByColumnValueAsync,
     loadNextPage,
     getListItemsAsync,
     createListItemAsync,
     updateListItemAsync,
+    touchItemAsync,
     deleteListItemAsync,
     setItemPermissionsAsync,
     getItemPermissionsAsync,
@@ -2619,23 +2710,28 @@ https://learn.microsoft.com/en-us/previous-versions/office/developer/sharepoint-
   return publicMembers;
 }
 
+let requestDigest;
 async function fetchSharePointData(
   uri,
   method = "GET",
   headers = {},
-  opts = {},
-  responseType = "json"
+  opts = {}
 ) {
   const siteEndpoint = uri.startsWith("http")
     ? uri
-    : sal.globalConfig.siteUrl + "/_api" + uri;
+    : window.context.pageContext.legacyPageContext.webServerRelativeUrl +
+      "/_api" +
+      uri;
+
   const response = await fetch(siteEndpoint, {
     method,
     headers: {
       Accept: "application/json; odata=verbose",
-      "X-RequestDigest": document.getElementById("__REQUESTDIGEST").value,
+      "Content-Type": "application/json;odata=nometadata",
+      "X-RequestDigest": requestDigest,
       ...headers,
     },
+    credentials: "same-origin",
     ...opts,
   });
 
@@ -2644,23 +2740,46 @@ async function fetchSharePointData(
       return;
     }
     console.error(response);
-    return;
   }
   try {
-    let result;
-    switch (responseType) {
-      case "json":
-        return response.json();
-        break;
-      case "blob":
-        return response.blob();
-        break;
-      default:
-        return response;
-    }
+    const result = await response.json();
+    return result;
   } catch (e) {
     return;
   }
+}
+
+async function getRequestDigest() {
+  const response = await fetch(
+    window.context.pageContext.legacyPageContext.webServerRelativeUrl +
+      "/_api/contextinfo",
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json; odata=verbose",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    console.error("Cannot refresh token", response);
+    return;
+  }
+  const result = await response.json();
+  return result.d.GetContextWebInformation;
+}
+
+async function refreshDigestValue() {
+  const result = await getRequestDigest();
+
+  if (!result) return;
+
+  requestDigest = result.FormDigestValue;
+
+  // document.getElementById("__REQUESTDIGEST").value = result.FormDigestValue;
+
+  // Refresh before timeout
+  window.setTimeout(refreshDigestValue, result.FormDigestTimeoutSeconds * 900);
 }
 
 window.fetchSharePointData = fetchSharePointData;

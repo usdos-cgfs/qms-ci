@@ -1,9 +1,28 @@
+import appTemplate from "./app.html";
+import quillStyles from "quill/dist/quill.snow.css";
+import dataTablesStyles from "datatables.net-dt/css/dataTables.dataTables.min.css";
+import bsStyles from "bootstrap/dist/css/bootstrap.min.css";
+import styles from "../../styles.css";
+import * as bs from "bootstrap";
+
+import "../../webcomponents/searchselect/searchselect.js";
+
+import * as ko from "knockout";
+import { version } from "../../../package.json";
+
+import { sal } from "../../sal-v2.js";
+import { Common, Incremental } from "../../common.js";
+
 import { getUrlParam, setUrlParam } from "../../common/router.js";
 import { Tab, TabsModule } from "../../components/tabs/tabs.js";
 import { makeDataTable } from "../../common/data-table.js";
 
 import { InitSal, sortByTitle } from "../../sal/infrastructure/index.js";
-import { appContext } from "../../infrastructure/app-db-context.js";
+import { initSal } from "../../sal-v2.js";
+import {
+  appContext,
+  initAppcontext,
+} from "../../infrastructure/app-db-context.js";
 
 import * as ModalDialog from "../../sal/components/modal/index.js";
 import * as FormManager from "../../sal/infrastructure/form_manager.js";
@@ -52,6 +71,7 @@ import { CancelPlanForm } from "../../forms/plan/cancel/cancel-plan-form.js";
 import {
   currentRole,
   currentUser,
+  initAuth,
   userRoleOpts,
 } from "../../services/authorization.js";
 
@@ -869,18 +889,18 @@ function m_fnRejectEffectivenessQTM(callback) {
 /* CALLBACKS AND PAGE MANIPULATIONS */
 
 function m_fnRefresh(result, value) {
-  if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
+  if (!result) {
     return;
   }
-  addTask(tasks.refresh);
+  const refreshTask = addTask(tasks.refresh);
   LoadMainData(function () {
     LoadSelectedCAP(vm.selectedTitle());
-    finishTask(tasks.refresh);
+    finishTask(refreshTask);
   });
 }
 
 async function onStageApprovedCallback(result) {
-  if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
+  if (!result) {
     return;
   }
   const refreshTask = addTask(tasks.refresh);
@@ -894,9 +914,6 @@ async function onStageApprovedCallback(result) {
 }
 
 async function onStageRejectedCallback(plan, rejection) {
-  // if (typeof result !== "undefined" && result == SP.UI.DialogResult.CANCEL) {
-  //   return;
-  // }
   return new Promise((resolve) => {
     const refreshTask = addTask(tasks.refresh);
 
@@ -911,14 +928,14 @@ async function onStageRejectedCallback(plan, rejection) {
 }
 
 function OnCapCreateCallback(result, value) {
-  if (result === SP.UI.DialogResult.OK) {
-    addTask(tasks.refreshPlans);
+  if (result) {
+    const refreshTask = addTask(tasks.refreshPlans);
     app.listRefs.Plans.getListItems("", function (items) {
       var id = items[items.length - 1];
       vm.allRecordsArray(items);
       vm.selectedTitle(id.Title);
       vm.tab(TABS.PLANDETAIL);
-      finishTask(tasks.refreshPlans);
+      finishTask(refreshTask);
       // m_fnForward();
     });
   }
@@ -929,13 +946,13 @@ function OnCapEditRefresh(result, value) {
   // result = 0 is Cancel
   // result = -1 is Uh oh, something is wrong
   //TODO: Check if the processstage is now closed.
-  if (result === SP.UI.DialogResult.OK) {
+  if (result) {
     m_fnRefresh();
   }
 }
 
 function OnActionEditCallback(result, value) {
-  if (result === SP.UI.DialogResult.OK) {
+  if (result) {
     addTask(tasks.newAction);
     app.listRefs.Actions.getListItems("", function (actions) {
       vm.allActionsArray(actions);
@@ -946,13 +963,13 @@ function OnActionEditCallback(result, value) {
 }
 
 function OnActionCreateCallback(result, value) {
-  if (result === SP.UI.DialogResult.OK) {
-    addTask(tasks.newAction);
+  if (result) {
+    const actionTask = addTask(tasks.newAction);
     // The user has modified the Action, the Associated CAP must be updated.
     app.listRefs.Actions.getListItems("", function (actions) {
       vm.allActionsArray(actions);
       vm.controls.record.updateImplementationDate();
-      finishTask(tasks.newAction);
+      finishTask(actionTask);
     });
   }
 }
@@ -961,13 +978,13 @@ function OnCallbackFormRefresh(result, value) {
   // result = 1 is OK
   // result = 0 is Cancel
   // result = -1 is Uh oh, something is wrong
-  if (result === SP.UI.DialogResult.OK) {
-    m_fnRefresh();
+  if (result) {
+    m_fnRefresh(true);
   }
 }
 
 function closePlan(id, { title, newStage, prevStage, cancelReason }) {
-  addTask(tasks.closing);
+  const closeTask = addTask(tasks.closing);
   const valuePair = [
     ["ProcessStage", newStage],
     ["Active", "0"],
@@ -981,8 +998,8 @@ function closePlan(id, { title, newStage, prevStage, cancelReason }) {
     //     alert("Plan has been locked. Please contact QTM to Re-Open.");
     //     m_fnRefresh();
     //   });
-    m_fnRefresh();
-    finishTask(tasks.closing);
+    m_fnRefresh(true);
+    finishTask(closeTask);
   });
 }
 // var incrementer;
@@ -993,7 +1010,7 @@ function closePlan(id, { title, newStage, prevStage, cancelReason }) {
  * @param {bool} lock pass true to lock request
  */
 function toggleLockPlan(title, lock, callback) {
-  addTask(tasks.lock);
+  const lockTask = addTask(tasks.lock);
   callback = callback === undefined ? m_fnRefresh : callback;
   // Pass true to lock request
 
@@ -1006,7 +1023,7 @@ function toggleLockPlan(title, lock, callback) {
   ];
 
   var incrementer = new Incremental(0, listRefs.length, () => {
-    finishTask(tasks.lock);
+    finishTask(lockTask);
     callback();
   });
 
@@ -1154,7 +1171,7 @@ function initComplete() {
   // makeDataTable("#tblAwaitingAction");
   // makeDataTable("#tblLookupRecords");
 
-  finishTask(tasks.init);
+  finishTask(initTask);
 
   // var idTab =
   // $('#injectAdditionalTabs').
@@ -1167,15 +1184,19 @@ function initComplete() {
 var loadStart,
   loadFinish = 0;
 
+let initTask;
+
 async function initApp() {
   loadStart = new Date();
   initSal();
-  InitSal();
+  await InitSal();
+  initAppcontext();
+  await initAuth();
   Common.Init();
   document.getElementById("spanLoadStatus").innerText =
     "Initiating Application";
   vm = await App.Create();
-  const initTask = addTask(tasks.init);
+  initTask = addTask(tasks.init);
   initStaticListRefs();
 
   LoadMainData(initComplete); // This will call initComplete() when all data is loaded
@@ -1582,6 +1603,8 @@ export function CAPViewModel(capIdstring) {
   console.log("evaluating viewmodel");
   var self = this;
 
+  self.appVersion = version;
+
   // self.currentUser = ko.observable(
   //   $().SPServices.SPGetCurrentUser({
   //     fieldName: "Title",
@@ -1590,6 +1613,9 @@ export function CAPViewModel(capIdstring) {
   // );
   var APPPROCESSTIMEOUT = 10 * 1000; // 10 seconds
   var APPPROCESSDISMISSTIMEOUT = 1000;
+
+  self.Common = Common;
+
   self.app = {
     currentDialogs: ModalDialog.currentDialogs,
   };
@@ -1623,7 +1649,7 @@ export function CAPViewModel(capIdstring) {
   self.currentUser = ko.observable();
 
   self.currentUserObj = {
-    id: ko.observable(_spPageContextInfo.userId),
+    id: ko.observable(window.context.pageContext.legacyPageContext.userId),
     businessOfficeOwnership: ko.pureComputed(function () {
       var userId = self.currentUserObj.id();
       var myOffices = [];
@@ -1867,7 +1893,7 @@ export function CAPViewModel(capIdstring) {
   self.myOpenActionsArray = ko.pureComputed(function () {
     var userId = self.currentUserObj.id();
     return self.allOpenActionsArray().filter(function (action) {
-      return action.ActionResponsiblePerson.get_lookupId() == userId;
+      return action.ActionResponsiblePerson?.get_lookupId() == userId;
     });
   });
 
@@ -2669,7 +2695,7 @@ export function CAPViewModel(capIdstring) {
       delete: async function (doc) {
         if (!confirm("Delete Document?")) return;
         await appContext.SupportingDocuments.RemoveEntityById(doc.ID);
-        m_fnRefresh();
+        m_fnRefresh(true);
       },
     },
     Actions: {
@@ -2801,7 +2827,7 @@ export function CAPViewModel(capIdstring) {
       deleteClick: async function (action) {
         if (!confirm("Are you sure you want to delete this record?")) return;
         await deleteActionById(action.ID);
-        m_fnRefresh();
+        m_fnRefresh(true);
       },
       requiresApproval: function (action) {
         if (vm.AdminType()) {
@@ -2833,7 +2859,7 @@ export function CAPViewModel(capIdstring) {
           app.listRefs.Actions.getListItems("", vm.allActionsArray);
 
           vm.controls.record.updateImplementationDate();
-          m_fnRefresh();
+          m_fnRefresh(true);
         });
       },
       approvalRejectClick: function (action) {
@@ -2872,25 +2898,36 @@ export function CAPViewModel(capIdstring) {
           app.listRefs.Actions.getListItems("", vm.allActionsArray);
 
           vm.controls.record.updateImplementationDate();
-          m_fnRefresh();
+          m_fnRefresh(true);
         });
       },
-      changesClick: function (action) {
-        app.listRefs.Actions.showModal(
-          "ChangeForm.aspx",
-          action.Title,
-          {
-            id: action.ID,
-          },
-          function () {}
-        );
+      changesClick: async function ({ ID }) {
+        const action = await appContext.Actions.FindById(ID);
+        if (!action) return;
+
+        const form = FormManager.DispForm({
+          entity: action,
+          view: Action.Views.EditApproval,
+        });
+
+        const options = {
+          title: "Action Changes",
+          form,
+          dialogReturnValueCallback: () => {},
+        };
+        ModalDialog.showModalDialog(options);
+
+        // app.listRefs.Actions.showModal(
+        //   "ChangeForm.aspx",
+        //   action.Title,
+        //   {
+        //     id: action.ID,
+        //   },
+        //   function () {}
+        // );
       },
       historyClick: function (action) {
-        app.listRefs.Actions.showVersions(
-          action.ID,
-          action.Title,
-          function () {}
-        );
+        appContext.Actions.ListRef.showVersionHistoryModal(action.ID);
       },
       findLastActionTargetDate: function () {
         let actionItems = vm.allActionsArray().filter(function (action) {
@@ -3243,7 +3280,7 @@ export function CAPViewModel(capIdstring) {
       return "javascript: void(0)";
     }
     return (
-      _spPageContextInfo.siteServerRelativeUrl +
+      window.context.pageContext.legacyPageContext.siteServerRelativeUrl +
       "/SitePages/print.aspx?capid=" +
       self.selectedTitle()
     );
@@ -3400,7 +3437,7 @@ export function CAPViewModel(capIdstring) {
         "Create a New CAP or CAR",
         args,
         (result, value) => {
-          if (result === SP.UI.DialogResult.OK) {
+          if (result) {
             const refreshTask = addTask(tasks.refreshPlans);
             const userId = vm.currentUserObj.id();
             app.listRefs.Plans.getListItems("", function (items) {
@@ -3572,7 +3609,7 @@ export function CAPViewModel(capIdstring) {
             //     alert("Plan has been unlocked.");
             //     m_fnRefresh();
             //   });
-            m_fnRefresh();
+            m_fnRefresh(true);
           }
         );
       }
@@ -3821,7 +3858,7 @@ export function CAPViewModel(capIdstring) {
   };
 
   self.controls.rejectStageSubmit = async function (result, plan, rejection) {
-    if (result !== SP.UI.DialogResult.OK) {
+    if (!result) {
       return;
     }
     // When the user submits the modal with the reason, create a
@@ -4168,7 +4205,7 @@ export function CAPViewModel(capIdstring) {
   /******************************** Lock Editing Logic ***************************/
 
   self.onNewPlanCreated = function (result, args) {
-    if (result !== SP.UI.DialogResult.OK) {
+    if (!result) {
       return;
     }
     const refreshTask = addTask(tasks.refreshPlans);
@@ -4262,14 +4299,11 @@ class App {
 
 window.vm = {};
 
-if (document.readyState === "ready" || document.readyState === "complete") {
+export async function load(element, context) {
+  /*********NOTE: the Contribute permission level needs to have manage permissions turned on ************/
+  window.context = context;
+
+  element.innerHTML = appTemplate;
+
   initApp();
-} else {
-  document.onreadystatechange = () => {
-    if (document.readyState === "complete" || document.readyState === "ready") {
-      ExecuteOrDelayUntilScriptLoaded(function () {
-        SP.SOD.executeFunc("sp.js", "SP.ClientContext", initApp);
-      }, "sp.js");
-    }
-  };
 }

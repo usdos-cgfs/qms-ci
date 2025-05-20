@@ -1,6 +1,13 @@
+import * as ko from "knockout";
 import { SitePage } from "./entities/index.js";
-import { SPList, copyFileAsync, ensurePerson } from "./infrastructure/index.js";
-import { Result } from "./shared/index.js";
+import {
+  SPList,
+  copyFileAsync,
+  ensurePerson,
+  getSitePermissions,
+  setSitePermissions,
+} from "./infrastructure/index.js";
+import { Result } from "./shared/result.js";
 
 const DEBUG = false;
 
@@ -11,10 +18,11 @@ export class DbContext {
 
   utilities = {
     copyFileAsync,
+    getBasePermissions: getSitePermissions,
+    setBasePermissions: setSitePermissions,
     ensurePerson,
   };
-
-  _virtualSets = new Map();
+  virtualSets = new Map();
 
   Set = (entityType) => {
     const key = entityType.ListDef.name;
@@ -25,12 +33,12 @@ export class DbContext {
       .find((set) => set.ListDef?.name == key);
     if (set) return set;
 
-    if (!this._virtualSets.has(key)) {
+    if (!this.virtualSets.has(key)) {
       const newSet = new EntitySet(entityType);
-      this._virtualSets.set(key, newSet);
+      this.virtualSets.set(key, newSet);
       return newSet;
     }
-    return this._virtualSets.get(key);
+    return this.virtualSets.get(key);
   };
 }
 
@@ -61,10 +69,10 @@ export class EntitySet {
 
       // TODO: this is bombing due to circular dependencies,
       // all fields need to be in View
-      const newEntity = new this.entityType();
-      if (newEntity.FieldMap) {
-        Object.keys(newEntity.FieldMap).map((field) => allFieldsSet.add(field));
-      }
+      // const newEntity = new this.entityType({ ID: null, Title: null });
+      // if (newEntity.FieldMap) {
+      //   Object.keys(newEntity.FieldMap).map((field) => allFieldsSet.add(field));
+      // }
       // const fieldMapKeysSet = new Set(...);
       // entityType.Views.All.map((field) => fieldMapKeysSet.add(field));
       this.AllDeclaredFields = [...allFieldsSet];
@@ -222,8 +230,12 @@ export class EntitySet {
     writeableEntity.ID =
       typeof entity.ID == "function" ? entity.ID() : entity.ID;
     if (DEBUG) console.log(writeableEntity);
-    const result = await this.ListRef.updateListItemAsync(writeableEntity);
+    const result = this.ListRef.updateListItemAsync(writeableEntity);
     return Result.Success(result);
+  };
+
+  TouchEntity = async function (entity) {
+    return this.ListRef.touchItemAsync(entity);
   };
 
   RemoveEntity = async function (entity) {
@@ -283,17 +295,9 @@ export class EntitySet {
   };
 
   RemoveFolderByPath = async function (folderPath) {
-    const itemResults = await this.FindByColumnValue(
-      [{ column: "FileLeafRef", value: folderPath }],
-      {},
-      {},
-      ["ID", "Title", "FileLeafRef"],
-      true
-    );
-    const entities = itemResults.results ?? [];
-    for (const entity of entities) {
-      await this.RemoveEntityById(entity.ID);
-    }
+    const folder = await this.ListRef.getFolderByPath(folderPath, ["ID"]);
+    if (!folder) return;
+    return this.RemoveEntityById(folder.ID);
   };
 
   // Permissions

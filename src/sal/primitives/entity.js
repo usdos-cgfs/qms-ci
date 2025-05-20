@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 export class Entity {
   constructor(params) {
     if (params?.ID) this.ID = params.ID;

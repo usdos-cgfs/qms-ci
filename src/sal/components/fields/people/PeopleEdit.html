@@ -1,0 +1,203 @@
+<div>
+  <label class="fw-semibold w-100"
+    ><span data-bind="text: displayName"></span
+    ><span data-bind="if: isRequired" class="fw-bold text-danger">*</span>:
+    <div
+      class="people-picker"
+      tabindex="0"
+      data-bind="css: { focused }, event: { focusin, focusout }"
+    >
+      <div
+        class="search-group form-select"
+        data-bind="event: { keydown },
+      class: ValidationClass"
+      >
+        <div class="selected-people" data-bind="foreach: selectedUsers">
+          <div class="selected-person">
+            <!-- ko ifnot: ID  -->
+            <div
+              class="status"
+              data-bind="attr: {title: ID}, class: resolutionStatus"
+            >
+              <!-- ko if: resolutionStatus() == 'searching' -->
+              <span class="small loader"></span>
+              <!-- /ko -->
+              <!-- ko if: resolutionStatus() == 'fail' -->
+              <i
+                class="fa-solid fa-triangle-exclamation"
+                data-bind="attr: {title: resolutionMessage}"
+              ></i>
+              <!-- /ko -->
+            </div>
+            <!-- /ko -->
+            <!-- ko if: ID -->
+            <div class="status resolved" data-bind="attr: {title: ID}">
+              <span data-bind="text: Initials()"></span>
+            </div>
+            <!-- /ko -->
+            <div
+              class="display-name"
+              data-bind="text: Title, attr: {title: LoginName}"
+            ></div>
+            <!-- ko if: $parent.Enable -->
+            <div
+              class="remove"
+              title="Remove User"
+              data-bind="click: $parent.removeUser"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </div>
+            <!-- /ko -->
+          </div>
+        </div>
+        <!-- ko if: Enable -->
+        <input
+          type="text"
+          class=""
+          placeholder="Search..."
+          data-bind="textInput: searchTerm, event: { focusin }"
+        />
+        <!-- /ko -->
+      </div>
+      <ul
+        class="search-opts"
+        data-bind="foreach: userOpts, 
+          visible: focused() && userOpts().length"
+      >
+        <li
+          class="search-opt"
+          data-bind="click: $parent.selectUser, css: { active }"
+        >
+          <span data-bind="text: Title, attr: {title: LoginName}"></span>
+        </li>
+      </ul>
+    </div>
+    <!-- ko if: instructions -->
+    <div
+      class="fw-lighter fst-italic text-secondary"
+      data-bind="html: instructions"
+    ></div>
+    <!-- /ko -->
+  </label>
+  <!-- ko if: ShowErrors -->
+  <!-- ko foreach: Errors -->
+  <div class="fw-semibold text-danger" data-bind="text: description"></div>
+  <!-- /ko -->
+  <!-- /ko -->
+</div>
+
+<style>
+  .people-picker {
+    /* background-color: white; */
+    position: relative;
+    outline: none;
+
+    & .selected-person {
+      overflow: hidden;
+    }
+  }
+
+  .search-group {
+    background-color: white;
+    border: 1px solid var(--primary-muted-color);
+    border-radius: 6px;
+  }
+
+  .people-picker.focused .search-group {
+    border-color: var(--primary-color);
+  }
+
+  .search-group > input {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    /* margin: 0.1rem; */
+    border-radius: 4px;
+  }
+
+  .search-opts {
+    list-style: none;
+    padding: 0;
+    margin: 0.1rem 0 0 0;
+    width: 100%;
+    position: absolute;
+    z-index: 5;
+    background-color: white;
+    border: 1px solid var(--secondary-color);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .search-opts .search-opt:nth-child(even) {
+    background-color: var(--bg-very-light-color);
+  }
+
+  .search-opts .search-opt {
+    cursor: pointer;
+    padding: 4px;
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-weight: normal;
+  }
+
+  .search-opts .search-opt:hover,
+  .search-opts .search-opt.active {
+    background-color: var(--bg-light-color);
+  }
+
+  .selected-people {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .selected-person {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid var(--primary-color);
+    border-radius: 2rem;
+    gap: 0.4rem;
+    height: 2rem;
+    min-height: 2rem;
+    margin: 0.4rem 0;
+    cursor: default;
+  }
+
+  .selected-person .status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    border-radius: 1rem;
+    color: white;
+  }
+
+  .selected-person .status.resolved {
+    background-color: var(--primary-color);
+    color: white !important;
+  }
+
+  .selected-person .status.fail {
+    background-color: var(--warn-color);
+    color: white !important;
+  }
+
+  .selected-person .display-name {
+    align-content: center;
+    font-weight: 600;
+  }
+
+  .selected-person .remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem;
+    width: 2rem;
+    color: var(--bg-dark-secondary-color);
+  }
+
+  .selected-person .remove:hover {
+    background-color: var(--bg-very-light-color);
+    cursor: pointer;
+  }
+</style>

@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import {
   html,
   BaseFieldModule,
@@ -18,6 +19,10 @@ const editTemplate = html`
       data-bind="html: instructions"
     ></div>
     <!-- /ko -->
+    <!-- ko ifnot: Enable -->
+    <div data-bind="html: Value"></div>
+    <!-- /ko -->
+    <!-- ko if: Enable -->
     <div
       class="richtext-field"
       data-bind="childrenComplete: childrenHaveLoaded"
@@ -25,15 +30,18 @@ const editTemplate = html`
       <!-- Create the editor container -->
       <div
         class="form-control"
-        data-bind="attr: {'id': getUniqueId()}, class: ValidationClass"
+        data-bind="attr: {'id': getUniqueId()}, 
+          class: ValidationClass, 
+          richText: Value"
         style="height: 150px"
       >
-        <div data-bind="html: Value"></div>
+        <div data-bind=""></div>
       </div>
     </div>
     <!-- /ko -->
+    <!-- /ko -->
     <!-- ko ifnot: isRichText -->
-    <label class="fw-semibold w-full"
+    <label class="fw-semibold"
       ><span data-bind="text: displayName"></span
       ><span data-bind="if: isRequired" class="fw-bold text-danger">*</span>:
       <!-- ko if: instructions -->
@@ -84,56 +92,10 @@ export class TextAreaModule extends BaseFieldModule {
   }
 
   childrenHaveLoaded = (nodes) => {
-    this.initializeEditor();
+    // this.initializeEditor();
   };
 
   getToolbarId = () => "toolbar-" + this.getUniqueId();
-
-  initializeEditor() {
-    const toolbarOptions = [
-      ["bold", "italic", "underline", "strike"], // toggled buttons
-      ["link"],
-      ["blockquote", "code-block"],
-
-      [{ header: 1 }, { header: 2 }], // custom button values
-      [{ list: "ordered" }, { list: "bullet" }],
-      [{ script: "sub" }, { script: "super" }], // superscript/subscript
-      [{ indent: "-1" }, { indent: "+1" }], // outdent/indent
-      [{ direction: "rtl" }], // text direction
-
-      [{ size: ["small", false, "large", "huge"] }], // custom dropdown
-      [{ header: [1, 2, 3, 4, 5, 6, false] }],
-
-      [{ color: [] }, { background: [] }], // dropdown with defaults from theme
-      [{ font: [] }],
-      [{ align: [] }],
-
-      ["clean"], // remove formatting button
-    ];
-
-    // debugger;
-    var editor = new Quill("#" + this.getUniqueId(), {
-      modules: { toolbar: toolbarOptions },
-      theme: "snow",
-    });
-
-    const Value = this.Value;
-
-    Value.subscribe((val) => {
-      if (val == "") {
-        editor.setText("");
-        return;
-      }
-      if (editor.root.innerHTML == val) return;
-
-      editor.root.innerHTML == val;
-      // editor.setText(val);
-    });
-
-    editor.on("text-change", function (delta, oldDelta, source) {
-      Value(editor.root.textContent ? editor.root.innerHTML : "");
-    });
-  }
 
   static viewTemplate = viewTemplate;
   static editTemplate = editTemplate;

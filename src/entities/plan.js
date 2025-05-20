@@ -1,3 +1,4 @@
+import * as ko from "knockout";
 import { businessOfficeStore, sourcesStore } from "../infrastructure/store.js";
 import {
   CheckboxField,
@@ -222,6 +223,11 @@ export class Plan extends ConstrainedEntity {
     displayName: "Extension Count",
   });
 
+  ExtensionRequested = new CheckboxField({
+    displayName: "Extension Requested",
+    isEditable: false,
+  });
+
   OfficeImpactBool = new CheckboxField({
     displayName:
       "Has Impact on Office Risks, Mitigations, or Internal Controls",
@@ -294,6 +300,7 @@ export class Plan extends ConstrainedEntity {
       "CoordinatorName",
       "Subject",
       "SelfInitiated",
+      "ProblemDescription",
       "Source",
       "SimilarNoncomformityBool",
       "SimilarNoncomformityDesc",
@@ -302,6 +309,7 @@ export class Plan extends ConstrainedEntity {
       "PreviousStage",
       "NextTargetDate",
       "ExtensionCount",
+      "ExtensionRequested",
       "ImplementationTargetDate",
       "OfficeImpactBool",
       "OfficeImpactDesc",
@@ -328,6 +336,7 @@ export class Plan extends ConstrainedEntity {
       "CoordinatorName",
       "Subject",
       "SelfInitiated",
+      "ProblemDescription",
       "Source",
       "SimilarNoncomformityBool",
       "SimilarNoncomformityDesc",

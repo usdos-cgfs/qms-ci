@@ -32,4 +32,8 @@ class ApplicationDbContext extends DbContext {
   SupportingDocuments = new EntitySet(SupportingDocument);
 }
 
-export const appContext = new ApplicationDbContext();
+export let appContext;
+
+export function initAppcontext() {
+  appContext = new ApplicationDbContext();
+}
