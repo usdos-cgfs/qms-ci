@@ -124,7 +124,7 @@ function FetchBusinessOfficeAssignments() {
         while (listItemEnumerator.moveNext()) {
           var oListItem = listItemEnumerator.get_current();
           //console.log(oListItem);
-          $.each(keys, function (idx, loc) {
+          for (const loc of keys) {
             // Iterate through each office
             var user = oListItem.get_item(loc);
             var userObj = {};
@@ -134,7 +134,7 @@ function FetchBusinessOfficeAssignments() {
               userObj.oUser = user;
               users.push(userObj);
             }
-          });
+          }
         }
         resolve(users.filter(filterById));
       },
@@ -222,10 +222,10 @@ function AddUserToSharePointGroup(userArr) {
     spGroup = siteGroups.getByName("QOs");
     var userCollection = spGroup.get_users();
     console.log("adding " + userArr.length + " users");
-    $.each(userArr, function (idx, user) {
+    for (const user of userArr) {
       console.log("adding: ", user.title);
       userCollection.addUser(web.getUserById(user.id));
-    });
+    }
     spGroup.update();
     // clientContext.load(user);
     clientContext.load(spGroup);
@@ -249,10 +249,10 @@ function RemoveUserFromSharePointGroup(userArr) {
     spGroup = siteGroups.getByName("QOs");
     var userCollection = spGroup.get_users();
     console.log("removing " + userArr.length + " users");
-    $.each(userArr, function (idx, user) {
+    for (const user of userArr) {
       console.log("adding: ", user.title);
       userCollection.remove(web.getUserById(user.id));
-    });
+    }
     spGroup.update();
     // clientContext.load(user);
     clientContext.load(spGroup);
