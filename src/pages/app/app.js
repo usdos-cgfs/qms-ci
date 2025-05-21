@@ -1652,9 +1652,10 @@ export function CAPViewModel(capIdstring) {
     id: ko.observable(window.context.pageContext.legacyPageContext.userId),
     businessOfficeOwnership: ko.pureComputed(function () {
       var userId = self.currentUserObj.id();
+      if (!userId) return [];
       var myOffices = [];
       self.allBusinessOffices().map(function (office) {
-        if (office.QAO.get_lookupId() == userId) {
+        if (office.QAO?.get_lookupId() == userId) {
           var qaoObj = {};
           qaoObj.id = office.ID;
           qaoObj.location = "All";
