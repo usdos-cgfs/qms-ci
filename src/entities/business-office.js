@@ -1,4 +1,4 @@
-import { PeopleField, TextField } from "../sal/fields/index.js";
+import { CheckboxField, PeopleField, TextField } from "../sal/fields/index.js";
 import { ConstrainedEntity } from "../sal/primitives/index.js";
 import { LOCATION } from "../constants.js";
 
@@ -39,6 +39,10 @@ export class BusinessOffice extends ConstrainedEntity {
     displayName: "QSO Manilla",
   });
 
+  Active = new CheckboxField({
+    displayName: "Active",
+  });
+
   getQSOByLocation(location) {
     switch (location) {
       case LOCATION.CHARLESTON:
@@ -71,6 +75,7 @@ export class BusinessOffice extends ConstrainedEntity {
       "QSO_Paris",
       "QSO_Sofia",
       "QSO_Manila",
+      "Active",
     ],
   };
 

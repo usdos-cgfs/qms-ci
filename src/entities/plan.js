@@ -1,5 +1,9 @@
 import * as ko from "knockout";
-import { businessOfficeStore, sourcesStore } from "../infrastructure/store.js";
+import {
+  activeBusinessOffices,
+  businessOfficeStore,
+  sourcesStore,
+} from "../infrastructure/store.js";
 import {
   CheckboxField,
   PeopleField,
@@ -82,7 +86,7 @@ export class Plan extends ConstrainedEntity {
   BusinessOffice = new LookupField({
     displayName: "Business Office",
     type: BusinessOffice,
-    options: businessOfficeStore,
+    options: activeBusinessOffices,
     appContext: () => appContext,
     isRequired: true,
   });

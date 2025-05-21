@@ -44,9 +44,23 @@
     id="btnManageQoGroup"
     class="button"
     type="button"
-    data-bind="click: clickManageQOs"
+    data-bind="click: () => clickManageGroup('QOs')"
   >
     Manage QOs
+  </button>
+  <button
+    class="button"
+    type="button"
+    data-bind="click:  () => clickManageGroup('QTM')"
+  >
+    Manage QTM
+  </button>
+  <button
+    class="button"
+    type="button"
+    data-bind="click:  () => clickManageGroup('QTM B')"
+  >
+    Manage QTM-B
   </button>
   <div class="flex gap-8">
     <div id="usersToAdd">

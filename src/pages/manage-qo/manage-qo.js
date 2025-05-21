@@ -1,3 +1,4 @@
+import { sortByField } from "../../sal/infrastructure/entity_utilities.js";
 import appTemplate from "./manage-qo.html";
 import * as ko from "knockout";
 
@@ -102,7 +103,9 @@ function FetchBusinessOfficeAssignments() {
     var listRef = website.get_lists().getByTitle("Business_Office");
 
     var camlQuery = new SP.CamlQuery();
-    camlQuery.set_viewXml("<Query></Query>");
+    camlQuery.set_viewXml(`<View Scope="RecursiveAll"><Query><Where><Eq>
+      <FieldRef Name="Active"/><Value Type="Boolean">1</Value>
+      </Eq></Where></Query></View>`);
     const collListItem = listRef.getItems(camlQuery);
     clientContext.load(collListItem);
     clientContext.executeQueryAsync(
@@ -171,36 +174,19 @@ function FetchTempQOAssignments() {
 
 async function syncArrays() {
   var qoCurrentMembers = await FetchGroupMembers("QOs");
-  var qtmCurrentMembers = await FetchGroupMembers("QTM");
+  // var qtmCurrentMembers = await FetchGroupMembers("QTM");
   var currentMembers = qoCurrentMembers
-    .concat(qtmCurrentMembers)
-    .filter(filterById);
+    .filter(filterById)
+    .sort(sortByField("title"));
+
   var businessOfficeAssignments = await FetchBusinessOfficeAssignments();
   var tempQOAssignments = await FetchTempQOAssignments();
   var assignedUsers = businessOfficeAssignments
     .concat(tempQOAssignments)
-    .filter(filterById);
+    .filter(filterById)
+    .sort(sortByField("title"));
 
   return { assignedUsers, currentMembers };
-
-  var usersToAdd = assignedUsers.filter(
-    (person) => !currentMembers.find((member) => member.id === person.id)
-  );
-  var usersToRemove = currentMembers.filter(
-    (member) => !assignedUsers.find((person) => person.id === member.id)
-  );
-
-  if (confirm("Add the following users:\n" + formatUserList(usersToAdd))) {
-    console.log("adding");
-    await AddUserToSharePointGroup(usersToAdd);
-  }
-
-  if (
-    confirm("Remove the following users:\n" + formatUserList(usersToRemove))
-  ) {
-    console.log("removing");
-    await RemoveUserFromSharePointGroup(usersToRemove);
-  }
 }
 
 function AddUserToSharePointGroup(userArr) {
@@ -319,7 +305,7 @@ class ViewModel {
     this.assignedUsers(assignedUsers);
   };
 
-  clickManageQOs = () => viewGroup("QOs");
+  clickManageGroup = viewGroup;
 
   clickSubmit = async () => {
     const usersToAdd = ko

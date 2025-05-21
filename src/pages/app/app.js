@@ -277,6 +277,9 @@ $("#btnRequestAllRecords").click(LoadMainData);
 // Tab 0 My CAP Table configuration:
 
 //TAB 1
+const camlqWhereActive = `<View Scope="RecursiveAll"><Query><Where><Eq>
+      <FieldRef Name="Active"/><Value Type="Boolean">1</Value>
+      </Eq></Where></Query></View>`;
 
 // Loading CAP data
 // This is where we structure the query for what get's loaded on main tab page and the drop-down on the specific record page.
@@ -301,11 +304,14 @@ function LoadMainData(next) {
     dataLoadIncrementer.inc();
   });
 
-  app.listRefs.BusinessOffices.getListItems("", function (offices) {
-    vm.allBusinessOffices(offices);
-    document.getElementById("spanLoadStatus").innerText = "Offices Loaded";
-    dataLoadIncrementer.inc();
-  });
+  app.listRefs.BusinessOffices.getListItems(
+    camlqWhereActive,
+    function (offices) {
+      vm.allBusinessOffices(offices);
+      document.getElementById("spanLoadStatus").innerText = "Offices Loaded";
+      dataLoadIncrementer.inc();
+    }
+  );
 
   app.listRefs.TempQOs.getListItems("", function (offices) {
     vm.allTempQOs(offices);
